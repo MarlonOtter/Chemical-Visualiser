@@ -1,0 +1,133 @@
+#include "Camera.h"
+
+#include <iostream>
+
+Camera::Camera(int width, int height, glm::vec3 position)
+{
+	Camera::width = width;
+	Camera::height = height;
+	Camera::position = position;
+
+	speed = baseSpeed;
+}
+
+void Camera::UpdateSize(GLFWwindow* window)
+{
+	// get the size of the window
+	glfwGetFramebufferSize(window, &width, &height);
+}
+
+void Camera::UpdateMatrix(float FOVdeg, float nearPlane, float farPlane)
+{
+	//define the matrices
+	glm::mat4 view = glm::mat4(1.0f);
+	glm::mat4 proj = glm::mat4(1.0f);
+
+	//move the camera away so the model can be seen better
+	view = glm::lookAt(position, position + orientation, Up);
+
+	//calculate the aspect ratio of the screen
+	// * encountered issue due to not being turned to floats so it was doing integer division *
+	float aspectRatio = static_cast<float>(width) / static_cast<float>(height);
+	//make so there is perspective
+	proj = glm::perspective(glm::radians(FOVdeg), aspectRatio, nearPlane, farPlane);
+	
+	//multiply the matrices into one
+	cameraMatrix = proj * view;
+}
+
+
+void Camera::Matrix(Shader& shader, const char* uniform)
+{
+	//pass the camera matrix into the shader
+	glUniformMatrix4fv(glGetUniformLocation(shader.ID, "camMatrix"), 1, GL_FALSE, glm::value_ptr(cameraMatrix));
+}
+
+void Camera::Inputs(GLFWwindow* window, float deltaTime, float& scrollOffset)
+{
+	//update the speed using the scroll wheel
+	baseSpeed = std::max(baseSpeed + scrollOffset * 0.1f, 0.0f);
+	scrollOffset = 0.0f;
+	speed = baseSpeed;
+	
+
+
+	//handle keyboard inputs for the camera
+
+	//WASD
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+	{
+		position += speed * deltaTime * orientation;
+	}
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+	{
+		position += speed * deltaTime * -glm::normalize(glm::cross(orientation, Up));
+	}
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+	{
+		position += speed * deltaTime * -orientation;
+	}
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+	{
+		position += speed * deltaTime * glm::normalize(glm::cross(orientation, Up));
+	}
+	
+	//Up and down
+	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+	{
+		position += speed * deltaTime * Up;
+	}
+	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+	{
+		position += speed * deltaTime * -Up;
+	}
+
+	//mouse control
+	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+	{
+		//hide the cursor
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+
+		//if the mouse button was only just pressed it moves cursor to center
+		//so that the camera doesn't jump about
+		if (firstClick)
+		{
+			//sets the cursor to the center of the window
+			glfwSetCursorPos(window, (width / 2), (height / 2));
+			firstClick = false;
+		}
+
+		//mouse position variables
+		double mouseX;
+		double mouseY;
+		//gets the mouse position
+		glfwGetCursorPos(window, &mouseX, &mouseY);
+
+		//calculate the rotation values in the X and Y
+		float rotX = 1.0f * sensitivity * (float)(mouseY - (height / 2)) / height;
+		float rotY = 1.0f * sensitivity * (float)(mouseX - (width / 2)) / width;
+
+		//calculate the new orientation
+		glm::vec3 newOrientation = glm::rotate(orientation, glm::radians(-rotX), glm::normalize(glm::cross(orientation, Up)));
+
+		//make so that the camera can't just do barrel rolls (limits how far up ypu can look)
+		if (!((glm::angle(newOrientation, Up) <= glm::radians(5.0f)) or (glm::angle(newOrientation, -Up) <= glm::radians(5.0f))))
+		{
+			orientation = newOrientation;
+		}
+
+		//rotate the camera around the Y axis the desired amount
+		orientation = glm::rotate(orientation, glm::radians(-rotY), Up);
+		//sets the mouse to the center of the window
+		glfwSetCursorPos(window, (width / 2), (height / 2));
+	}
+	//you let go of the left mouse button
+	else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE)
+	{
+		//show cursor
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		//set value to true so that it can be reused
+		firstClick = true;
+	}
+}
+
