@@ -19,67 +19,65 @@
     <Filter Include="Resource Files\Textures">
       <UniqueIdentifier>{f6080764-d9f4-4194-b332-cb4f1e8bf880}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Renderer">
+      <UniqueIdentifier>{b3e6baf8-35fb-4ac7-8385-2c7db46bdc87}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Renderer">
+      <UniqueIdentifier>{a6d3c8a2-c4ea-464c-b6d3-83fe91485cfb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ChemVis">
+      <UniqueIdentifier>{fb640ee8-cb78-4c9b-8eba-d6636038a190}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ChemVis">
+      <UniqueIdentifier>{fa55c786-eff0-441f-ae25-2b11989f1651}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Renderer\VBO.cpp">
+      <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\Camera.cpp">
+      <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\EBO.cpp">
+      <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\glad.c">
+      <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
     <ClCompile Include="Main.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="glad.c">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Renderer\Mesh.cpp">
+      <Filter>Source Files\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="ShaderClass.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Renderer\Model.cpp">
+      <Filter>Source Files\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="VAO.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Renderer\ShaderClass.cpp">
+      <Filter>Source Files\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="VBO.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Renderer\stb.cpp">
+      <Filter>Source Files\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="EBO.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Renderer\Texture.cpp">
+      <Filter>Source Files\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="Texture.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Renderer\VAO.cpp">
+      <Filter>Source Files\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="stb.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="mods\Atom.cpp">
+      <Filter>Source Files\ChemVis</Filter>
     </ClCompile>
-    <ClCompile Include="Camera.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="mods\Chemical.cpp">
+      <Filter>Source Files\ChemVis</Filter>
     </ClCompile>
-    <ClCompile Include="Mesh.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Renderer\DebugLine.cpp">
+      <Filter>Source Files\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="Model.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Renderer\Grid.cpp">
+      <Filter>Source Files\Renderer</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="ShaderClass.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="VAO.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="VBO.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="EBO.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Texture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Mesh.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Model.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\default.vert">
@@ -88,10 +86,66 @@
     <None Include="Shaders\default.frag">
       <Filter>Resource Files\Shaders</Filter>
     </None>
+    <None Include="Shaders\DebugLine.frag">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\DebugLine.vert">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\atom.frag">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\gridLines.frag">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\axisLines.frag">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\axisLines.vert">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\Textures\Brick.png">
       <Filter>Resource Files\Textures</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Renderer\Camera.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\EBO.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\Mesh.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\Model.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\ShaderClass.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\Texture.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\VAO.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\VBO.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="mods\Atom.h">
+      <Filter>Header Files\ChemVis</Filter>
+    </ClInclude>
+    <ClInclude Include="mods\Chemical.h">
+      <Filter>Header Files\ChemVis</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\DebugLine.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\Grid.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

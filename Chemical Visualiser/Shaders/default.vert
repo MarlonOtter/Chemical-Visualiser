@@ -19,7 +19,7 @@ uniform mat4 model;
 
 void main()
 {
-    crntPos = vec3(model * vec4(aPos, 1.0f));
+    crntPos = vec3(model * translation * rotation * scale * vec4(aPos, 1.0f));
     //output the position of the vertex
     
     normals = aNormal;
