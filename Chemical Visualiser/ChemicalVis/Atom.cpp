@@ -6,12 +6,12 @@ Atom::Atom(int atomicNum, int maxBonds)
 	Atom::atomicNum = atomicNum;
 	Atom::maxBonds = maxBonds;
 
-	model = Model("Resources/Models/Spheres/1xV2.obj", pos);
+	//model = Model("Resources/Models/Spheres/1xV2.obj");
 }
 
 void Atom::Draw(Shader& shader, Camera& camera)
 {
-	model.Draw(shader, camera);
+	//model.Draw(shader, camera);
 }
 
 void Atom::AddBond(Atom& atom)

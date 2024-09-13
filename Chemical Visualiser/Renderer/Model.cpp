@@ -1,17 +1,12 @@
 #include "Model.h"
 
-Model::Model()
-{
-
-}
 
 
-Model::Model(const char* path, glm::vec3 pos, std::vector<Texture> textures)
+Model::Model(const char* path, std::vector<Texture> textures)
 {
 	// save data to class
 	Model::dir = path;
 	Model::textures = textures;
-	Model::pos = pos;
 
 	//load the model
 	LoadModel();
@@ -97,14 +92,12 @@ void Model::ProccessMesh(aiMesh* mesh)
 	meshes.push_back(Mesh(vertices, indices, textures));
 }
 
-void Model::Draw(Shader& shader, Camera& camera, glm::vec3 translation)
+void Model::Draw(Shader& shader, Camera& camera, glm::vec3 pos, glm::quat rot, glm::vec3 scale)
 {
 
 	//define a matrix
 	glm::mat4 matrix = glm::mat4(1.0f);
-	//apply the translation to the position
-	pos += translation;
-	//set the matrix to the new position
+	//set the matrix to the desired position
 	matrix = glm::translate(matrix, pos);
 
 	//send the matrix to the shader
@@ -117,28 +110,10 @@ void Model::Draw(Shader& shader, Camera& camera, glm::vec3 translation)
 		// it is not very efficient as it costs 1 draw call per mesh
 		// which very quickly adds up with lots of models
 		glm::vec3 meshOffset = glm::vec3(0.0f, 0.0f, 0.0f);
-		meshes[i].Draw(shader, camera, matrix, meshOffset, rotation, scale);
+		meshes[i].Draw(shader, camera, matrix, meshOffset, rot, scale);
 	}
 
 }	
-
-//translate the model by a vector
-void Model::Translate(glm::vec3 translation)
-{
-	pos += translation;
-}
-
-//rotate the model
-void Model::Rotate(glm::quat rotation)
-{
-
-}
-
-//scale the model on each axis
-void Model::Scale(glm::vec3 scale)
-{
-	Model::scale = scale;
-}
 
 // loop through each mesh and delete it
 void Model::Delete()

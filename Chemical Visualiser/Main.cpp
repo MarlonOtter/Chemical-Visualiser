@@ -2,7 +2,7 @@
 #include <iostream> //input and output to the terminal
 
 //includes to all the other files
-#include "Renderer/Model.h"
+#include "Renderer/ObjectArray.h"
 #include "Renderer/Grid.h"
 
 bool debug = true;
@@ -88,6 +88,8 @@ int main()
 	//define the viewport
 	glViewport(0, 0, width, height);
 
+	ObjectArray objs;
+
 	//create a shader program and attach its vertex and fragment shader
 	Shader shader("Shaders/default.vert", "Shaders/default.frag");
 
@@ -96,8 +98,8 @@ int main()
 	//create the shader program for drawing debug lines
 	Shader DebugLineShader("Shaders/DebugLine.vert", "Shaders/DebugLine.frag");
 
+	//grid stuff
 	Shader gridShader("Shaders/DebugLine.vert", "Shaders/gridLines.frag");
-
 	Shader axisShader("Shaders/axisLines.vert", "Shaders/axisLines.frag");
 	axisShader.Activate();
 	glUniform1f(glGetUniformLocation(axisShader.ID, "size"), 150.0f);
@@ -106,7 +108,7 @@ int main()
 
 	Texture textures[] =
 	{
-		Texture("Resources/Textures/transCubeTex.png", "diffuse", 0),
+		Texture("Resources/Textures/cubeTexture.png", "diffuse", 0),
 		Texture("Resources/Textures/spec.png", "specular", 1)
 	};
 
@@ -115,22 +117,51 @@ int main()
 	std::vector<Texture> texts(textures, textures + sizeof(textures) / sizeof(Texture));
 
 	//define and import the models
-	Model sphere("Resources/Models/Spheres/1xV2.obj", glm::vec3(0.0f, 0.0f, 0.0f), texts);
+	Model sphereModel("Resources/Models/Spheres/1xV2.obj", texts);
+	Model cubeModel("Resources/Models/cube/cube.obj", texts);
+
+	// the use of an object class means that there is only one copy of the vertices
+	// in memory, reducing memory usage if there are lots of the same model like in
+	// this project. It also doesn't impact other the cost of models
+
+	// This creates the object and adds itself to an object array that loops through and draws each one
+	Object sphere(&sphereModel, &shader);
+	objs.Add(sphere);
 	sphere.Scale(glm::vec3(0.5f, 0.5f, 0.5f)); // makes the sphere 1m wide
 	sphere.Translate(glm::vec3(0.5f, 0.5f, 0.5f)); //moves sphere to desired position
-
-	Grid grid(80, 1.0f); // creates the debugGrid with a size of 80 square and and interval of 1.0m
 	
-	//set the colour of the light in the shader
+	//create another sphere
+	Object sphere2(&sphereModel, &shader);
+	objs.Add(sphere2);
+	// move it a bit
+	sphere2.Translate(glm::vec3(0.0f, 2.0f, 0.0f));
+
+	// cerate a cube this time
+	Object cube(&cubeModel, &shader);
+	//add the cube to the array to make drawing easier
+	objs.Add(cube);
+	// do some transformations
+	cube.Translate(glm::vec3(2.0f, 0.0f, 0.0f));
+	cube.Scale(glm::vec3(0.25f, 0.25f, 0.25f));
+	// rotation does work however it doesn't affect the light so the light sees to come from the wring direction
+	//cube.Rotate(glm::quatLookAt(glm::normalize(glm::vec3(4.0f, 1.0f, 1.0f)), glm::normalize(glm::vec3(0.0f, 1.0f, 0.0f))));
+	
+	// creates the debugGrid with a size of 80 square and and interval of 1.0m
+	Grid grid(80, 1.0f); 
+	
+	//set the colour of the light in the shaderss
 	glm::vec3 lightColour = glm::vec3(1.0f, 1.0f, 1.0f);
 	shader.Activate();
 	glUniform3f(glGetUniformLocation(shader.ID, "lightColour"), lightColour.r, lightColour.g, lightColour.b);
 	atomShader.Activate();
 	glUniform3f(glGetUniformLocation(atomShader.ID, "lightColour"), lightColour.r, lightColour.g, lightColour.b);
 
-	//enable camera depth to work properly
+	// enable camera depth to work properly
 	glEnable(GL_DEPTH_TEST);
 
+	// Cull the back of triangles
+	// This reduces the number of triangles that need to be draw as if they are facing the wrong way they
+	// will be discarded
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_FRONT);
 	glFrontFace(GL_CW);
@@ -142,6 +173,7 @@ int main()
 	//set orientation
 	camera.orientation = glm::vec3(-0.59f, -0.26f, -0.76f);
 
+	std::cout << objs.size();
 
 	//defined for deltaTime
 	double crntTime = 0;
@@ -158,8 +190,9 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		//calculates frame time
-		float deltaTime = CalcDeltaTime(deltprevTime);
+		float deltaTime = (float)CalcDeltaTime(deltprevTime);
 
+		//FPS counter
 		crntTime = glfwGetTime();
 		timeDiff = crntTime - prevTime;
 		FPScounter++;
@@ -182,8 +215,8 @@ int main()
 		//update any matrices for the camera
 		camera.UpdateMatrix(60.0f, 0.1f, 100.0f);
 
-		//draw the models
-		sphere.Draw(shader, camera);
+		//draw all the models
+		objs.Draw(camera);
 
 		//debug settings
 		if (debug) 

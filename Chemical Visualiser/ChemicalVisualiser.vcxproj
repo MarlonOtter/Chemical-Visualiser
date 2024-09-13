@@ -137,9 +137,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ChemicalVis\Atom.cpp" />
+    <ClCompile Include="ChemicalVis\Chemical.cpp" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="mods\Atom.cpp" />
-    <ClCompile Include="mods\Chemical.cpp" />
     <ClCompile Include="Renderer\Camera.cpp" />
     <ClCompile Include="Renderer\EBO.cpp" />
     <ClCompile Include="Renderer\glad.c" />
@@ -147,6 +147,8 @@
     <ClCompile Include="Renderer\Grid.cpp" />
     <ClCompile Include="Renderer\Mesh.cpp" />
     <ClCompile Include="Renderer\Model.cpp" />
+    <ClCompile Include="Renderer\Object.cpp" />
+    <ClCompile Include="Renderer\ObjectArray.cpp" />
     <ClCompile Include="Renderer\ShaderClass.cpp" />
     <ClCompile Include="Renderer\stb.cpp" />
     <ClCompile Include="Renderer\Texture.cpp" />
@@ -167,14 +169,16 @@
     <Image Include="Resources\Textures\Brick.png" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="mods\Atom.h" />
-    <ClInclude Include="mods\Chemical.h" />
+    <ClInclude Include="ChemicalVis\Atom.h" />
+    <ClInclude Include="ChemicalVis\Chemical.h" />
     <ClInclude Include="Renderer\Camera.h" />
     <ClInclude Include="Renderer\EBO.h" />
     <ClInclude Include="Renderer\DebugLine.h" />
     <ClInclude Include="Renderer\Grid.h" />
     <ClInclude Include="Renderer\Mesh.h" />
     <ClInclude Include="Renderer\Model.h" />
+    <ClInclude Include="Renderer\Object.h" />
+    <ClInclude Include="Renderer\ObjectArray.h" />
     <ClInclude Include="Renderer\ShaderClass.h" />
     <ClInclude Include="Renderer\Texture.h" />
     <ClInclude Include="Renderer\VAO.h" />

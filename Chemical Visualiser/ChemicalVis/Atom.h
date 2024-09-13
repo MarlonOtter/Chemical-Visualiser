@@ -11,7 +11,7 @@ class Atom
 		int maxBonds;
 		std::vector<Atom> bonds;
 
-		Model model;
+		//Model model;
 
 		Atom(int atomicNum, int maxBonds);
 		void AddBond(Atom& atom);

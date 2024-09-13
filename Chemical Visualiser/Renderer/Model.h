@@ -11,20 +11,19 @@
 class Model
 {
 	public:
-		glm::vec3 pos = glm::vec3(0.0f, 0.0f, 0.0f);
-		glm::quat rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
-		glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f);
 
-		Model();
 
-		Model(const char* path, glm::vec3 pos = glm::vec3(0.0f, 0.0f, 0.0f), std::vector<Texture> textures = std::vector<Texture>());
-		void Draw(Shader& shader, Camera& camera, glm::vec3 translation = glm::vec3(0.0f, 0.00f, 0.0f));
+		Model(const char* path, std::vector<Texture> textures = std::vector<Texture>());
+
+		void Draw
+		(
+			Shader& shader,
+			Camera& camera,
+			glm::vec3 pos = glm::vec3(0.0f, 0.0f, 0.0f),
+			glm::quat rot = glm::quat(1.0f, 0.0f, 0.0f, 0.0f),
+			glm::vec3 scale = glm::vec3(0.0f, 0.0f, 0.0f)
+		);
 		
-		void Translate(glm::vec3 translation);
-		void Rotate(glm::quat rotation);
-		void Scale(glm::vec3 scale);
-
-
 		void Delete();
 	private:
 

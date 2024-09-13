@@ -66,16 +66,22 @@
     <ClCompile Include="Renderer\VAO.cpp">
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="mods\Atom.cpp">
-      <Filter>Source Files\ChemVis</Filter>
-    </ClCompile>
-    <ClCompile Include="mods\Chemical.cpp">
-      <Filter>Source Files\ChemVis</Filter>
-    </ClCompile>
     <ClCompile Include="Renderer\DebugLine.cpp">
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="Renderer\Grid.cpp">
+      <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\Object.cpp">
+      <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="ChemicalVis\Atom.cpp">
+      <Filter>Source Files\ChemVis</Filter>
+    </ClCompile>
+    <ClCompile Include="ChemicalVis\Chemical.cpp">
+      <Filter>Source Files\ChemVis</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\ObjectArray.cpp">
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
   </ItemGroup>
@@ -135,16 +141,22 @@
     <ClInclude Include="Renderer\VBO.h">
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="mods\Atom.h">
-      <Filter>Header Files\ChemVis</Filter>
-    </ClInclude>
-    <ClInclude Include="mods\Chemical.h">
-      <Filter>Header Files\ChemVis</Filter>
-    </ClInclude>
     <ClInclude Include="Renderer\DebugLine.h">
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="Renderer\Grid.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\Object.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="ChemicalVis\Chemical.h">
+      <Filter>Header Files\ChemVis</Filter>
+    </ClInclude>
+    <ClInclude Include="ChemicalVis\Atom.h">
+      <Filter>Header Files\ChemVis</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\ObjectArray.h">
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
   </ItemGroup>
