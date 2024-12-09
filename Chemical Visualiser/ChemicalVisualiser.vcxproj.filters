@@ -31,6 +31,18 @@
     <Filter Include="Source Files\ChemVis">
       <UniqueIdentifier>{fa55c786-eff0-441f-ae25-2b11989f1651}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\lib">
+      <UniqueIdentifier>{bfba8d43-34de-4eee-955d-e394566f5f9c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\lib\ImGUI">
+      <UniqueIdentifier>{ba6bb28d-9d00-4a4b-8d44-c7ce9afdf3c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ChemVis\GUI">
+      <UniqueIdentifier>{f1f7e683-3a0c-4f20-99df-439ee44756f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ChemVis\GUI">
+      <UniqueIdentifier>{ee7eea67-bf0a-4611-afc0-f12927124bb0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Renderer\VBO.cpp">
@@ -42,12 +54,6 @@
     <ClCompile Include="Renderer\EBO.cpp">
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="Renderer\glad.c">
-      <Filter>Source Files\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="Main.cpp">
-      <Filter>Source Files\Renderer</Filter>
-    </ClCompile>
     <ClCompile Include="Renderer\Mesh.cpp">
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
@@ -55,9 +61,6 @@
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="Renderer\ShaderClass.cpp">
-      <Filter>Source Files\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="Renderer\stb.cpp">
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="Renderer\Texture.cpp">
@@ -83,6 +86,51 @@
     </ClCompile>
     <ClCompile Include="Renderer\ObjectArray.cpp">
       <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="ChemicalVis\DataFetch.cpp">
+      <Filter>Source Files\ChemVis</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\glad.c">
+      <Filter>Source Files\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\stb.cpp">
+      <Filter>Source Files\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="Libraries\include\imgui\imgui_demo.cpp">
+      <Filter>Source Files\lib\ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Libraries\include\imgui\imgui_draw.cpp">
+      <Filter>Source Files\lib\ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Libraries\include\imgui\imgui_widgets.cpp">
+      <Filter>Source Files\lib\ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Libraries\include\imgui\imgui.cpp">
+      <Filter>Source Files\lib\ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Libraries\include\imgui\backends\imgui_impl_opengl3.cpp">
+      <Filter>Source Files\lib\ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Libraries\include\imgui\backends\imgui_impl_glfw.cpp">
+      <Filter>Source Files\lib\ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Libraries\include\imgui\imgui_tables.cpp">
+      <Filter>Source Files\lib\ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="ChemicalVis\GUI.cpp">
+      <Filter>Source Files\ChemVis\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="ChemicalVis\EditorWindow.cpp">
+      <Filter>Source Files\ChemVis\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="ChemicalVis\RenderOptions.cpp">
+      <Filter>Source Files\ChemVis\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="ChemicalVis\ChemicalWindow.cpp">
+      <Filter>Source Files\ChemVis\GUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -110,11 +158,6 @@
     <None Include="Shaders\axisLines.vert">
       <Filter>Resource Files\Shaders</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="Resources\Textures\Brick.png">
-      <Filter>Resource Files\Textures</Filter>
-    </Image>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Renderer\Camera.h">
@@ -158,6 +201,24 @@
     </ClInclude>
     <ClInclude Include="Renderer\ObjectArray.h">
       <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="ChemicalVis\chemicalData.h">
+      <Filter>Header Files\ChemVis</Filter>
+    </ClInclude>
+    <ClInclude Include="ChemicalVis\DataFetch.h">
+      <Filter>Header Files\ChemVis</Filter>
+    </ClInclude>
+    <ClInclude Include="ChemicalVis\EditorWindow.h">
+      <Filter>Header Files\ChemVis\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="ChemicalVis\GUI.h">
+      <Filter>Header Files\ChemVis\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="ChemicalVis\RenderOptions.h">
+      <Filter>Header Files\ChemVis\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="ChemicalVis\ChemicalWindow.h">
+      <Filter>Header Files\ChemVis\GUI</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

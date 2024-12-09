@@ -43,15 +43,8 @@ void Camera::Matrix(Shader& shader, const char* uniform)
 	glUniformMatrix4fv(glGetUniformLocation(shader.ID, "camMatrix"), 1, GL_FALSE, glm::value_ptr(cameraMatrix));
 }
 
-void Camera::Inputs(GLFWwindow* window, float deltaTime, float& scrollOffset)
+void Camera::Inputs(GLFWwindow* window, float deltaTime, float scrollOffset)
 {
-	//update the speed using the scroll wheel
-	baseSpeed = std::max(baseSpeed + scrollOffset * 0.1f, 0.0f);
-	scrollOffset = 0.0f;
-	speed = baseSpeed;
-	
-
-
 	//handle keyboard inputs for the camera
 
 	//WASD
@@ -85,15 +78,12 @@ void Camera::Inputs(GLFWwindow* window, float deltaTime, float& scrollOffset)
 	//mouse control
 	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
 	{
-		//hide the cursor
-		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
-
-		//if the mouse button was only just pressed it moves cursor to center
+		//if the mouse button was only just pressed it sets the previous location as the currnet
 		//so that the camera doesn't jump about
 		if (firstClick)
 		{
-			//sets the cursor to the center of the window
-			glfwSetCursorPos(window, (width / 2), (height / 2));
+			//gets the mouse position
+			glfwGetCursorPos(window, &prevCursorPosX, &prevCursorPosY);
 			firstClick = false;
 		}
 
@@ -104,8 +94,8 @@ void Camera::Inputs(GLFWwindow* window, float deltaTime, float& scrollOffset)
 		glfwGetCursorPos(window, &mouseX, &mouseY);
 
 		//calculate the rotation values in the X and Y
-		float rotX = 1.0f * sensitivity * (float)(mouseY - (height / 2)) / height;
-		float rotY = 1.0f * sensitivity * (float)(mouseX - (width / 2)) / width;
+		float rotX = sensitivity * (float)(mouseY - prevCursorPosY);
+		float rotY = sensitivity * (float)(mouseX - prevCursorPosX);
 
 		//calculate the new orientation
 		glm::vec3 newOrientation = glm::rotate(orientation, glm::radians(-rotX), glm::normalize(glm::cross(orientation, Up)));
@@ -119,13 +109,11 @@ void Camera::Inputs(GLFWwindow* window, float deltaTime, float& scrollOffset)
 		//rotate the camera around the Y axis the desired amount
 		orientation = glm::rotate(orientation, glm::radians(-rotY), Up);
 		//sets the mouse to the center of the window
-		glfwSetCursorPos(window, (width / 2), (height / 2));
+		glfwGetCursorPos(window, &prevCursorPosX, &prevCursorPosY);
 	}
 	//you let go of the left mouse button
 	else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE)
 	{
-		//show cursor
-		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 		//set value to true so that it can be reused
 		firstClick = true;
 	}

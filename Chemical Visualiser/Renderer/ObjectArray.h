@@ -11,10 +11,10 @@ class ObjectArray
 		int Add(Object& object);
 
 		int Remove(int index);
-		int Remove(std::string name);
+		int Remove(std::string ID);
 
 		Object* Get(int index);
-		Object* Get(std::string name);
+		Object* Get(std::string ID);
 
 		void Draw(Camera& camera);
 
@@ -23,6 +23,6 @@ class ObjectArray
 	private:
 		std::vector<Object*> objArr;
 
-		int _findIndex(std::string name);
+		int _findIndex(std::string ID);
 };
 #endif // !OBJECT_ARRAY_CLASS_H

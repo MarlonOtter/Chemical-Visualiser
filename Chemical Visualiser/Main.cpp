@@ -5,45 +5,34 @@
 #include "Renderer/ObjectArray.h"
 #include "Renderer/Grid.h"
 
+#include "ChemicalVis/GUI.h"
+
 bool debug = true;
 
 // width and height of the window that is going to be created in pixels
 int width = 800;
 int height = 800;
 
-// the change in scroll on the scroll wheel
-float scrollOffset = 0.0f;
+bool keyJ = true;
+
+// threading reference : 23/11/2024 : https://stackoverflow.com/questions/42418360/how-to-check-if-thread-has-finished-work-in-c11-and-above
+
 
 // colour of the background
 glm::vec4 bgColour = glm::vec4(0.15f, 0.15f, 0.15f, 1.0f);
 
-// this is called whenever the user scrolls with their mosue
-void scroll_callback(GLFWwindow* window, double xOffset, double yOffset)
-{
-	// updates the scroll offset
-	scrollOffset += (float)yOffset;
-}
 
-// this is called whenever the user changes the size of the window
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+// this is the code that is needed to make a request to the database with name
+//it is temperary how it is 
+static glm::vec3 Float3ToVec3(float nums[3])
 {
-	// sets the size of the viewport
-	glViewport(0, 0, width, height);
-}
-
-//function that calculates the time for a frame
-double CalcDeltaTime(double& prevTime)
-{
-	double crntTime = glfwGetTime();
-	double deltaTime = crntTime - prevTime;
-	prevTime = crntTime;
-	return deltaTime;
+	return glm::vec3(nums[0], nums[1], nums[2]);
 }
 
 
 //main function
 //runs when the program is first executed
-int main()
+int main() 
 {
 	//initialise GLFW
 	glfwInit();
@@ -63,7 +52,7 @@ int main()
 	if (window == NULL)
 	{
 		//Output Error
-		std::cout << "Failed to create a window";
+		std::cout << "Failed to create a window\n";
 		//terminate glfw
 		glfwTerminate();
 		//stop the program
@@ -73,9 +62,6 @@ int main()
 	glfwMakeContextCurrent(window);
 	//maximize the window
 	glfwMaximizeWindow(window);
-
-	//set the framebuffer callback
-	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
 	//get glad to configure OpenGL
 	gladLoadGL();
@@ -87,6 +73,12 @@ int main()
 	glfwGetFramebufferSize(window, &width, &height);
 	//define the viewport
 	glViewport(0, 0, width, height);
+
+	//Initialise GUI
+	chemVisGUI GUI(window);
+
+
+	//initialise all the objects and such
 
 	ObjectArray objs;
 
@@ -125,19 +117,19 @@ int main()
 	// this project. It also doesn't impact other the cost of models
 
 	// This creates the object and adds itself to an object array that loops through and draws each one
-	Object sphere(&sphereModel, &shader);
+	Object sphere("Sphere", &sphereModel, &shader);
 	objs.Add(sphere);
 	sphere.Scale(glm::vec3(0.5f, 0.5f, 0.5f)); // makes the sphere 1m wide
 	sphere.Translate(glm::vec3(0.5f, 0.5f, 0.5f)); //moves sphere to desired position
-	
+
 	//create another sphere
-	Object sphere2(&sphereModel, &shader);
+	Object sphere2("Sphere2", &sphereModel, &shader);
 	objs.Add(sphere2);
 	// move it a bit
 	sphere2.Translate(glm::vec3(0.0f, 2.0f, 0.0f));
 
 	// cerate a cube this time
-	Object cube(&cubeModel, &shader);
+	Object cube("Cube", &cubeModel, &shader);
 	//add the cube to the array to make drawing easier
 	objs.Add(cube);
 	// do some transformations
@@ -145,10 +137,10 @@ int main()
 	cube.Scale(glm::vec3(0.25f, 0.25f, 0.25f));
 	// rotation does work however it doesn't affect the light so the light sees to come from the wring direction
 	//cube.Rotate(glm::quatLookAt(glm::normalize(glm::vec3(4.0f, 1.0f, 1.0f)), glm::normalize(glm::vec3(0.0f, 1.0f, 0.0f))));
-	
+
 	// creates the debugGrid with a size of 80 square and and interval of 1.0m
-	Grid grid(80, 1.0f); 
-	
+	Grid grid(80, 1.0f);
+
 	//set the colour of the light in the shaderss
 	glm::vec3 lightColour = glm::vec3(1.0f, 1.0f, 1.0f);
 	shader.Activate();
@@ -168,62 +160,64 @@ int main()
 
 	//set camera position
 	Camera camera(width, height, glm::vec3(1.5f, 1.0f, 2.0f));
-	//scroll to control speed
-	glfwSetScrollCallback(window, scroll_callback);
+
 	//set orientation
 	camera.orientation = glm::vec3(-0.59f, -0.26f, -0.76f);
 
-	std::cout << objs.size();
-
-	//defined for deltaTime
-	double crntTime = 0;
-	double prevTime = 0;
-	double deltprevTime = 0;
-	double timeDiff;
+	//defined for deltaTime/FPS
 	int FPScounter = 0;
+	float totalDeltaTime = 0.0;
+
 	//keep the window open
 	while (!glfwWindowShouldClose(window))
 	{
+		// create the GUI
+		// This can go anywhere in the main loop
+		GUI.CreateElements();
+
+		// This needs to be done more efficiently... creating a variable for each and then setting
+		// it out of the class isn't very good
+		sphere.pos = Float3ToVec3(GUI.editor.position);
+		sphere.scale = Float3ToVec3(GUI.editor.scale);
+		sphere.rotation = glm::quat(Float3ToVec3(GUI.editor.rotation));
+
+		bgColour = glm::vec4(Float3ToVec3(GUI.renderOptions.bgColour), 1.0f);
+		if (GUI.renderOptions.wireFrame) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		else glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		camera.speed = GUI.renderOptions.cameraSpeed;
+
 		//change the colour of the background
 		glClearColor(bgColour.r, bgColour.g, bgColour.b, bgColour.a);
 		//clears the buffer and applies the colour
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		//calculates frame time
-		float deltaTime = (float)CalcDeltaTime(deltprevTime);
-
-		//FPS counter
-		crntTime = glfwGetTime();
-		timeDiff = crntTime - prevTime;
-		FPScounter++;
-		if (timeDiff >= 1.0 / 30.0)
+		//if the GUI is being hovered over ignore user inputs to the visualiser
+		if (!GUI.io->WantCaptureMouse && !GUI.io->WantCaptureKeyboard)
 		{
-			std::string FPS = std::to_string((1.0f / timeDiff) * FPScounter);
-			std::string title = "Chemical Visualiser : " + FPS.substr(0, FPS.find(".") + 2) + "FPS";
-			
-			glfwSetWindowTitle(window, title.c_str());
-
-			prevTime = crntTime;
-			FPScounter = 0;
+			//do any inputs
+			camera.Inputs(window, GUI.io->DeltaTime, GUI.io->MouseWheel);
 		}
-	
-		//do any inputs
-		camera.Inputs(window, deltaTime, scrollOffset);
 		//update the size of the window in the camera class
 		camera.UpdateSize(window);
 
 		//update any matrices for the camera
-		camera.UpdateMatrix(60.0f, 0.1f, 100.0f);
+		camera.UpdateMatrix(GUI.renderOptions.FOV, GUI.renderOptions.nearPlane, GUI.renderOptions.farPlane);
 
 		//draw all the models
 		objs.Draw(camera);
 
 		//debug settings
-		if (debug) 
+		if (debug)
 		{
 			//draw a grid and axis
 			grid.Draw(gridShader, axisShader, camera);
 		}
+
+		//update the size of the frame taht is created depending on the size of the window
+		glfwGetFramebufferSize(window, &width, &height);
+		glViewport(0, 0, width, height);
+
+		GUI.Draw();
 
 		//swap to the next frame
 		glfwSwapBuffers(window);
@@ -242,3 +236,5 @@ int main()
 	//this is required to return an int so that the program can notify the user of any issues
 	return 0;
 }
+
+

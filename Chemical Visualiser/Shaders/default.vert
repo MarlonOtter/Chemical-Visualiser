@@ -10,8 +10,10 @@ out vec3 normals;
 out vec3 colour;
 out vec2 texCoord;
 
+//camera perspective and such
 uniform mat4 camMatrix;
 
+//transformations
 uniform mat4 translation;
 uniform mat4 rotation;
 uniform mat4 scale;

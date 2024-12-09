@@ -1,7 +1,6 @@
 #ifndef SHADER_CLASS_H
 #define SHADER_CLASS_H
 
-#include <iostream> //input and output to the terminal
 #include <string>
 #include <fstream>
 #include <sstream>

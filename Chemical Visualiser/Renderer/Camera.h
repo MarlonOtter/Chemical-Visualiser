@@ -24,13 +24,15 @@ public:
 	int width;
 	int height;
 
+	double prevCursorPosX = 0.0;
+	double prevCursorPosY = 0.0;
 	bool firstClick;
 
 	float baseSpeed = 2.0f;
 	const float sprintMult = 4.0f;
 
 	float speed;
-	float sensitivity = 100.0f;
+	float sensitivity = 0.1f;
 
 	Camera(int width, int height, glm::vec3 position);
 
@@ -38,6 +40,6 @@ public:
 
 	void UpdateMatrix(float FOVdeg, float nearPlane, float farPlane);
 	void Matrix(Shader& shader, const char* uniform);
-	void Inputs(GLFWwindow* window, float deltaTime, float& scrollOffset);
+	void Inputs(GLFWwindow* window, float deltaTime, float scrollOffset);
 };
 #endif // !CAMERA_CLASS_H

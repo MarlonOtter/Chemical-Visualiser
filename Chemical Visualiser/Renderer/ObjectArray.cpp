@@ -52,12 +52,12 @@ int ObjectArray::size()
 	return (int)objArr.size();
 }
 
-int ObjectArray::_findIndex(std::string name)
+int ObjectArray::_findIndex(std::string ID)
 {
 	//this is just a simple linear search for the name
 	for (int i = 0; i < objArr.size(); i++)
 	{
-		if (objArr[i]->name == name)// if the name is what is being looked for is found
+		if (objArr[i]->ID == ID)// if the name is what is being looked for is found
 		{
 			return i; // return i
 		}

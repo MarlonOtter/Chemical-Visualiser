@@ -1,32 +1,31 @@
 #include "Object.h"
 
 // All the different variates of constructors
-Object::Object(Model* model, Shader* shader, glm::vec3 pos)
+Object::Object(std::string ID, Model* model, Shader* shader, glm::vec3 pos)
 {
 	SetModel(model);
 	SetShader(shader);
 	Object::pos = pos;
-	
-	//Object::SetName("Object(" + std::to_string(model->objArr.size()) + ")");
+	Object::ID = ID;
+
 }
 
-Object::Object(Model* model, glm::vec3 pos)
+Object::Object(std::string ID, Model* model, glm::vec3 pos)
 {
 	SetModel(model);
 	Object::pos = pos;
-	
-	//Object::SetName("Object(" + std::to_string(model->objArr.size()) + ")");
+	Object::ID = ID;
 }
 
-Object::Object(glm::vec3 pos)
+Object::Object(std::string ID, glm::vec3 pos)
 {
 	Object::pos = pos;
-	Object::name = "Object1";
+	Object::ID = ID;
 }
 
-void Object::SetName(std::string name)
+void Object::SetID(std::string ID)
 {
-	Object::name = name;
+	Object::ID = ID;
 }
 
 // set and delete model
@@ -103,7 +102,7 @@ bool Object::_modelExists()
 
 void Object::ObjArrSetup()
 {
-	if (name == "")
+	if (ID == "")
 	{
 		//Object::SetName("Object(" + std::to_string(model->objArr.size()) + ")");
 	}
