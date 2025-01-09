@@ -14,9 +14,6 @@ Model::Model(const char* path, std::vector<Texture> textures)
 
 void Model::LoadModel()
 {
-	// clear any prevoiously stored data
-	// i won't do this atm as the function will only be used on a fresh mesh
-	// 
 	// import the mesh using assimp
 	Assimp::Importer Importer;
 

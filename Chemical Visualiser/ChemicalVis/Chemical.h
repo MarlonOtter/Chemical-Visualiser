@@ -1,21 +1,29 @@
-#ifndef CHEMICAL_CLASS_H
-#define CHEMICAL_CLASS_H
+#pragma once
+
+#include "nlohmann/json.hpp"
+
 
 #include "Atom.h"
 
-
-class Chemical
+class Chemical 
 {
-	public:
-		const char* name;
-		const char* formula;
+public:
+	//create a chemical object from data input
+	Chemical();
+	Chemical(std::string chemData);
 
-		//Chemical(std::string name);
-		Chemical(const char* atomicFormula);
+	nlohmann::json json;
 
-		void MapFormula(std::string formula);
+private:
+	// CREATE CHEMICAL
 
-		void Draw(Shader& shader, Camera& camera);
+	//this will take in the chemical data as input and spit out a json object
+	//includes some validation
+	void convertToJSON(std::string data);
+
+	//get all the data about all the atoms and turn them into Atom Classes
+	void parseAtoms(nlohmann::json json);
+
+	//Get all the information about the chemical from the json data
+	nlohmann::json parseChemicalInfo(nlohmann::json json);
 };
-
-#endif // !CHEMICAL_CLASS_H

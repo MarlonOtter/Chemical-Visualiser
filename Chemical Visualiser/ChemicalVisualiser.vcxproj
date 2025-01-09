@@ -137,7 +137,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="ChemicalVis\Atom.cpp" />
+    <ClCompile Include="ChemicalDataCache.cpp" />
     <ClCompile Include="ChemicalVis\Chemical.cpp" />
     <ClCompile Include="ChemicalVis\ChemicalWindow.cpp" />
     <ClCompile Include="ChemicalVis\DataFetch.cpp" />
@@ -178,9 +178,9 @@
     <None Include="Shaders\gridLines.frag" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ChemicalDataCache.h" />
     <ClInclude Include="ChemicalVis\Atom.h" />
     <ClInclude Include="ChemicalVis\Chemical.h" />
-    <ClInclude Include="ChemicalVis\chemicalData.h" />
     <ClInclude Include="ChemicalVis\ChemicalWindow.h" />
     <ClInclude Include="ChemicalVis\DataFetch.h" />
     <ClInclude Include="ChemicalVis\EditorWindow.h" />

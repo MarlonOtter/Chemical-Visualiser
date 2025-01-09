@@ -5,6 +5,7 @@
 #include "backends/imgui_impl_opengl3.h"
 #include "glm/glm.hpp"
 #include <string>
+#include "glad/glad.h"
 
 class RenderOptionsWindow
 {

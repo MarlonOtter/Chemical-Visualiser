@@ -28,10 +28,14 @@ void Camera::UpdateMatrix(float FOVdeg, float nearPlane, float farPlane)
 
 	//calculate the aspect ratio of the screen
 	// * encountered issue due to not being turned to floats so it was doing integer division *
+	
 	float aspectRatio = static_cast<float>(width) / static_cast<float>(height);
+	if (width == 0 || height == 0) aspectRatio = 1.0f;
+
 	//make so there is perspective
 	proj = glm::perspective(glm::radians(FOVdeg), aspectRatio, nearPlane, farPlane);
 	
+
 	//multiply the matrices into one
 	cameraMatrix = proj * view;
 }

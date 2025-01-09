@@ -78,12 +78,6 @@
     <ClCompile Include="Renderer\Object.cpp">
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="ChemicalVis\Atom.cpp">
-      <Filter>Source Files\ChemVis</Filter>
-    </ClCompile>
-    <ClCompile Include="ChemicalVis\Chemical.cpp">
-      <Filter>Source Files\ChemVis</Filter>
-    </ClCompile>
     <ClCompile Include="Renderer\ObjectArray.cpp">
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
@@ -131,6 +125,12 @@
     </ClCompile>
     <ClCompile Include="ChemicalVis\ChemicalWindow.cpp">
       <Filter>Source Files\ChemVis\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="ChemicalDataCache.cpp">
+      <Filter>Source Files\ChemVis</Filter>
+    </ClCompile>
+    <ClCompile Include="ChemicalVis\Chemical.cpp">
+      <Filter>Source Files\ChemVis</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -193,17 +193,11 @@
     <ClInclude Include="Renderer\Object.h">
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="ChemicalVis\Chemical.h">
-      <Filter>Header Files\ChemVis</Filter>
-    </ClInclude>
     <ClInclude Include="ChemicalVis\Atom.h">
       <Filter>Header Files\ChemVis</Filter>
     </ClInclude>
     <ClInclude Include="Renderer\ObjectArray.h">
       <Filter>Header Files\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="ChemicalVis\chemicalData.h">
-      <Filter>Header Files\ChemVis</Filter>
     </ClInclude>
     <ClInclude Include="ChemicalVis\DataFetch.h">
       <Filter>Header Files\ChemVis</Filter>
@@ -219,6 +213,12 @@
     </ClInclude>
     <ClInclude Include="ChemicalVis\ChemicalWindow.h">
       <Filter>Header Files\ChemVis\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="ChemicalDataCache.h">
+      <Filter>Header Files\ChemVis</Filter>
+    </ClInclude>
+    <ClInclude Include="ChemicalVis\Chemical.h">
+      <Filter>Header Files\ChemVis</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

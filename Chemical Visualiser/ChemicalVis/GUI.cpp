@@ -15,8 +15,7 @@ void chemVisGUI::CreateElements()
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
 	
-	//display the editor window (change stuff about a specific object)
-	editor.Display();
+	//display windows
 	renderOptions.Display();
 	chemicalFetch.Display();
 	

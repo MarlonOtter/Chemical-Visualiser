@@ -30,7 +30,12 @@ void RenderOptionsWindow::ListSettings()
 			farPlane = nearPlane + 0.001f;
 		}
 
-		ImGui::Checkbox("Wireframe Mode", &wireFrame);
+		if (ImGui::Checkbox("Wireframe Mode", &wireFrame))
+		{
+			//Toggle Wireframe mode
+			if (wireFrame) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			else glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		}
 		ImGui::ColorEdit3("Background Colour", bgColour);
 		ImGui::TreePop();
 	}
@@ -40,6 +45,11 @@ void RenderOptionsWindow::ListSettings()
 		if (ImGui::DragFloat("Camera Speed", &cameraSpeed, 0.1f) && cameraSpeed < 0.0f)
 		{
 			cameraSpeed = 0.0f;
+		}
+		ImGuiIO& io = ImGui::GetIO();
+		if (ImGui::DragFloat("Global Font Size", &io.FontGlobalScale, 0.01f))
+		{
+
 		}
 		ImGui::TreePop();
 	}

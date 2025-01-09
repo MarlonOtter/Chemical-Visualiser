@@ -171,62 +171,64 @@ int main()
 	//keep the window open
 	while (!glfwWindowShouldClose(window))
 	{
-		// create the GUI
-		// This can go anywhere in the main loop
-		GUI.CreateElements();
-
-		// This needs to be done more efficiently... creating a variable for each and then setting
-		// it out of the class isn't very good
-		sphere.pos = Float3ToVec3(GUI.editor.position);
-		sphere.scale = Float3ToVec3(GUI.editor.scale);
-		sphere.rotation = glm::quat(Float3ToVec3(GUI.editor.rotation));
-
-		bgColour = glm::vec4(Float3ToVec3(GUI.renderOptions.bgColour), 1.0f);
-		if (GUI.renderOptions.wireFrame) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		else glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		camera.speed = GUI.renderOptions.cameraSpeed;
-
-		//change the colour of the background
-		glClearColor(bgColour.r, bgColour.g, bgColour.b, bgColour.a);
-		//clears the buffer and applies the colour
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		//if the GUI is being hovered over ignore user inputs to the visualiser
-		if (!GUI.io->WantCaptureMouse && !GUI.io->WantCaptureKeyboard)
-		{
-			//do any inputs
-			camera.Inputs(window, GUI.io->DeltaTime, GUI.io->MouseWheel);
-		}
-		//update the size of the window in the camera class
-		camera.UpdateSize(window);
-
-		//update any matrices for the camera
-		camera.UpdateMatrix(GUI.renderOptions.FOV, GUI.renderOptions.nearPlane, GUI.renderOptions.farPlane);
-
-		//draw all the models
-		objs.Draw(camera);
-
-		//debug settings
-		if (debug)
-		{
-			//draw a grid and axis
-			grid.Draw(gridShader, axisShader, camera);
-		}
-
-		//update the size of the frame taht is created depending on the size of the window
+		//update the size of the frame that is created depending on the size of the window
 		glfwGetFramebufferSize(window, &width, &height);
 		glViewport(0, 0, width, height);
 
-		GUI.Draw();
+		// if the window is minimised. don't draw anything
+		if (width != 0 && height != 0) {
+		
+			// create the GUI
+		// This can go anywhere in the main loop
+		GUI.CreateElements();
+		
+		camera.speed = GUI.renderOptions.cameraSpeed;
 
-		//swap to the next frame
-		glfwSwapBuffers(window);
+		//change the colour of the background to the one in the render options
+		glClearColor(GUI.renderOptions.bgColour[0], GUI.renderOptions.bgColour[1], GUI.renderOptions.bgColour[2], 1.0f);
+		//clears the buffer and applies the colour
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		
+
+			//if the GUI is being hovered over ignore user inputs to the visualiser
+			if (!GUI.io->WantCaptureMouse && !GUI.io->WantCaptureKeyboard)
+			{
+				//do any inputs
+				camera.Inputs(window, GUI.io->DeltaTime, GUI.io->MouseWheel);
+			}
+			//update the size of the window in the camera class
+			camera.UpdateSize(window);
+
+			//update any matrices for the camera
+			camera.UpdateMatrix(GUI.renderOptions.FOV, GUI.renderOptions.nearPlane, GUI.renderOptions.farPlane);
+
+			//draw all the models
+			objs.Draw(camera);
+
+			//debug settings
+			if (debug)
+			{
+				//draw a grid and axis
+				grid.Draw(gridShader, axisShader, camera);
+			}
+
+			
+
+			GUI.Draw();
+
+			//swap to the next frame
+			glfwSwapBuffers(window);
+		}
 		//check for window events such as closing or resizing
 		glfwPollEvents();
 	}
 	//delete the shader
 	shader.Delete();
+
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
 
 	//close the window
 	glfwDestroyWindow(window);

@@ -1,29 +1,23 @@
-
 #include "Chemical.h"
 
-
-Chemical::Chemical(const char* atomicFormula)
+Chemical::Chemical(std::string chemData)
 {
-	Chemical::formula = atomicFormula;
-	MapFormula(formula);
+	convertToJSON(chemData);
 }
 
-void Chemical::MapFormula(std::string formula)
+void Chemical::convertToJSON(std::string chemData)
 {
-	// validate
-	// maybe just check for invalid characters
-
-	// loop through each character
-	for (int i = 0; i < formula.size(); i++)
-	{
-		if (formula[i] == '/')
-		{
-
-		}
-	}
+	json = nlohmann::json::parse(chemData);
 }
 
-void Chemical::Draw(Shader& shader, Camera& camera)
+void Chemical::parseAtoms(nlohmann::json json)
 {
+	json["PC_Compounds"][0]["atoms"]["aid"]; // this returns a list of the order in the elements array
+	json["PC_Compounds"][0]["atoms"]["element"]; //this returns a list of elements to its atom 
 
+	//returns 2D conformers
+	json["PC_Compounds"][0]["coords"][0]["aid"];
+	json["PC_Compounds"][0]["coords"][0]["conformers"][0]["x"];
+	json["PC_Compounds"][0]["coords"][0]["conformers"][0]["y"];
+	
 }
