@@ -1,9 +1,6 @@
 #include "ObjectArray.h"
 
-ObjectArray::ObjectArray()
-{
-	// don't know if this will have to do anything
-}
+std::vector<Object*> ObjectArray::objArr;
 
 int ObjectArray::Add(Object& object)
 {

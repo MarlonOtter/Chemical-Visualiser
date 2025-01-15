@@ -1,6 +1,6 @@
 
 //impport the header
-#include "DataFetch.h"
+#include "PubchemAccess.h"
 
 // PUBLIC METHODS
 

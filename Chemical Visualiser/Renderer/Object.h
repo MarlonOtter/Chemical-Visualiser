@@ -6,6 +6,8 @@
 class Object
 {
 	public:
+		Model* model;
+		Shader* shader;
 		std::string ID;
 
 		glm::vec3 pos = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -23,6 +25,7 @@ class Object
 
 		void SetShader(Shader* shader);
 		void DelShader();
+		Shader& getShader();
 
 		void Translate(glm::vec3 translation);
 		void Rotate(glm::quat rotation);
@@ -36,8 +39,7 @@ class Object
 		Model* GetModel();
 
 	private:
-		Model* model;
-		Shader* shader;
+		
 
 		bool _modelExists();
 		void ObjArrSetup();

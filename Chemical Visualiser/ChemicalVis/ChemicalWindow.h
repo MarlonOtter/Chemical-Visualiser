@@ -6,50 +6,54 @@
 #include <string>
 
 //this is for multi-threading
-#include <future>
 
-#include "Chemical.h"
-#include "DataFetch.h"
+
+#include "globalClass.h"
+#include "PubchemAccess.h"
+#include "ChemicalInputHandling.h"
+
 
 class ChemicalFetchWindow
 {
 public:
 	ImGuiIO* io;
-	//these will likely need to be made longer
-	char out[128];
-	std::future<std::string> thread;
+
+	bool gotChemical = false;
 
 	void Display();
 
-	//void MultiThreadFunc();
-	void checkRequest();
-
 private:
+	// is true only on the first frame
+	bool init = true;
+
+	//the chemical data as a string
 	std::string chemicalData;
 	
-	ImVec2 chemicalInputPos;
+	// is the chemical input or popup selected
 	bool chemicalInputIsActive;
 	bool autoCompleteActive;
 
-	char inp[128];
-	char prevInp[128];
-	std::string autoCompleteOptions;
-	bool autoCompleteQueued;
+	// string that displays error to user
+	std::string inputError = "";
 
-	bool makingRequest = false;
+	// stores the input text
+	char inp[128];
+
+	// autocomplete Stuff
+	std::string autoCompleteOptions;
+
+	// combo for selecting input type
+	const char* inputTypes[3] = { "Name", "CID", "SMILES" };
 	int selectedInputType = 0;
+
+	//offset for the autocomplete popup
 	float acOffset = 0;
 
-	void DisplayInput();
-	void DisplayAutoCompleteOptions();
+	//Display main UI
+	void DisplayContent();
+	//Display Autocomplete Options
+	void DisplayAutoCompleteOptions(ImVec2& chemicalInputPos);
 
-	void AutoComplete(std::string str);
-	std::string GetData(std::string chemName);
-
+	// Ran when user selects name as method of input
+	void NameInput(ImVec2& chemicalInputPos);	
 };
-
-/*
-	Should Search the stored chemical data to see if that is already saved before it is used
-
-	for autocomplete it should do it for cached/saved
-*/

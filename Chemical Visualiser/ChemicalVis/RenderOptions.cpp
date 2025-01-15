@@ -36,6 +36,7 @@ void RenderOptionsWindow::ListSettings()
 			if (wireFrame) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 			else glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		}
+		ImGui::Checkbox("Grid Toggle", &grid);
 		ImGui::ColorEdit3("Background Colour", bgColour);
 		ImGui::TreePop();
 	}
@@ -51,6 +52,8 @@ void RenderOptionsWindow::ListSettings()
 		{
 
 		}
+		std::string objCount = "Object Count : ";// +std::to_string(ObjectArray::size());
+		ImGui::Text(objCount.c_str());
 		ImGui::TreePop();
 	}
 	

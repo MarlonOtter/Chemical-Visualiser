@@ -49,6 +49,11 @@ void Object::DelShader()
 	shader = nullptr;
 }
 
+Shader& Object::getShader()
+{
+	return *shader;
+}
+
 void Object::Translate(glm::vec3 translation)
 {
 	//move the object by a set value

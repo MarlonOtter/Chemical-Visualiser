@@ -44,5 +44,6 @@ int chemVisGUI::Setup()
 	
 	chemVisGUI::io = &ImGui::GetIO();
 	cont = ImGui::GetCurrentContext();
+
 	return 0;
 }

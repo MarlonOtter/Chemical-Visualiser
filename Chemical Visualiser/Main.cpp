@@ -7,8 +7,6 @@
 
 #include "ChemicalVis/GUI.h"
 
-bool debug = true;
-
 // width and height of the window that is going to be created in pixels
 int width = 800;
 int height = 800;
@@ -74,13 +72,9 @@ int main()
 	//define the viewport
 	glViewport(0, 0, width, height);
 
+	
 	//Initialise GUI
 	chemVisGUI GUI(window);
-
-
-	//initialise all the objects and such
-
-	ObjectArray objs;
 
 	//create a shader program and attach its vertex and fragment shader
 	Shader shader("Shaders/default.vert", "Shaders/default.frag");
@@ -117,27 +111,13 @@ int main()
 	// this project. It also doesn't impact other the cost of models
 
 	// This creates the object and adds itself to an object array that loops through and draws each one
-	Object sphere("Sphere", &sphereModel, &shader);
-	objs.Add(sphere);
-	sphere.Scale(glm::vec3(0.5f, 0.5f, 0.5f)); // makes the sphere 1m wide
-	sphere.Translate(glm::vec3(0.5f, 0.5f, 0.5f)); //moves sphere to desired position
+	Object atomObj("atom", &sphereModel, &atomShader);
+	
 
-	//create another sphere
-	Object sphere2("Sphere2", &sphereModel, &shader);
-	objs.Add(sphere2);
-	// move it a bit
-	sphere2.Translate(glm::vec3(0.0f, 2.0f, 0.0f));
 
-	// cerate a cube this time
-	Object cube("Cube", &cubeModel, &shader);
-	//add the cube to the array to make drawing easier
-	objs.Add(cube);
-	// do some transformations
-	cube.Translate(glm::vec3(2.0f, 0.0f, 0.0f));
-	cube.Scale(glm::vec3(0.25f, 0.25f, 0.25f));
-	// rotation does work however it doesn't affect the light so the light sees to come from the wring direction
-	//cube.Rotate(glm::quatLookAt(glm::normalize(glm::vec3(4.0f, 1.0f, 1.0f)), glm::normalize(glm::vec3(0.0f, 1.0f, 0.0f))));
 
+	//TODO: rotation does work however it doesn't affect the light so the light sees to come from the wring direction
+	
 	// creates the debugGrid with a size of 80 square and and interval of 1.0m
 	Grid grid(80, 1.0f);
 
@@ -161,12 +141,11 @@ int main()
 	//set camera position
 	Camera camera(width, height, glm::vec3(1.5f, 1.0f, 2.0f));
 
-	//set orientation
-	camera.orientation = glm::vec3(-0.59f, -0.26f, -0.76f);
+	globalClass::camera = &camera;
+	globalClass::atomShader = &shader;
+	globalClass::atomModel = &cubeModel;
 
-	//defined for deltaTime/FPS
-	int FPScounter = 0;
-	float totalDeltaTime = 0.0;
+	float atomScale = 0.3f;
 
 	//keep the window open
 	while (!glfwWindowShouldClose(window))
@@ -176,11 +155,12 @@ int main()
 		glViewport(0, 0, width, height);
 
 		// if the window is minimised. don't draw anything
-		if (width != 0 && height != 0) {
+		if (width == 0 && height == 0) 
+		{
+			glfwPollEvents();
+			continue;
+		}
 		
-			// create the GUI
-		// This can go anywhere in the main loop
-		GUI.CreateElements();
 		
 		camera.speed = GUI.renderOptions.cameraSpeed;
 
@@ -191,40 +171,77 @@ int main()
 
 		
 
-			//if the GUI is being hovered over ignore user inputs to the visualiser
-			if (!GUI.io->WantCaptureMouse && !GUI.io->WantCaptureKeyboard)
-			{
-				//do any inputs
-				camera.Inputs(window, GUI.io->DeltaTime, GUI.io->MouseWheel);
-			}
-			//update the size of the window in the camera class
-			camera.UpdateSize(window);
-
-			//update any matrices for the camera
-			camera.UpdateMatrix(GUI.renderOptions.FOV, GUI.renderOptions.nearPlane, GUI.renderOptions.farPlane);
-
-			//draw all the models
-			objs.Draw(camera);
-
-			//debug settings
-			if (debug)
-			{
-				//draw a grid and axis
-				grid.Draw(gridShader, axisShader, camera);
-			}
-
-			
-
-			GUI.Draw();
-
-			//swap to the next frame
-			glfwSwapBuffers(window);
+		//if the GUI is being hovered over ignore user inputs to the visualiser
+		if (!GUI.io->WantCaptureMouse && !GUI.io->WantCaptureKeyboard)
+		{
+			//do any inputs
+			camera.Inputs(window, GUI.io->DeltaTime, GUI.io->MouseWheel);
 		}
+		//update the size of the window in the camera class
+		camera.UpdateSize(window);
+
+		//update any matrices for the camera
+		camera.UpdateMatrix(GUI.renderOptions.FOV, GUI.renderOptions.nearPlane, GUI.renderOptions.farPlane);
+			
+		GUI.CreateElements();
+		//draw all the models
+		//ObjectArray::Draw(camera);
+
+		//debug settings
+		if (GUI.renderOptions.grid)
+		{
+			//draw a grid and axis
+			grid.Draw(gridShader, axisShader, camera);
+		}
+
+		//create a temparary UI to tweak atom size and clear of all atoms
+		ImGui::Begin("Atom Settings");
+		ImGui::DragFloat("scale", &atomScale, 0.001f, 0.0f, 100.0f);
+		atomObj.scale = glm::vec3(atomScale, atomScale, atomScale);
+		if (ImGui::Button("Clear Chemicals"))
+		{
+			globalClass::chemicals.clear();
+		}
+		ImGui::End();
+
+		for (int i = 0; i < globalClass::chemicals.size(); i++)
+		{
+			//TODO: This can be improved by using instancing
+			for (int j = 0; j < globalClass::chemicals[i].atoms.size(); j++)
+			{
+				// check if there is an atom which has no element associated with it
+				if (globalClass::chemicals[i].atoms[j].element == 0) {
+					std::cout << "ERROR: Atom with no element" << std::endl;
+					continue;
+				}
+				//set the position of the atom object to the correct location
+				atomObj.pos = globalClass::chemicals[i].atoms[j].pos + glm::vec3(0.0f, 0.0f, i * 2);
+				atomObj.scale = glm::vec3(atomScale, atomScale, atomScale);
+				atomObj.scale = atomObj.scale * std::min(1.0f, static_cast<float>(globalClass::chemicals[i].atoms[j].element) / 2.0f);
+				//get the colour of the atom to be displayed
+				atomObj.shader->Activate();
+				glm::vec3 colr = globalClass::chemicals[i].atoms[j].colour;
+				glUniform3f(glGetUniformLocation(atomShader.ID, "atomColour"), colr.r, colr.g, colr.b);
+				//Draw the atom
+				atomObj.Draw(camera);
+			}
+		}
+		
+		//Draw the UI to the screen
+		GUI.Draw();
+
+		//swap to the next frame
+		glfwSwapBuffers(window);
+		
 		//check for window events such as closing or resizing
 		glfwPollEvents();
 	}
 	//delete the shader
 	shader.Delete();
+	atomShader.Delete();
+	gridShader.Delete();
+	axisShader.Delete();
+	DebugLineShader.Delete();
 
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();

@@ -1,23 +1,47 @@
 #include "Chemical.h"
 
-Chemical::Chemical(std::string chemData)
+Chemical::Chemical()
 {
+
+}
+
+Chemical::Chemical(std::string chemData, Model& model, Shader& shader)
+{
+	atomModel = &model;
+	atomShader = &shader;
+
 	convertToJSON(chemData);
+	parseAtoms();
 }
 
 void Chemical::convertToJSON(std::string chemData)
 {
-	json = nlohmann::json::parse(chemData);
+	data = nlohmann::json::parse(chemData);
 }
 
-void Chemical::parseAtoms(nlohmann::json json)
+void Chemical::parseAtoms()
 {
-	json["PC_Compounds"][0]["atoms"]["aid"]; // this returns a list of the order in the elements array
-	json["PC_Compounds"][0]["atoms"]["element"]; //this returns a list of elements to its atom 
+	json atomTypeJson = data.at(json::json_pointer(atomTypeAddr));
+
+	atomTypeJson["aid"]; // this returns a list of the order in the elements array
+	atomTypeJson["element"]; //this returns a list of elements to its atom 
 
 	//returns 2D conformers
-	json["PC_Compounds"][0]["coords"][0]["aid"];
-	json["PC_Compounds"][0]["coords"][0]["conformers"][0]["x"];
-	json["PC_Compounds"][0]["coords"][0]["conformers"][0]["y"];
-	
+	json atomPosJson = data.at(json::json_pointer(atomPosAddr));
+
+
+	int numberOfAtoms = atomPosJson["aid"].size();
+	atoms.assign(numberOfAtoms, Atom(glm::vec3(0), 0));
+	for (int i = 0; i < numberOfAtoms; i++)
+	{
+		int index = atomPosJson["aid"][i];
+		float x = atomPosJson["conformers"][0]["x"][i];
+		float y = atomPosJson["conformers"][0]["y"][i];
+
+		//TODO: Take into consideration the order of atomType from the aid array
+		Atom atom(glm::vec3(x, y, 0.0f), atomTypeJson["element"][i]);
+		atoms[index - 1] = atom;
+	}
+	return;
 }
+

@@ -6,6 +6,7 @@
 #include "glm/glm.hpp"
 #include <string>
 #include "glad/glad.h"
+#include "GlobalClass.h"
 
 class RenderOptionsWindow
 {
@@ -16,6 +17,7 @@ public:
 	float nearPlane = 0.1f;
 	float farPlane = 100.0f;
 	bool wireFrame;
+	bool grid = true;
 	float bgColour[3] = { 0.15f, 0.15f, 0.15f };
 
 	float cameraSpeed = 5.0f; 

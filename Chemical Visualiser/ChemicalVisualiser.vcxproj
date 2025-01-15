@@ -138,10 +138,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ChemicalDataCache.cpp" />
+    <ClCompile Include="ChemicalVis\Atom.cpp" />
     <ClCompile Include="ChemicalVis\Chemical.cpp" />
+    <ClCompile Include="ChemicalVis\ChemicalInputHandling.cpp" />
     <ClCompile Include="ChemicalVis\ChemicalWindow.cpp" />
-    <ClCompile Include="ChemicalVis\DataFetch.cpp" />
-    <ClCompile Include="ChemicalVis\EditorWindow.cpp" />
+    <ClCompile Include="ChemicalVis\GlobalClass.cpp" />
+    <ClCompile Include="ChemicalVis\PubchemAccess.cpp" />
     <ClCompile Include="ChemicalVis\GUI.cpp" />
     <ClCompile Include="ChemicalVis\RenderOptions.cpp" />
     <ClCompile Include="Libraries\include\imgui\backends\imgui_impl_glfw.cpp" />
@@ -168,6 +170,7 @@
     <ClCompile Include="Renderer\VBO.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="ChemicalVis\Settings.json" />
     <None Include="Shaders\atom.frag" />
     <None Include="Shaders\axisLines.frag" />
     <None Include="Shaders\axisLines.vert" />
@@ -181,11 +184,13 @@
     <ClInclude Include="ChemicalDataCache.h" />
     <ClInclude Include="ChemicalVis\Atom.h" />
     <ClInclude Include="ChemicalVis\Chemical.h" />
+    <ClInclude Include="ChemicalVis\ChemicalInputHandling.h" />
     <ClInclude Include="ChemicalVis\ChemicalWindow.h" />
-    <ClInclude Include="ChemicalVis\DataFetch.h" />
-    <ClInclude Include="ChemicalVis\EditorWindow.h" />
+    <ClInclude Include="ChemicalVis\GlobalClass.h" />
+    <ClInclude Include="ChemicalVis\PubchemAccess.h" />
     <ClInclude Include="ChemicalVis\GUI.h" />
     <ClInclude Include="ChemicalVis\RenderOptions.h" />
+    <ClInclude Include="ChemicalVis\Settings.h" />
     <ClInclude Include="Renderer\Camera.h" />
     <ClInclude Include="Renderer\EBO.h" />
     <ClInclude Include="Renderer\DebugLine.h" />

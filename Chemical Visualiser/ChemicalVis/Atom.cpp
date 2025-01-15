@@ -1,27 +1,43 @@
-
 #include "Atom.h"
 
-Atom::Atom(int atomicNum, int maxBonds)
+Atom::Atom(glm::vec3 pos, int element, std::vector<Atom> bonds)
 {
-	Atom::atomicNum = atomicNum;
-	Atom::maxBonds = maxBonds;
-
-	//model = Model("Resources/Models/Spheres/1xV2.obj");
+	Atom::pos = pos;
+	Atom::element = element;
 }
 
-void Atom::Draw(Shader& shader, Camera& camera)
+Atom::Atom(glm::vec3 pos, int element)
 {
-	//model.Draw(shader, camera);
+	Atom::pos = pos;
+	Atom::element = element;
+
+	switch (element)
+	{
+	case 0: // Nothing
+		break;
+	case 6: // Carbon
+		colour = glm::vec3(0.5f, 0.5f, 0.5f);
+		break;
+	case 1: // Hydrogen 
+		colour = glm::vec3(1.0f, 1.0f, 1.0f);
+		break;
+	case 8: // Oxygen
+		colour = glm::vec3(1.0f, 0.0f, 0.0f);
+		break;
+	case 7: // Nitrogen
+		colour = glm::vec3(0.0f, 0.0f, 1.0f);
+		break;
+	default:
+		break;
+	}
 }
 
 void Atom::AddBond(Atom& atom)
 {
-	//add new atom to bond vector
 
-	//add bond mesh / change to correct mesh
 }
 
 void Atom::Delete()
 {
-	//model.Delete();
+
 }
