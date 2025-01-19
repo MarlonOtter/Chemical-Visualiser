@@ -43,6 +43,21 @@
     <Filter Include="Source Files\ChemVis\GUI">
       <UniqueIdentifier>{ee7eea67-bf0a-4611-afc0-f12927124bb0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\Shaders\Grid">
+      <UniqueIdentifier>{c87757a7-c709-43e0-b92f-ebcae7f2f516}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Shaders\Default">
+      <UniqueIdentifier>{52eedbf9-38cd-47b7-bff4-a326666b0303}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Shaders\Atom">
+      <UniqueIdentifier>{787ad772-8498-4163-8993-82dc0b98ed32}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Shaders\Bond">
+      <UniqueIdentifier>{9b232fc7-4ee5-4df6-abb6-19bf66252d3c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ChemVis\GUI\ChemicalInputWindow">
+      <UniqueIdentifier>{2d279602-df58-4b38-83bc-cdbecb093b3b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Renderer\VBO.cpp">
@@ -81,9 +96,6 @@
     <ClCompile Include="Renderer\ObjectArray.cpp">
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="ChemicalVis\PubchemAccess.cpp">
-      <Filter>Source Files\ChemVis</Filter>
-    </ClCompile>
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -120,9 +132,6 @@
     <ClCompile Include="ChemicalVis\RenderOptions.cpp">
       <Filter>Source Files\ChemVis\GUI</Filter>
     </ClCompile>
-    <ClCompile Include="ChemicalVis\ChemicalWindow.cpp">
-      <Filter>Source Files\ChemVis\GUI</Filter>
-    </ClCompile>
     <ClCompile Include="ChemicalDataCache.cpp">
       <Filter>Source Files\ChemVis</Filter>
     </ClCompile>
@@ -132,40 +141,58 @@
     <ClCompile Include="ChemicalVis\Atom.cpp">
       <Filter>Source Files\ChemVis</Filter>
     </ClCompile>
-    <ClCompile Include="ChemicalVis\ChemicalInputHandling.cpp">
+    <ClCompile Include="ChemicalVis\GlobalClass.cpp">
       <Filter>Source Files\ChemVis</Filter>
     </ClCompile>
-    <ClCompile Include="ChemicalVis\GlobalClass.cpp">
+    <ClCompile Include="ChemicalVis\ChemicalWindow.cpp">
+      <Filter>Source Files\ChemVis\GUI\ChemicalInputWindow</Filter>
+    </ClCompile>
+    <ClCompile Include="ChemicalVis\ChemicalInputHandling.cpp">
+      <Filter>Source Files\ChemVis\GUI\ChemicalInputWindow</Filter>
+    </ClCompile>
+    <ClCompile Include="ChemicalVis\PubchemAccess.cpp">
+      <Filter>Source Files\ChemVis\GUI\ChemicalInputWindow</Filter>
+    </ClCompile>
+    <ClCompile Include="ChemicalVis\DrawChemical.cpp">
       <Filter>Source Files\ChemVis</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\default.vert">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="Shaders\default.frag">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="Shaders\DebugLine.frag">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="Shaders\DebugLine.vert">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="Shaders\atom.frag">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="Shaders\gridLines.frag">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="Shaders\axisLines.frag">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="Shaders\axisLines.vert">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
     <None Include="ChemicalVis\Settings.json">
       <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Shaders\axisLines.frag">
+      <Filter>Resource Files\Shaders\Grid</Filter>
+    </None>
+    <None Include="Shaders\axisLines.vert">
+      <Filter>Resource Files\Shaders\Grid</Filter>
+    </None>
+    <None Include="Shaders\gridLines.frag">
+      <Filter>Resource Files\Shaders\Grid</Filter>
+    </None>
+    <None Include="Shaders\default.frag">
+      <Filter>Resource Files\Shaders\Default</Filter>
+    </None>
+    <None Include="Shaders\default.vert">
+      <Filter>Resource Files\Shaders\Default</Filter>
+    </None>
+    <None Include="Shaders\defaultInstanced.vert">
+      <Filter>Resource Files\Shaders\Default</Filter>
+    </None>
+    <None Include="Shaders\atom.frag">
+      <Filter>Resource Files\Shaders\Atom</Filter>
+    </None>
+    <None Include="Shaders\atom.vert">
+      <Filter>Resource Files\Shaders\Atom</Filter>
+    </None>
+    <None Include="Shaders\DebugLine.vert">
+      <Filter>Resource Files\Shaders\Grid</Filter>
+    </None>
+    <None Include="Shaders\bond.frag">
+      <Filter>Resource Files\Shaders\Bond</Filter>
+    </None>
+    <None Include="Shaders\bond.vert">
+      <Filter>Resource Files\Shaders\Bond</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -233,6 +260,9 @@
       <Filter>Header Files\ChemVis</Filter>
     </ClInclude>
     <ClInclude Include="ChemicalVis\Settings.h">
+      <Filter>Header Files\ChemVis</Filter>
+    </ClInclude>
+    <ClInclude Include="ChemicalVis\DrawChemical.h">
       <Filter>Header Files\ChemVis</Filter>
     </ClInclude>
   </ItemGroup>

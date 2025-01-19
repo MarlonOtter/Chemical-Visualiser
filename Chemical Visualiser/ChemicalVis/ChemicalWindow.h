@@ -29,6 +29,8 @@ private:
 	//the chemical data as a string
 	std::string chemicalData;
 	
+	int Chemcount = 1;
+
 	// is the chemical input or popup selected
 	bool chemicalInputIsActive;
 	bool autoCompleteActive;

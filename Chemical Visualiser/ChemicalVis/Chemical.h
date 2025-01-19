@@ -6,35 +6,43 @@
 
 using json = nlohmann::json;
 
+struct Bond
+{
+	int atomA;
+	int atomB;
+	unsigned int count;
+};
+
 class Chemical 
 {
 public:
 	//create a chemical object from data input
 	Chemical();
-	Chemical(std::string chemData, Model& model, Shader& shader);
+	Chemical(std::string chemData);
 
 	nlohmann::json data;
+
 	std::vector<Atom> atoms;
-
-	Model* atomModel;
-	Shader* atomShader;
-
-	void Draw(Camera& camera);
+	std::vector<Bond> bonds;
 
 private:
 
 	//Json format
-	std::string atomTypeAddr = "/PC_Compounds/0/atoms";
-	std::string atomPosAddr =  "/PC_Compounds/0/coords/0";
+	const std::string atomTypeAddr = "/PC_Compounds/0/atoms";
+	const std::string atomPosAddr =  "/PC_Compounds/0/coords/0";
+	const std::string bondsAddr = "/PC_Compounds/0/bonds";
 
 	// CREATE CHEMICAL
 
 	//this will take in the chemical data as input and spit out a json object
 	//includes some validation
-	void convertToJSON(std::string data);
+	void ConvertToJSON(std::string data);
 
 	//get all the data about all the atoms and turn them into Atom Classes
-	void parseAtoms();
+	void ParseAtoms();
+
+	void AddBonds();
+
 
 	//Get all the information about the chemical from the json data
 	nlohmann::json parseChemicalInfo();

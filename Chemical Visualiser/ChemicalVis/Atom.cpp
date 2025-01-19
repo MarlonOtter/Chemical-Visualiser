@@ -1,11 +1,5 @@
 #include "Atom.h"
 
-Atom::Atom(glm::vec3 pos, int element, std::vector<Atom> bonds)
-{
-	Atom::pos = pos;
-	Atom::element = element;
-}
-
 Atom::Atom(glm::vec3 pos, int element)
 {
 	Atom::pos = pos;
@@ -30,11 +24,6 @@ Atom::Atom(glm::vec3 pos, int element)
 	default:
 		break;
 	}
-}
-
-void Atom::AddBond(Atom& atom)
-{
-
 }
 
 void Atom::Delete()

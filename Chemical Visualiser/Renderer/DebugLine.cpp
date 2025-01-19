@@ -1,4 +1,5 @@
 #include "DebugLine.h"
+#include <iostream>
 
 DebugLine::DebugLine()
 {
@@ -27,32 +28,29 @@ DebugLine::DebugLine(std::vector<glm::vec3> points, std::vector<GLuint> indices,
 
 void DebugLine::_Setup()
 {
+	std::cout << "WARNING: This Code Contains a memory leak and should not be ran until Fixed\n";
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
 
 	//VBO stuff
-	GLuint VBO;
-	//create VBO
-	glGenBuffers(1, &VBO);
-	//bind VBO
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	//Add data to the VBO
-	glBufferData(GL_ARRAY_BUFFER, points.size() * sizeof(glm::vec3), points.data(), GL_STATIC_DRAW);
+	VBO VBO1(points);
+	vbo = &VBO1;
 
 	//EBO
 	if (hasIndices())
 	{
-		EBO EBO(indices);
+		EBO EBO1(indices);
+		ebo = &EBO1;
 	}
 
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	//define the layout of the data in the VBO
+	vbo->Bind();
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
 	//unbind the VAO, VBO
 	glBindVertexArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	vbo->Unbind();
 }
 
 void DebugLine::Draw(Shader& shader, Camera& camera)
@@ -96,7 +94,20 @@ void DebugLine::SetPoints(std::vector<glm::vec3> points)
 	
 }
 
+void DebugLine::Delete()
+{
+	points.clear();
+	indices.clear();
+	glDeleteVertexArrays(1, &VAO);
+	vbo->Delete();
+	if (hasIndices())
+	{
+		ebo->Delete();
+	}
+}
+
 bool DebugLine::hasIndices()
 {
 	return indices.size() > 0;
 }
+

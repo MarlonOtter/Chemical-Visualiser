@@ -5,7 +5,7 @@
 #include "ChemicalWindow.h"
 
 
-class chemVisGUI
+class GUI
 {
 public:
 	ImGuiIO* io;
@@ -14,15 +14,15 @@ public:
 	RenderOptionsWindow renderOptions;
 	ChemicalFetchWindow chemicalFetch;
 
-	chemVisGUI(GLFWwindow* window);
+	void Setup(GLFWwindow* window);
 	void CreateElements();
 	void Draw();
 
+	GLFWwindow* getWindow();
+
 private:
 	GLFWwindow* window;
-	ImGuiContext* cont;
-
-	int Setup();
+	ImGuiContext* context;
 
 	void TestingWindow();
 };

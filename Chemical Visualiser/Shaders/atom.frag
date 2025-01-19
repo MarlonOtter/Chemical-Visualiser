@@ -5,9 +5,11 @@ in vec3 crntPos;
 in vec3 normals;
 in vec3 colour;
 in vec2 texCoord;
+in vec3 atomColour;
 
 uniform vec3 lightColour;
-uniform vec3 atomColour;
+
+
 
 uniform vec3 camPos;
 

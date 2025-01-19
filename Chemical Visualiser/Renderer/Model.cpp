@@ -91,7 +91,6 @@ void Model::ProccessMesh(aiMesh* mesh)
 
 void Model::Draw(Shader& shader, Camera& camera, glm::vec3 pos, glm::quat rot, glm::vec3 scale)
 {
-
 	//define a matrix
 	glm::mat4 matrix = glm::mat4(1.0f);
 	//set the matrix to the desired position
@@ -111,6 +110,52 @@ void Model::Draw(Shader& shader, Camera& camera, glm::vec3 pos, glm::quat rot, g
 	}
 
 }	
+
+void Model::DrawInstanced
+(
+	Shader& shader,
+	Camera& camera,
+	std::vector<glm::vec3> pos,
+	std::vector<glm::quat> rot,
+	std::vector<glm::vec3> scale
+)
+{
+	std::vector<glm::mat4> matrices;
+	//get the maximum number of items
+	//incase that there are more of one than the other
+	int maxSize = std::max(scale.size(), std::max(pos.size(), rot.size()));
+	for (int i = 0; i < maxSize; i++)
+	{
+		//calculate matrix
+		glm::mat4 trans = glm::mat4(1.0f);
+		glm::mat4 rotat = glm::mat4(1.0f);
+		glm::mat4 scaling = glm::mat4(1.0f);
+
+		//apply transformations to the matrix if able to
+		if (i < pos.size())   trans = glm::translate(trans, pos[i]);
+		if (i < rot.size())   rotat = glm::mat4_cast(rot[i]);
+		if (i < scale.size()) scaling = glm::scale(scaling, scale[i]);
+
+		//add matrix to list
+		matrices.push_back(trans * rotat * scaling);
+	}
+
+	//draw the instanced meshes
+	DrawInstanced(shader, camera, matrices);
+}
+
+void Model::DrawInstanced
+(
+	Shader& shader,
+	Camera& camera,
+	std::vector<glm::mat4> matrices
+)
+{
+	for (int i = 0; i < meshes.size(); i++)
+	{
+		meshes[i].DrawInstanced(shader, camera, matrices.size(), matrices);
+	}
+}
 
 // loop through each mesh and delete it
 void Model::Delete()

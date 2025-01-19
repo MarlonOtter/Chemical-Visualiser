@@ -4,10 +4,13 @@
 #include "PubchemAccess.h"
 #include <future>
 
+// threading reference : 23 / 11 / 2024 
+// https ://stackoverflow.com/questions/42418360/how-to-check-if-thread-has-finished-work-in-c11-and-above
+
 class CIH
 {
 public:
-	
+	static std::future<std::string> thread;
 
 	static int ValidateData(std::string& data);
 
@@ -22,7 +25,7 @@ public:
 	static bool isRequest();
 
 private:
-	static std::future<std::string> thread;
+	
 	static bool makingRequest;
 	static bool autoCompleteQueue;
 };

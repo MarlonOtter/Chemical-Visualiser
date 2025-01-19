@@ -5,7 +5,7 @@
 // This draws a line that is a pixel width
 //
 
-
+// WARNING: CAUSES MEMORY LEAK
 
 
 
@@ -26,7 +26,9 @@ class DebugLine
 		std::vector<GLuint> indices;
 
 		GLuint VAO;
-		
+		VBO* vbo;
+		EBO* ebo;
+
 		DebugLine();
 
 		DebugLine(
@@ -46,6 +48,8 @@ class DebugLine
 		void Draw(Shader& shader, Camera& camera);
 
 		void SetPoints(std::vector<glm::vec3> points);
+
+		void Delete();
 
 	private:
 		void _Setup();

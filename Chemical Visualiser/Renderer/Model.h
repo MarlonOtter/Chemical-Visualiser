@@ -12,7 +12,7 @@
 class Model
 {
 	public:
-
+		std::vector<Mesh> meshes;
 
 		Model(const char* path, std::vector<Texture> textures = std::vector<Texture>());
 
@@ -24,13 +24,29 @@ class Model
 			glm::quat rot = glm::quat(1.0f, 0.0f, 0.0f, 0.0f),
 			glm::vec3 scale = glm::vec3(0.0f, 0.0f, 0.0f)
 		);
+
+		void DrawInstanced
+		(
+			Shader& shader,
+			Camera& camera,
+			std::vector<glm::vec3> pos = { glm::vec3(0.0f, 0.0f, 0.0f) },
+			std::vector<glm::quat> rot = { glm::quat(1.0f, 0.0f, 0.0f, 0.0f) },
+			std::vector<glm::vec3> scale = { glm::vec3(0.0f, 0.0f, 0.0f) }
+		);
+
+		void DrawInstanced
+		(
+			Shader& shader,
+			Camera& camera,
+			std::vector<glm::mat4> matrices
+		);
 		
 		void Delete();
 	private:
 
 		const char* dir;
 		std::vector<Texture> textures;
-		std::vector<Mesh> meshes;
+		
 		
 		void LoadModel();
 		

@@ -1,15 +1,24 @@
 #include "GUI.h"
 
-chemVisGUI::chemVisGUI(GLFWwindow* window)
+void GUI::Setup(GLFWwindow* window)
 {
-	chemVisGUI::window = window;
-	Setup();
+	GUI::window = window;
+	
+	//Initialise ImGUI
+	ImGui::CreateContext();
+
+	ImGui_ImplOpenGL3_Init();
+	ImGui_ImplGlfw_InitForOpenGL(GUI::window, true);
+
+	GUI::io = &ImGui::GetIO();
+
+	context = ImGui::GetCurrentContext();
 }
 
-void chemVisGUI::CreateElements()
+void GUI::CreateElements()
 {
 	//set context
-	ImGui::SetCurrentContext(cont);
+	ImGui::SetCurrentContext(context);
 
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
@@ -22,12 +31,12 @@ void chemVisGUI::CreateElements()
 	ImGui::ShowDemoWindow();
 }
 
-void chemVisGUI::TestingWindow()
+void GUI::TestingWindow()
 {
 	
 }
 
-void chemVisGUI::Draw()
+void GUI::Draw()
 {
 	//render the GUI
 	ImGui::Render();
@@ -35,15 +44,7 @@ void chemVisGUI::Draw()
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
-int chemVisGUI::Setup()
+GLFWwindow* GUI::getWindow()
 {
-	//Initialise ImGUI
-	ImGui::CreateContext();
-	ImGui_ImplOpenGL3_Init();
-	ImGui_ImplGlfw_InitForOpenGL(window, true);
-	
-	chemVisGUI::io = &ImGui::GetIO();
-	cont = ImGui::GetCurrentContext();
-
-	return 0;
+	return window;
 }

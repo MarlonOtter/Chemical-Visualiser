@@ -142,6 +142,7 @@
     <ClCompile Include="ChemicalVis\Chemical.cpp" />
     <ClCompile Include="ChemicalVis\ChemicalInputHandling.cpp" />
     <ClCompile Include="ChemicalVis\ChemicalWindow.cpp" />
+    <ClCompile Include="ChemicalVis\DrawChemical.cpp" />
     <ClCompile Include="ChemicalVis\GlobalClass.cpp" />
     <ClCompile Include="ChemicalVis\PubchemAccess.cpp" />
     <ClCompile Include="ChemicalVis\GUI.cpp" />
@@ -172,12 +173,15 @@
   <ItemGroup>
     <None Include="ChemicalVis\Settings.json" />
     <None Include="Shaders\atom.frag" />
+    <None Include="Shaders\atom.vert" />
     <None Include="Shaders\axisLines.frag" />
     <None Include="Shaders\axisLines.vert" />
+    <None Include="Shaders\bond.frag" />
+    <None Include="Shaders\bond.vert" />
     <None Include="Shaders\default.frag" />
     <None Include="Shaders\default.vert" />
-    <None Include="Shaders\DebugLine.frag" />
     <None Include="Shaders\DebugLine.vert" />
+    <None Include="Shaders\defaultInstanced.vert" />
     <None Include="Shaders\gridLines.frag" />
   </ItemGroup>
   <ItemGroup>
@@ -186,6 +190,7 @@
     <ClInclude Include="ChemicalVis\Chemical.h" />
     <ClInclude Include="ChemicalVis\ChemicalInputHandling.h" />
     <ClInclude Include="ChemicalVis\ChemicalWindow.h" />
+    <ClInclude Include="ChemicalVis\DrawChemical.h" />
     <ClInclude Include="ChemicalVis\GlobalClass.h" />
     <ClInclude Include="ChemicalVis\PubchemAccess.h" />
     <ClInclude Include="ChemicalVis\GUI.h" />

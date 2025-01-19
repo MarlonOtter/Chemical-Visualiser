@@ -15,7 +15,7 @@ void ChemicalFetchWindow::Display()
 	}
 	
 	//create the window
-	if (ImGui::Begin("Chemical Fetch Window", NULL, ImGuiWindowFlags_NoBringToFrontOnFocus))
+	if (ImGui::Begin("Chemical Input Window", NULL, ImGuiWindowFlags_NoBringToFrontOnFocus))
 	{
 		//Display the input
 		DisplayContent();
@@ -35,7 +35,6 @@ void ChemicalFetchWindow::DisplayContent()
 	// if the user pressed enter and their is an input get the data about chemical if possible 
 	// TODO : allow the enter key to be changed in a settings menu
 	bool entered = ImGui::IsItemDeactivatedAfterEdit() && ImGui::IsKeyDown(ImGuiKey::ImGuiKey_Enter) && std::string(inp).size() > 0;
-	if (entered) std::cout << "True" << std::endl;
 
 	// Position of the input box
 	ImVec2 chemicalInputPos = ImGui::GetCursorScreenPos();
@@ -56,10 +55,15 @@ void ChemicalFetchWindow::DisplayContent()
 	}
 	ImGui::PopItemWidth(); //reset widget width to default settings
 
+	
+	//ImGui::InputInt("Chemical Count", &Chemcount);
+	//ImGui::Text(CIH::isRequest() ? "1" : "0");
+
 	// get the data about the chemical when pressed
 	if (ImGui::Button("Search") || entered)
 	{
 		//Get the data about a chemical from pubchem
+		//CIH::thread.wait();
 		chemicalData = CIH::GetData(inp); 
 		if (CIH::ValidateData(chemicalData) == -1) 
 		{
@@ -67,9 +71,14 @@ void ChemicalFetchWindow::DisplayContent()
 		}
 		else
 		{
-			//create the chemical
-			globalClass::chemicals.push_back(Chemical(chemicalData, *globalClass::atomModel, *globalClass::atomShader));
+			//just for testing the power of the renderer
+			for (int i = 0; i < Chemcount; i++)
+			{
+				//create the chemical
+				globalClass::chemicals.push_back(Chemical(chemicalData));
+			}
 		}
+		chemicalData = "";
 	}
 
 	// autocomplete window position offset to not cover the button
@@ -133,4 +142,5 @@ void ChemicalFetchWindow::DisplayAutoCompleteOptions(ImVec2& chemicalInputPos)
 		
 		ImGui::End();
 	}
+	optionsJson.clear();
 }

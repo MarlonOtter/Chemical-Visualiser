@@ -47,6 +47,7 @@ void RenderOptionsWindow::ListSettings()
 		{
 			cameraSpeed = 0.0f;
 		}
+		globalClass::camera->speed = cameraSpeed;
 		ImGuiIO& io = ImGui::GetIO();
 		if (ImGui::DragFloat("Global Font Size", &io.FontGlobalScale, 0.01f))
 		{
