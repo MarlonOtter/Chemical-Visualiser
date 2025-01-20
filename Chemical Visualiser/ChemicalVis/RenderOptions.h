@@ -17,7 +17,7 @@ public:
 	float nearPlane = 0.1f;
 	float farPlane = 100.0f;
 	bool wireFrame;
-	bool grid = true;
+	bool grid = false;
 	float bgColour[3] = { 0.15f, 0.15f, 0.15f };
 
 	float cameraSpeed = 5.0f; 

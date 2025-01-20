@@ -14,6 +14,8 @@ public:
 	static float bondLengthMultiplier;
 	static float bondSeperationDist;
 
+	static float chemicalSeperationDist;
+
 	static Shader* atomShader;
 	static Model* atomModel;
 };

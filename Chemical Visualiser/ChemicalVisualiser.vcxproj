@@ -169,6 +169,7 @@
     <ClCompile Include="Renderer\Texture.cpp" />
     <ClCompile Include="Renderer\VAO.cpp" />
     <ClCompile Include="Renderer\VBO.cpp" />
+    <ClCompile Include="temp.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChemicalVis\Settings.json" />

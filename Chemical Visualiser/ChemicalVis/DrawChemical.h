@@ -22,9 +22,10 @@ class DrawChemical
 public:
 	static void Draw(std::vector<Chemical> chemicals, Model& atomModel, Model& bondModel, Camera camera, Shader& atomShader, Shader& bondShader);
 
+	static glm::vec3 rotateAround(glm::vec3 pos, float degrees, glm::vec3 center = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 axis = glm::vec3(0.0f, 1.0f, 0.0f));
 private:
-	static AtomDrawData calcAtoms(Chemical& chemical);
-	static Transforms calcBonds(Chemical& chemical);
+	static AtomDrawData calcAtoms(Chemical& chemical, int index);
+	static Transforms calcBonds(Chemical& chemical, int index);
 
 	static int merge(AtomDrawData& src, AtomDrawData& dst);
 	static int merge(Transforms& src, Transforms& dst);

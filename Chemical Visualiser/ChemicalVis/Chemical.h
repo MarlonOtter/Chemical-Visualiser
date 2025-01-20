@@ -18,7 +18,7 @@ class Chemical
 public:
 	//create a chemical object from data input
 	Chemical();
-	Chemical(std::string chemData);
+	Chemical(std::string chemData, std::string conformer3D);
 
 	nlohmann::json data;
 
@@ -37,6 +37,8 @@ private:
 	//this will take in the chemical data as input and spit out a json object
 	//includes some validation
 	void ConvertToJSON(std::string data);
+
+	void AddConformer(std::string conformer3D);
 
 	//get all the data about all the atoms and turn them into Atom Classes
 	void ParseAtoms();

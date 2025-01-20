@@ -118,7 +118,6 @@ void Mesh::DrawInstanced
 
 	instanceVBO.Unbind();
 
-
 	//draw the instances
 	glDrawElementsInstanced(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0, matrices.size());
 	instanceVBO.Delete();

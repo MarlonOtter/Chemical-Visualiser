@@ -5,8 +5,7 @@ layout (location = 1) in vec3 aNormal;      //normals
 layout (location = 2) in vec3 aColour;      //vertex colour
 layout (location = 3) in vec2 aTexCoord;    //UV coordinates
 
-layout (location = 4) in vec3 aAtomColour;
-
+layout (location = 4) in vec3 aAtomColour; // the colour of the atom based on its element
 layout (location = 5) in mat4 aMatrix;  // matrix transformation for that instance
 
 

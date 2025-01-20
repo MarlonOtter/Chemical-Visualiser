@@ -75,7 +75,7 @@ void ChemicalFetchWindow::DisplayContent()
 			for (int i = 0; i < Chemcount; i++)
 			{
 				//create the chemical
-				globalClass::chemicals.push_back(Chemical(chemicalData));
+				globalClass::chemicals.push_back(Chemical(chemicalData, CIH::GetConformers(inp)));
 			}
 		}
 		chemicalData = "";

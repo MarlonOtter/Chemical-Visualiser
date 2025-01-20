@@ -5,9 +5,11 @@ Chemical::Chemical()
 
 }
 
-Chemical::Chemical(std::string chemData)
+Chemical::Chemical(std::string chemData, std::string conformer3D)
 {
+
 	ConvertToJSON(chemData);
+	AddConformer(conformer3D);
 	ParseAtoms();
 	AddBonds();
 }
@@ -17,27 +19,55 @@ void Chemical::ConvertToJSON(std::string chemData)
 	data = nlohmann::json::parse(chemData);
 }
 
+void Chemical::AddConformer(std::string conformer3D)
+{
+	// if there is no 3D structure given return as there is no data to add 
+	if (conformer3D.size() == 0) return;
+	json conformerJson = json::parse(conformer3D);
+	json conformerData = conformerJson.at(json::json_pointer(atomPosAddr))["conformers"][0];
+
+	//if the data being put in has no z, don't add it
+	//if (!conformerData.contains("z")) return;
+
+	//insert the data
+	data.at(json::json_pointer(atomPosAddr))["conformers"][1] = conformerData;
+}
+
+
 void Chemical::ParseAtoms()
 {
 	json atomTypeJson = data.at(json::json_pointer(atomTypeAddr));
 
-	atomTypeJson["aid"]; // this returns a list of the order in the elements array
-	atomTypeJson["element"]; //this returns a list of elements to its atom 
-
 	//returns 2D conformers
 	json atomPosJson = data.at(json::json_pointer(atomPosAddr));
+
+	
+	//if there are 3D conformers put them in the atom data instead of the 2D
+	int conformerIndex = 0;
+	std::cout << atomPosJson["conformers"].dump() << std::endl;
+	if (atomPosJson["conformers"].size() > 1)
+	{
+		conformerIndex = 1;
+	}
 
 
 	int numberOfAtoms = atomPosJson["aid"].size();
 	atoms.assign(numberOfAtoms, Atom(glm::vec3(0), 0));
 	for (int i = 0; i < numberOfAtoms; i++)
 	{
+		//get the x and y conformers from the data
 		int index = atomPosJson["aid"][i];
-		float x = atomPosJson["conformers"][0]["x"][i];
-		float y = atomPosJson["conformers"][0]["y"][i];
+		float x = atomPosJson["conformers"][conformerIndex]["x"][i];
+		float y = atomPosJson["conformers"][conformerIndex]["y"][i];
+		
+		float z = 0.0f;
+		//also get the z value if it is present
+		if (conformerIndex > 0)
+		{
+			z = atomPosJson["conformers"][conformerIndex]["z"][i];
+		}
 
-		//TODO: Take into consideration the order of atomType from the aid array
-		Atom atom(glm::vec3(x, y, 0.0f), atomTypeJson["element"][i]);
+		Atom atom(glm::vec3(x, y, z), atomTypeJson["element"][i]);
 		atoms[index - 1] = atom;
 	}
 	
@@ -46,7 +76,13 @@ void Chemical::ParseAtoms()
 
 void Chemical::AddBonds()
 {
+	if (!data["PC_Compounds"][0].contains("bonds")) return;
 	json bondsJson = data.at(json::json_pointer(bondsAddr));
+
+	//if the json doesn't contains bond data, return
+	//if (!bondsJson.contains("aid1")) return;
+	
+	//loop through each bond and add it to the list
 	int numBonds = bondsJson["aid1"].size();
 	for (int i = 0; i < numBonds; i++)
 	{

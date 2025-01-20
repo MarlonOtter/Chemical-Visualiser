@@ -15,6 +15,7 @@ public:
 	static int ValidateData(std::string& data);
 
 	static std::string GetData(std::string chemName);
+	static std::string GetConformers(std::string chemName);
 
 	static int queueAutoComplete();
 	static int makeAutoCompleteRequest(std::string str);

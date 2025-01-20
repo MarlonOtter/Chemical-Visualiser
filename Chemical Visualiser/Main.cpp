@@ -153,7 +153,8 @@ int main()
 		ImGui::DragFloat("atom scale", &globalClass::atomScale, 0.001f, 0.001f, 100.0f);
 		ImGui::DragFloat("bond width", &globalClass::bondRadius, 0.001f, 0.001f, 1000.0f);
 		ImGui::DragFloat("bond length", &globalClass::bondLengthMultiplier, 0.001f, 0.001f, 1000.0f);
-		ImGui::DragFloat("bond seperation Dist", &globalClass::bondSeperationDist, 0.0001f, 0.001f, 10.0f);
+		ImGui::DragFloat("bond seperation Dist", &globalClass::bondSeperationDist, 0.001f, 0.001f, 10.0f);
+		ImGui::DragFloat("chemical seperation Dist", &globalClass::chemicalSeperationDist, 0.001f, 0.001f, 10.0f);
 		
 		if (ImGui::Button("Clear Chemicals"))
 		{
@@ -163,6 +164,7 @@ int main()
 			}
 			globalClass::chemicals.clear();
 		}
+
 		ImGui::End();
 
 		if (globalClass::chemicals.size() > 0)

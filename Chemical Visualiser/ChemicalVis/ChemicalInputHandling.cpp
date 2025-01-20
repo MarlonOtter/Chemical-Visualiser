@@ -6,6 +6,7 @@ bool CIH::autoCompleteQueue = true;
 
 int CIH::ValidateData(std::string& data)
 {
+	if (data.size() == 0) return -1;
 	nlohmann::json json = nlohmann::json::parse(data);
 
 	if (json.begin().key() == "Fault")
@@ -18,7 +19,13 @@ int CIH::ValidateData(std::string& data)
 
 std::string CIH::GetData(std::string chemName)
 {
+	//get the normal data about the chemical (also contains 2D conformers)
 	return PubChem::name(chemName);
+}
+
+std::string CIH::GetConformers(std::string chemName)
+{
+	return PubChem::conformers_name(chemName);
 }
 
 int CIH::queueAutoComplete()
