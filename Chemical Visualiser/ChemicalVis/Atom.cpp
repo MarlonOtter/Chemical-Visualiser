@@ -1,8 +1,9 @@
 #include "Atom.h"
 
-Atom::Atom(glm::vec3 pos, int element)
+Atom::Atom(int element, glm::vec3 pos3D, glm::vec2 pos2D)
 {
-	Atom::pos = pos;
+	Atom::pos3D = pos3D;
+	Atom::pos2D = pos2D;
 	Atom::element = element;
 
 	switch (element)

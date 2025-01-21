@@ -1,16 +1,16 @@
 #include "DrawChemical.h"
 
 
-void DrawChemical::Draw(std::vector<Chemical> chemicals, Model& atomModel, Model& bondModel, Camera camera, Shader& atomShader, Shader& bondShader)
+void DrawChemical::Draw(std::vector<Chemical> chemicals, Model& atomModel, Model& bondModel, Camera camera, Shader& atomShader, Shader& bondShader, int format)
 {
 	AtomDrawData allAtomDrawData;
 	Transforms allBondTransforms;
 	for (int i = 0; i < chemicals.size(); i++)
 	{
-		AtomDrawData atomDrawData = calcAtoms(chemicals[i], i);
+		AtomDrawData atomDrawData = calcAtoms(chemicals[i], i, format);
 		merge(atomDrawData, allAtomDrawData);
 
-		Transforms bondTransforms = calcBonds(chemicals[i], i);
+		Transforms bondTransforms = calcBonds(chemicals[i], i, format);
 		merge(bondTransforms, allBondTransforms);
 	}
 	//add the colours
@@ -31,7 +31,7 @@ void DrawChemical::Draw(std::vector<Chemical> chemicals, Model& atomModel, Model
 	atomVBO.Delete();
 }
 
-AtomDrawData DrawChemical::calcAtoms(Chemical& chemical, int index)
+AtomDrawData DrawChemical::calcAtoms(Chemical& chemical, int index, int format)
 {
 	Transforms transforms;
 	std::vector<glm::vec3> colours;
@@ -39,13 +39,19 @@ AtomDrawData DrawChemical::calcAtoms(Chemical& chemical, int index)
 	for (int i = 0; i < chemical.atoms.size(); i++)
 	{
 		Atom atom = chemical.atoms[i];
+		glm::vec3 atomPos = glm::vec3(atom.pos2D, 0.0f);
+		if (format == 2)
+		{
+			atomPos = atom.pos3D;
+		}
+
 		// check if there is an atom which has no element associated with it
 		if (chemical.atoms[i].element == 0) {
 			std::cout << "ERROR: Atom with no element" << std::endl;
 			continue;
 		}
 		//set the position of the atom object to the correct location
-		transforms.pos.push_back(atom.pos + glm::vec3(0.0f, 0.0f, index * globalClass::chemicalSeperationDist));
+		transforms.pos.push_back(atomPos + glm::vec3(0.0f, 0.0f, index * globalClass::chemicalSeperationDist));
 
 		//the scale is multiplied by a set value. This may be able to be changed in settings once i implement that
 		transforms.scale.push_back(glm::vec3(globalClass::atomScale) * std::min(1.0f, static_cast<float>(atom.element) / 2.0f));
@@ -56,7 +62,7 @@ AtomDrawData DrawChemical::calcAtoms(Chemical& chemical, int index)
 	return AtomDrawData{ transforms, colours };
 }
 
-Transforms DrawChemical::calcBonds(Chemical& chemical, int index)
+Transforms DrawChemical::calcBonds(Chemical& chemical, int index, int format)
 {
 	Transforms transforms;
 
@@ -67,9 +73,16 @@ Transforms DrawChemical::calcBonds(Chemical& chemical, int index)
 		for (int j = 0; j < bond.count; j++)
 		{
 
-			//this only works for the 2D chemical structure atm
-			glm::vec3 pointA = chemical.atoms[bond.atomA - 1].pos;
-			glm::vec3 pointB = chemical.atoms[bond.atomB - 1].pos;
+			
+			glm::vec3 pointA = glm::vec3(chemical.atoms[bond.atomA - 1].pos2D, 0);
+			glm::vec3 pointB = glm::vec3(chemical.atoms[bond.atomB - 1].pos2D, 0);
+
+			if (format == 2)
+			{
+				pointA = chemical.atoms[bond.atomA - 1].pos3D;
+				pointB = chemical.atoms[bond.atomB - 1].pos3D;
+			}
+
 			glm::vec3 midPoint = ((pointA + pointB) / 2.0f);
 
 			//calculate the rotation needed to point at the atoms

@@ -1,7 +1,7 @@
 #include "GlobalClass.h"
 
-
-Camera* globalClass::camera;
+Camera* globalClass::camera2D;
+Camera* globalClass::camera3D;
 
 std::vector<Chemical> globalClass::chemicals;
 

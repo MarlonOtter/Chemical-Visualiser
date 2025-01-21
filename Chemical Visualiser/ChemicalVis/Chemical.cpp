@@ -27,7 +27,7 @@ void Chemical::AddConformer(std::string conformer3D)
 	json conformerData = conformerJson.at(json::json_pointer(atomPosAddr))["conformers"][0];
 
 	//if the data being put in has no z, don't add it
-	//if (!conformerData.contains("z")) return;
+	if (!conformerData.contains("z")) return;
 
 	//insert the data
 	data.at(json::json_pointer(atomPosAddr))["conformers"][1] = conformerData;
@@ -41,36 +41,31 @@ void Chemical::ParseAtoms()
 	//returns 2D conformers
 	json atomPosJson = data.at(json::json_pointer(atomPosAddr));
 
-	
-	//if there are 3D conformers put them in the atom data instead of the 2D
-	int conformerIndex = 0;
-	std::cout << atomPosJson["conformers"].dump() << std::endl;
-	if (atomPosJson["conformers"].size() > 1)
-	{
-		conformerIndex = 1;
-	}
-
 
 	int numberOfAtoms = atomPosJson["aid"].size();
-	atoms.assign(numberOfAtoms, Atom(glm::vec3(0), 0));
+	atoms.assign(numberOfAtoms, Atom(0));
 	for (int i = 0; i < numberOfAtoms; i++)
 	{
 		//get the x and y conformers from the data
 		int index = atomPosJson["aid"][i];
-		float x = atomPosJson["conformers"][conformerIndex]["x"][i];
-		float y = atomPosJson["conformers"][conformerIndex]["y"][i];
-		
-		float z = 0.0f;
-		//also get the z value if it is present
-		if (conformerIndex > 0)
+
+		//if there is 3D data get it.
+		glm::vec3 pos3D;
+		if (atomPosJson["conformers"].size() > 1)
 		{
-			z = atomPosJson["conformers"][conformerIndex]["z"][i];
+			pos3D.x = atomPosJson["conformers"][1]["x"][i];
+			pos3D.y = atomPosJson["conformers"][1]["y"][i];
+			pos3D.z = atomPosJson["conformers"][1]["z"][i];
 		}
 
-		Atom atom(glm::vec3(x, y, z), atomTypeJson["element"][i]);
+		//get 2D structure data
+		glm::vec2 pos2D;
+		pos2D.x = atomPosJson["conformers"][0]["x"][i];
+		pos2D.y = atomPosJson["conformers"][0]["y"][i];
+
+		Atom atom(atomTypeJson["element"][i], pos3D, pos2D);
 		atoms[index - 1] = atom;
 	}
-	
 	return;
 }
 

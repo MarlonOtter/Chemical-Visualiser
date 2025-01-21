@@ -156,9 +156,6 @@
     <ClCompile Include="ChemicalVis\DrawChemical.cpp">
       <Filter>Source Files\ChemVis</Filter>
     </ClCompile>
-    <ClCompile Include="temp.cpp">
-      <Filter>Resource Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="ChemicalVis\Settings.json">

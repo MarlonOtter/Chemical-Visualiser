@@ -37,6 +37,7 @@ public:
 	Camera(int width, int height, glm::vec3 position);
 
 	void UpdateSize(GLFWwindow* window);
+	void UpdateSize(int width, int height);
 
 	void UpdateMatrix(float FOVdeg, float nearPlane, float farPlane);
 	void Matrix(Shader& shader, const char* uniform);

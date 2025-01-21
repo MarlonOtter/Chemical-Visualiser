@@ -16,6 +16,10 @@ struct Bond
 class Chemical 
 {
 public:
+	static const int _2D = 1;
+	static const int _3D = 2;
+	
+
 	//create a chemical object from data input
 	Chemical();
 	Chemical(std::string chemData, std::string conformer3D);

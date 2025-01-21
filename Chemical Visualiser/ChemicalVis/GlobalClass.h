@@ -5,7 +5,8 @@
 class globalClass
 {
 public:
-	static Camera* camera;
+	static Camera* camera3D;
+	static Camera* camera2D;
 	static std::vector<Chemical> chemicals;
 
 	static float atomScale;

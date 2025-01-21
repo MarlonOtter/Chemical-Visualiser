@@ -17,6 +17,12 @@ void Camera::UpdateSize(GLFWwindow* window)
 	glfwGetFramebufferSize(window, &width, &height);
 }
 
+void Camera::UpdateSize(int width, int height)
+{
+	Camera::width = width;
+	Camera::height = height;
+}
+
 void Camera::UpdateMatrix(float FOVdeg, float nearPlane, float farPlane)
 {
 	//define the matrices

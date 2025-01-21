@@ -37,7 +37,8 @@ void RenderOptionsWindow::ListSettings()
 			else glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		}
 		ImGui::Checkbox("Grid Toggle", &grid);
-		ImGui::ColorEdit3("Background Colour", bgColour);
+		ImGui::ColorEdit3("Background Colour 1", bgColour);
+		ImGui::ColorEdit3("Background Colour 2", bgColour2);
 		ImGui::TreePop();
 	}
 		
@@ -47,14 +48,13 @@ void RenderOptionsWindow::ListSettings()
 		{
 			cameraSpeed = 0.0f;
 		}
-		globalClass::camera->speed = cameraSpeed;
+		globalClass::camera3D->speed = cameraSpeed;
 		ImGuiIO& io = ImGui::GetIO();
 		if (ImGui::DragFloat("Global Font Size", &io.FontGlobalScale, 0.01f))
 		{
 
 		}
-		std::string objCount = "Object Count : ";// +std::to_string(ObjectArray::size());
-		ImGui::Text(objCount.c_str());
+		ImGui::SliderFloat("Screen Divider", &viewPortDivider, 0.0001f, 1.0f);
 		ImGui::TreePop();
 	}
 	
