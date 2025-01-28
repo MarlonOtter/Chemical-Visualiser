@@ -50,7 +50,7 @@ void Chemical::ParseAtoms()
 		int index = atomPosJson["aid"][i];
 
 		//if there is 3D data get it.
-		glm::vec3 pos3D;
+		glm::vec3 pos3D(0);
 		if (atomPosJson["conformers"].size() > 1)
 		{
 			pos3D.x = atomPosJson["conformers"][1]["x"][i];
@@ -59,7 +59,7 @@ void Chemical::ParseAtoms()
 		}
 
 		//get 2D structure data
-		glm::vec2 pos2D;
+		glm::vec2 pos2D(0);
 		pos2D.x = atomPosJson["conformers"][0]["x"][i];
 		pos2D.y = atomPosJson["conformers"][0]["y"][i];
 

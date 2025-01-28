@@ -10,7 +10,7 @@ class GUI
 public:
 	ImGuiIO* io;
 
-	//the windows
+	//the ImGui windows
 	RenderOptionsWindow renderOptions;
 	ChemicalFetchWindow chemicalFetch;
 
@@ -23,6 +23,9 @@ public:
 private:
 	GLFWwindow* window;
 	ImGuiContext* context;
-
-	void TestingWindow();
 };
+
+
+
+
+

@@ -21,6 +21,9 @@ public:
 
 	glm::mat4 cameraMatrix = glm::mat4(1.0f);
 
+	glm::vec4 viewport;
+	float orthoScale = 0.05f;
+
 	int width;
 	int height;
 
@@ -38,8 +41,10 @@ public:
 
 	void UpdateSize(GLFWwindow* window);
 	void UpdateSize(int width, int height);
+	void UpdateSize(glm::vec2 pos, glm::vec2 size);
+	void UpdateSize(glm::vec4 viewport);
 
-	void UpdateMatrix(float FOVdeg, float nearPlane, float farPlane);
+	void UpdateMatrix(float FOVdeg, float nearPlane, float farPlane, int view = 0);
 	void Matrix(Shader& shader, const char* uniform);
 	void Inputs(GLFWwindow* window, float deltaTime, float scrollOffset);
 };

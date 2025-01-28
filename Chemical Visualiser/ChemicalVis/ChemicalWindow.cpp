@@ -71,6 +71,8 @@ void ChemicalFetchWindow::DisplayContent()
 		}
 		else
 		{
+			//reset error to display nothing
+			inputError = "";
 			//just for testing the power of the renderer
 			for (int i = 0; i < Chemcount; i++)
 			{
@@ -122,7 +124,7 @@ void ChemicalFetchWindow::DisplayAutoCompleteOptions(ImVec2& chemicalInputPos)
 	flags |= ImGuiWindowFlags_AlwaysAutoResize;
 	flags |= ImGuiWindowFlags_NoFocusOnAppearing;
 
-	ImGui::SetNextWindowPos(ImVec2(acOffset*1.1f + chemicalInputPos.x, chemicalInputPos.y));
+	ImGui::SetNextWindowPos(ImVec2(acOffset * 1.1f + chemicalInputPos.x, chemicalInputPos.y));
 	if (ImGui::Begin("AutoComplete", NULL, flags))
 	{
 		autoCompleteActive = ImGui::IsWindowHovered();
@@ -139,7 +141,7 @@ void ChemicalFetchWindow::DisplayAutoCompleteOptions(ImVec2& chemicalInputPos)
 				autoCompleteActive = false;
 			}
 		}
-		
+
 		ImGui::End();
 	}
 	optionsJson.clear();

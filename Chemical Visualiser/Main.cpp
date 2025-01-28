@@ -9,6 +9,10 @@
 
 #include "ChemicalVis/GUI.h"
 
+#include "ChemicalVis/CameraControls.h"
+
+#include "Viewport.h"
+
 // width and height of the window that is going to be created in pixels
 
 int windowWidth = 800;
@@ -16,6 +20,13 @@ int windowHeight = 800;
 
 glm::vec4 viewPort1;
 glm::vec4 viewPort2;
+
+bool isResizing(ImVec2 currentSize, ImVec2 prevSize)
+{
+	return (currentSize.x != prevSize.x || currentSize.y != prevSize.y) &&
+		ImGui::IsMouseDragging(0);  // Check for left mouse button drag
+		//ImGui::IsWindowHovered(ImGuiHoveredFlags_ChildWindows);
+}
 
 
 //main function
@@ -65,7 +76,9 @@ int main()
 
 	// create a shader program for bonds and atoms
 	// and attach its vertex and fragment shader
-	Shader atomShader("Shaders/atom.vert", "Shaders/atom.frag");
+	Shader atom3DShader("Shaders/atom.vert", "Shaders/atom3D.frag");
+	Shader atom2DShader("Shaders/atom.vert", "Shaders/atom2D.frag");
+
 	Shader bondShader("Shaders/bond.vert", "Shaders/bond.frag");
 
 	//define the shaders for the grid and axis
@@ -87,8 +100,8 @@ int main()
 	//set the colour of the light in the shaderss
 	glm::vec3 lightColour = glm::vec3(1.0f, 1.0f, 1.0f);
 	
-	atomShader.Activate();
-	glUniform3f(glGetUniformLocation(atomShader.ID, "lightColour"), lightColour.r, lightColour.g, lightColour.b);
+	atom3DShader.Activate();
+	glUniform3f(glGetUniformLocation(atom3DShader.ID, "lightColour"), lightColour.r, lightColour.g, lightColour.b);
 	bondShader.Activate();
 	glUniform3f(glGetUniformLocation(bondShader.ID, "lightColour"), lightColour.r, lightColour.g, lightColour.b);
 
@@ -107,27 +120,32 @@ int main()
 	GUI.Setup(window);
 
 	//create the camera object
-	Camera camera3D(800, 800, glm::vec3(0));
+	Camera camera3D(800, 800, glm::vec3(0,0,5));
 	
 	globalClass::camera3D = &camera3D;
 
 	//second viewport
 	glViewport(windowWidth / 2, 0, windowWidth / 2, windowHeight);
-	Camera camera2D(800, 800, glm::vec3(0));
+	Camera camera2D(800, 800, glm::vec3(8, 2, 10));
 	globalClass::camera2D = &camera2D;
+
+	glm::vec4 viewPort1(0, 0, windowWidth * GUI.renderOptions.viewPortDivider, windowHeight);
+	glm::vec4 viewPort2(windowWidth * GUI.renderOptions.viewPortDivider, 0, windowWidth * (1 - GUI.renderOptions.viewPortDivider), windowHeight);
+	ImVec2 prevSize;
+	int ResizingCounter = 0;
+
+	float viewportRatio = 0.5f;
+
+	Viewport viewport1(0, 0, viewPort1.z, viewPort1.w);
+	Viewport viewport2(viewPort2.x, 0, viewPort2.z, viewPort2.w);
+
 
 	//keep the window open
 	while (!glfwWindowShouldClose(window))
 	{
-
 		//update the size of the frame that is created depending on the size of the window
 		glfwGetFramebufferSize(window, &windowWidth, &windowHeight);
 		
-		glm::vec4 viewPort1(0, 0, windowWidth *GUI.renderOptions.viewPortDivider, windowHeight);
-		glm::vec4 viewPort2(windowWidth * GUI.renderOptions.viewPortDivider, 0, windowWidth * (1-GUI.renderOptions.viewPortDivider), windowHeight);
-		
-		glViewport(viewPort1.x, viewPort1.y, viewPort1.z, viewPort1.w);
-
 
 		// if the window is minimised. don't draw anything
 		if (windowWidth == 0 || windowHeight == 0 || !glfwGetWindowAttrib(window, GLFW_FOCUSED))
@@ -136,27 +154,12 @@ int main()
 			continue;
 		}
 
-		//change the colour of the background to the one in the render options
-		glClearColor(GUI.renderOptions.bgColour[0], GUI.renderOptions.bgColour[1], GUI.renderOptions.bgColour[2], 1.0f);
-		//clears the buffer bits
+		viewport1.setPos(glm::vec2(0,0));
+		viewport1.setSize(glm::vec2(windowWidth * viewportRatio, windowHeight));
+		viewport1.Update(GUI.renderOptions.bgColour);
 
-		glScissor(viewPort1.x, viewPort1.y, viewPort1.z, viewPort1.w);
-		glEnable(GL_SCISSOR_TEST);
+		CameraControls::Update();
 
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		//if the GUI is being hovered over ignore user inputs to the visualiser
-		if (!GUI.io->WantCaptureMouse && !GUI.io->WantCaptureKeyboard && ImGui::IsKeyDown(ImGuiKey_1))
-		{
-			//do any inputs
-			camera3D.Inputs(window, GUI.io->DeltaTime, GUI.io->MouseWheel);
-		}
-		//update the size of the window in the camera class
-		camera3D.UpdateSize(viewPort1.z, viewPort1.w);
-
-		//update any matrices for the camera
-		camera3D.UpdateMatrix(GUI.renderOptions.FOV, GUI.renderOptions.nearPlane, GUI.renderOptions.farPlane);
-			
 		GUI.CreateElements();
 
 		//debug settings
@@ -166,6 +169,36 @@ int main()
 			//draw a grid and axis
 			grid.Draw(gridShader, axisShader, camera3D);
 		}
+
+		ImGuiWindowFlags flags = 0;
+		flags |= ImGuiWindowFlags_NoBackground;
+		flags |= ImGuiWindowFlags_NoBringToFrontOnFocus;
+		flags |= ImGuiWindowFlags_NoMove;
+		flags |= ImGuiWindowFlags_NoTitleBar;
+
+		//Create a window for each viewport so that they can individually be selected
+		ImGui::SetNextWindowPos(ImVec2(viewPort1.x, viewPort1.y));
+		//ImGui::SetNextWindowSize(ImVec2(viewPort1.z, viewPort1.w), ImGuiCond_FirstUseEver);
+		ImGui::Begin("ViewPort 1", 0, flags);
+		bool view1Focus = ImGui::IsWindowHovered();
+		ImVec2 viewSize = ImGui::GetWindowSize();
+		viewportRatio = viewSize.x / static_cast<float>(windowWidth);
+		viewPort1.z = viewSize.x;
+		if (viewSize.y < viewPort1.w)
+		{
+			ImGui::SetWindowSize("ViewPort 1", ImVec2(viewSize.x, viewPort1.w));
+		}
+		ImGui::End();
+
+		
+		viewPort2.x = viewPort1.x + viewPort1.z;
+		viewPort2.z = windowWidth - viewPort2.x;
+		ImGui::SetNextWindowPos(ImVec2(viewPort2.x, viewPort2.y));
+		ImGui::SetNextWindowSize(ImVec2(viewPort2.z, viewPort2.w));
+		ImGui::Begin("ViewPort 2", 0, flags);
+		bool view2Focus = ImGui::IsWindowHovered();
+		
+		ImGui::End();
 
 		//create a temparary UI to tweak atom size and clear of all atoms
 		ImGui::Begin("Atom Settings");
@@ -186,31 +219,66 @@ int main()
 
 		ImGui::End();
 
+		if (isResizing(viewSize, prevSize))
+		{
+			ResizingCounter = 5;
+		}
+		ResizingCounter--;
+
+		//if the GUI is being hovered over ignore user inputs to the visualiser
+		if (view1Focus && !(ResizingCounter > 0))
+		{  
+			//do any inputs
+			if (ImGui::IsKeyDown(ImGuiKey_T))
+			{
+				camera3D.Inputs(window, GUI.io->DeltaTime, GUI.io->MouseWheel);
+			}
+			else
+			{
+				CameraControls::Inputs3D(camera3D, *GUI.io);
+			}
+			
+		}
+		prevSize = viewSize;
+		//update the size of the window in the camera class
+		camera3D.UpdateSize(viewport1.getPos(), viewport1.getSize());
+
+
+		//update any matrices for the camera
+		camera3D.UpdateMatrix(GUI.renderOptions.FOV, GUI.renderOptions.nearPlane, GUI.renderOptions.farPlane);
+
+		
+
+
+
 		if (globalClass::chemicals.size() > 0)
 		{
-			DrawChemical::Draw(globalClass::chemicals, atomModel, bondModel, camera3D, atomShader, bondShader, Chemical::_3D);	
+			DrawChemical::Draw(globalClass::chemicals, atomModel, bondModel, camera3D, atom3DShader, bondShader, Chemical::_3D);	
 		}
 		
-		//This has to be ran before GUI.Draw()
-		glViewport(viewPort2.x, viewPort2.y, viewPort2.z, viewPort2.w);
-		//split up the viewports
-		glScissor(viewPort2.x, viewPort2.y, viewPort2.z, viewPort2.w);
-		//change the colour of the background to the one in the render options
-		glClearColor(GUI.renderOptions.bgColour2[0], GUI.renderOptions.bgColour2[1], GUI.renderOptions.bgColour2[2], 1.0f);
-		//clears the buffer bits
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		viewport2.setPos(glm::vec2(viewPort2.x, 0));
+		viewport2.setSize(glm::vec2(windowWidth * (1.0f - viewportRatio), windowHeight));
+		viewport2.Update(GUI.renderOptions.bgColour2);
 
-		if (!GUI.io->WantCaptureMouse && !GUI.io->WantCaptureKeyboard && ImGui::IsKeyDown(ImGuiKey_2))
+		if (view2Focus)
 		{
 			//do any inputs
-			camera2D.Inputs(window, GUI.io->DeltaTime, GUI.io->MouseWheel);
+			if (ImGui::IsKeyDown(ImGuiKey_T))
+			{
+				camera2D.Inputs(window, GUI.io->DeltaTime, GUI.io->MouseWheel);
+			}
+			else
+			{
+				CameraControls::Inputs2D(camera2D, *GUI.io);
+			}
+			
 		}
 
 		//update the size of the window in the camera class
-		camera2D.UpdateSize(viewPort2.z, viewPort2.w);
+		camera2D.UpdateSize(viewport2.getPos(), viewport2.getSize());
 
 		//update any matrices for the camera
-		camera2D.UpdateMatrix(GUI.renderOptions.FOV, GUI.renderOptions.nearPlane, GUI.renderOptions.farPlane);
+		camera2D.UpdateMatrix(GUI.renderOptions.FOV, GUI.renderOptions.nearPlane, GUI.renderOptions.farPlane, 1);
 
 		if (GUI.renderOptions.grid)
 		{
@@ -218,7 +286,7 @@ int main()
 			grid.Draw(gridShader, axisShader, camera2D);
 		}
 
-		DrawChemical::Draw(globalClass::chemicals, atomModel, bondModel, camera2D, atomShader, bondShader, Chemical::_2D);
+		DrawChemical::Draw(globalClass::chemicals, atomModel, bondModel, camera2D, atom2DShader, bondShader, Chemical::_2D);
 
 		//Draw the UI to the screen (ontop of everything)
 		GUI.Draw();
@@ -233,7 +301,8 @@ int main()
 	grid.gridLine.Delete();
 	grid.axisLine.Delete();
 	//delete the shader
-	atomShader.Delete();
+	atom3DShader.Delete();
+	atom2DShader.Delete();
 	bondShader.Delete();
 
 	gridShader.Delete();
@@ -251,5 +320,7 @@ int main()
 	//this is required to return an int so that the program can notify the user of any issues
 	return 0;
 }
+
+
 
 

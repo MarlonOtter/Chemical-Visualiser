@@ -58,6 +58,12 @@
     <Filter Include="Source Files\ChemVis\GUI\ChemicalInputWindow">
       <UniqueIdentifier>{2d279602-df58-4b38-83bc-cdbecb093b3b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\MultiViewport">
+      <UniqueIdentifier>{164a0619-9b6b-4cb3-9c2c-0302e9211ed0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\MultiViewport">
+      <UniqueIdentifier>{e685d56d-ee1b-4504-bcf6-c4a24f7ec3ba}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Renderer\VBO.cpp">
@@ -156,6 +162,12 @@
     <ClCompile Include="ChemicalVis\DrawChemical.cpp">
       <Filter>Source Files\ChemVis</Filter>
     </ClCompile>
+    <ClCompile Include="ChemicalVis\CameraControls.cpp">
+      <Filter>Source Files\ChemVis</Filter>
+    </ClCompile>
+    <ClCompile Include="Viewport.cpp">
+      <Filter>Source Files\MultiViewport</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="ChemicalVis\Settings.json">
@@ -179,7 +191,7 @@
     <None Include="Shaders\defaultInstanced.vert">
       <Filter>Resource Files\Shaders\Default</Filter>
     </None>
-    <None Include="Shaders\atom.frag">
+    <None Include="Shaders\atom3D.frag">
       <Filter>Resource Files\Shaders\Atom</Filter>
     </None>
     <None Include="Shaders\atom.vert">
@@ -193,6 +205,9 @@
     </None>
     <None Include="Shaders\bond.vert">
       <Filter>Resource Files\Shaders\Bond</Filter>
+    </None>
+    <None Include="Shaders\atom2D.frag">
+      <Filter>Resource Files\Shaders\Atom</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -264,6 +279,12 @@
     </ClInclude>
     <ClInclude Include="ChemicalVis\DrawChemical.h">
       <Filter>Header Files\ChemVis</Filter>
+    </ClInclude>
+    <ClInclude Include="ChemicalVis\CameraControls.h">
+      <Filter>Header Files\ChemVis</Filter>
+    </ClInclude>
+    <ClInclude Include="Viewport.h">
+      <Filter>Header Files\MultiViewport</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

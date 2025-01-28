@@ -19,11 +19,12 @@ public:
 	bool wireFrame;
 	bool grid = false;
 	float bgColour[3] = { 0.15f, 0.15f, 0.15f };
-	float bgColour2[3] = { 0.15f, 0.15f, 0.15f };
+	float bgColour2[3] = { 0.8f, 0.8f, 0.8f};
 
 	float viewPortDivider = 0.5f;
 
 	float cameraSpeed = 5.0f; 
+	float orthoScale = 0.1f;
 
 private:
 	void ListSettings();

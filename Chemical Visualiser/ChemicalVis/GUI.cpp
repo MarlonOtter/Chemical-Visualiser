@@ -31,11 +31,6 @@ void GUI::CreateElements()
 	ImGui::ShowDemoWindow();
 }
 
-void GUI::TestingWindow()
-{
-	
-}
-
 void GUI::Draw()
 {
 	//render the GUI

@@ -23,14 +23,28 @@ void Camera::UpdateSize(int width, int height)
 	Camera::height = height;
 }
 
-void Camera::UpdateMatrix(float FOVdeg, float nearPlane, float farPlane)
+void Camera::UpdateSize(glm::vec4 viewport)
+{
+	Camera::viewport = viewport;
+	width = viewport.z;
+	height = viewport.w;
+}
+
+void Camera::UpdateSize(glm::vec2 pos, glm::vec2 size)
+{
+	Camera::viewport = glm::vec4(pos, size);
+	width = size.x;
+	height = size.y;
+}
+
+void Camera::UpdateMatrix(float FOVdeg, float nearPlane, float farPlane, int view)
 {
 	//define the matrices
-	glm::mat4 view = glm::mat4(1.0f);
+	glm::mat4 viewMat = glm::mat4(1.0f);
 	glm::mat4 proj = glm::mat4(1.0f);
 
 	//move the camera away so the model can be seen better
-	view = glm::lookAt(position, position + orientation, Up);
+	viewMat = glm::lookAt(position, position + orientation, Up);
 
 	//calculate the aspect ratio of the screen
 	// * encountered issue due to not being turned to floats so it was doing integer division *
@@ -38,12 +52,16 @@ void Camera::UpdateMatrix(float FOVdeg, float nearPlane, float farPlane)
 	float aspectRatio = static_cast<float>(width) / static_cast<float>(height);
 	if (width == 0 || height == 0) aspectRatio = 1.0f;
 
-	//make so there is perspective
-	proj = glm::perspective(glm::radians(FOVdeg), aspectRatio, nearPlane, farPlane);
+	//calculate the matrix for perspective
+	if (view == 0) proj = glm::perspective(glm::radians(FOVdeg), aspectRatio, nearPlane, farPlane);
+
+	//Calcualte 
+	if (view == 1) proj = glm::ortho(-0.5f * (float)width * orthoScale, (float)width * orthoScale * 0.5f, -0.5f * (float)height * orthoScale, (float)height * orthoScale * 0.5f, float(nearPlane), float(farPlane));
+
 	
 
 	//multiply the matrices into one
-	cameraMatrix = proj * view;
+	cameraMatrix = proj * viewMat;
 }
 
 
