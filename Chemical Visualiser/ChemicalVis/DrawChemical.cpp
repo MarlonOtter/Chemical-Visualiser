@@ -7,10 +7,13 @@ void DrawChemical::Draw(std::vector<Chemical> chemicals, Model& atomModel, Model
 	Transforms allBondTransforms;
 	for (int i = 0; i < chemicals.size(); i++)
 	{
-		AtomDrawData atomDrawData = calcAtoms(chemicals[i], i, format);
+		glm::vec3 chemOffset = glm::vec3(0.0f, 0.0f, i * globalClass::chemicalSeperationDist);
+		if (format == Chemical::_2D) chemOffset = glm::vec3(i * globalClass::chemicalSeperationDist, 0, 0);
+
+		AtomDrawData atomDrawData = calcAtoms(chemicals[i], i, format, chemOffset);
 		merge(atomDrawData, allAtomDrawData);
 
-		Transforms bondTransforms = calcBonds(chemicals[i], i, format);
+		Transforms bondTransforms = calcBonds(chemicals[i], i, format, chemOffset);
 		merge(bondTransforms, allBondTransforms);
 	}
 	//add the colours
@@ -31,7 +34,7 @@ void DrawChemical::Draw(std::vector<Chemical> chemicals, Model& atomModel, Model
 	atomVBO.Delete();
 }
 
-AtomDrawData DrawChemical::calcAtoms(Chemical& chemical, int index, int format)
+AtomDrawData DrawChemical::calcAtoms(Chemical& chemical, int index, int format, glm::vec3 chemicalOffset)
 {
 	Transforms transforms;
 	std::vector<glm::vec3> colours;
@@ -51,7 +54,8 @@ AtomDrawData DrawChemical::calcAtoms(Chemical& chemical, int index, int format)
 			continue;
 		}
 		//set the position of the atom object to the correct location
-		transforms.pos.push_back(atomPos + glm::vec3(0.0f, 0.0f, index * globalClass::chemicalSeperationDist));
+		
+		transforms.pos.push_back(atomPos + chemicalOffset);
 
 		//the scale is multiplied by a set value. This may be able to be changed in settings once i implement that
 		transforms.scale.push_back(glm::vec3(globalClass::atomScale) * std::min(1.0f, static_cast<float>(atom.element) / 2.0f));
@@ -62,11 +66,10 @@ AtomDrawData DrawChemical::calcAtoms(Chemical& chemical, int index, int format)
 	return AtomDrawData{ transforms, colours };
 }
 
-Transforms DrawChemical::calcBonds(Chemical& chemical, int index, int format)
+Transforms DrawChemical::calcBonds(Chemical& chemical, int index, int format, glm::vec3 chemicalOffset)
 {
 	Transforms transforms;
 
-	glm::vec3 chemicalOffset = glm::vec3(0.0f, 0.0f, index * globalClass::chemicalSeperationDist);
 	for (int i = 0; i < chemical.bonds.size(); i++)
 	{
 		Bond bond = chemical.bonds[i];

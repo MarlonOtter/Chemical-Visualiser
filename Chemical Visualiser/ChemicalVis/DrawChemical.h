@@ -24,8 +24,8 @@ public:
 
 	static glm::vec3 rotateAround(glm::vec3 pos, float degrees, glm::vec3 center = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 axis = glm::vec3(0.0f, 1.0f, 0.0f));
 private:
-	static AtomDrawData calcAtoms(Chemical& chemical, int index, int format);
-	static Transforms calcBonds(Chemical& chemical, int index, int format);
+	static AtomDrawData calcAtoms(Chemical& chemical, int index, int format, glm::vec3 chemicalOffset);
+	static Transforms calcBonds(Chemical& chemical, int index, int format, glm::vec3 chemicalOffset);
 
 	static int merge(AtomDrawData& src, AtomDrawData& dst);
 	static int merge(Transforms& src, Transforms& dst);

@@ -137,9 +137,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Camera2D.cpp" />
+    <ClCompile Include="ArcBallCamera.cpp" />
     <ClCompile Include="ChemicalDataCache.cpp" />
     <ClCompile Include="ChemicalVis\Atom.cpp" />
-    <ClCompile Include="ChemicalVis\CameraControls.cpp" />
     <ClCompile Include="ChemicalVis\Chemical.cpp" />
     <ClCompile Include="ChemicalVis\ChemicalInputHandling.cpp" />
     <ClCompile Include="ChemicalVis\ChemicalWindow.cpp" />
@@ -188,9 +189,10 @@
     <None Include="Shaders\gridLines.frag" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Camera2D.h" />
+    <ClInclude Include="ArcBallCamera.h" />
     <ClInclude Include="ChemicalDataCache.h" />
     <ClInclude Include="ChemicalVis\Atom.h" />
-    <ClInclude Include="ChemicalVis\CameraControls.h" />
     <ClInclude Include="ChemicalVis\Chemical.h" />
     <ClInclude Include="ChemicalVis\ChemicalInputHandling.h" />
     <ClInclude Include="ChemicalVis\ChemicalWindow.h" />

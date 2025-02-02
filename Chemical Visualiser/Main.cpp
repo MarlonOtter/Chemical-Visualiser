@@ -1,25 +1,23 @@
 
-
-
 //includes to all the other files
 #include "Renderer/ObjectArray.h"
 #include "Renderer/Grid.h"
+
+#include "Camera2D.h"
+#include "ArcBallCamera.h"
 
 #include "ChemicalVis/DrawChemical.h"
 
 #include "ChemicalVis/GUI.h"
 
-#include "ChemicalVis/CameraControls.h"
-
 #include "Viewport.h"
 
 // width and height of the window that is going to be created in pixels
 
+
 int windowWidth = 800;
 int windowHeight = 800;
-
-glm::vec4 viewPort1;
-glm::vec4 viewPort2;
+glm::vec2 prevWindowSize(800, 800);
 
 bool isResizing(ImVec2 currentSize, ImVec2 prevSize)
 {
@@ -66,6 +64,7 @@ int main()
 	gladLoadGL();
 
 	//limit the FPS to the monitors refresh rate (V-SYNC)
+	//should probalby be a setting
 	glfwSwapInterval(1);
 
 	//get the size of the window
@@ -102,6 +101,7 @@ int main()
 	
 	atom3DShader.Activate();
 	glUniform3f(glGetUniformLocation(atom3DShader.ID, "lightColour"), lightColour.r, lightColour.g, lightColour.b);
+	glUniform3f(glGetUniformLocation(atom3DShader.ID, "lightSource"), 0, 1, 0);
 	bondShader.Activate();
 	glUniform3f(glGetUniformLocation(bondShader.ID, "lightColour"), lightColour.r, lightColour.g, lightColour.b);
 
@@ -120,25 +120,24 @@ int main()
 	GUI.Setup(window);
 
 	//create the camera object
-	Camera camera3D(800, 800, glm::vec3(0,0,5));
+	ArcBallCamera camera3D(800, 800, glm::vec3(0,0,-10));
 	
 	globalClass::camera3D = &camera3D;
 
 	//second viewport
 	glViewport(windowWidth / 2, 0, windowWidth / 2, windowHeight);
-	Camera camera2D(800, 800, glm::vec3(8, 2, 10));
+	Camera2D camera2D(800, 800, glm::vec3(8, 2, 10));
 	globalClass::camera2D = &camera2D;
 
-	glm::vec4 viewPort1(0, 0, windowWidth * GUI.renderOptions.viewPortDivider, windowHeight);
-	glm::vec4 viewPort2(windowWidth * GUI.renderOptions.viewPortDivider, 0, windowWidth * (1 - GUI.renderOptions.viewPortDivider), windowHeight);
 	ImVec2 prevSize;
 	int ResizingCounter = 0;
 
-	float viewportRatio = 0.5f;
+	glm::vec2 viewportRatio = glm::vec2(0.5f, 1.0f);
 
-	Viewport viewport1(0, 0, viewPort1.z, viewPort1.w);
-	Viewport viewport2(viewPort2.x, 0, viewPort2.z, viewPort2.w);
+	Viewport visualiser3D(0, 0, 0, 0, false, true);
+	Viewport visualiser2D(0, 0, 0, 0, false, true);
 
+	int frameInterval = 1;
 
 	//keep the window open
 	while (!glfwWindowShouldClose(window))
@@ -146,19 +145,28 @@ int main()
 		//update the size of the frame that is created depending on the size of the window
 		glfwGetFramebufferSize(window, &windowWidth, &windowHeight);
 		
-
-		// if the window is minimised. don't draw anything
+		glfwSwapInterval(frameInterval);
+		frameInterval = 1;
+		// if the window is minimised/unfocussed. don't draw anything
 		if (windowWidth == 0 || windowHeight == 0 || !glfwGetWindowAttrib(window, GLFW_FOCUSED))
 		{
 			glfwPollEvents();
+
+			//reduce background usage by running the main loop 15times/sec instead of 60
+			frameInterval = 4;
 			continue;
 		}
 
-		viewport1.setPos(glm::vec2(0,0));
-		viewport1.setSize(glm::vec2(windowWidth * viewportRatio, windowHeight));
-		viewport1.Update(GUI.renderOptions.bgColour);
 
-		CameraControls::Update();
+		//if the glfw window was just resized, update the window size ratio
+		if (prevWindowSize.x == windowWidth && prevWindowSize.y == windowHeight)
+		{
+			viewportRatio = visualiser3D.calculateRelativeSize(windowWidth, windowHeight);
+		}
+
+		visualiser3D.setPos(0, 0);
+		visualiser3D.setSize(viewportRatio, glm::vec2(windowWidth, windowHeight));
+		visualiser3D.Update(GUI.renderOptions.bgColour);
 
 		GUI.CreateElements();
 
@@ -169,36 +177,11 @@ int main()
 			//draw a grid and axis
 			grid.Draw(gridShader, axisShader, camera3D);
 		}
-
-		ImGuiWindowFlags flags = 0;
-		flags |= ImGuiWindowFlags_NoBackground;
-		flags |= ImGuiWindowFlags_NoBringToFrontOnFocus;
-		flags |= ImGuiWindowFlags_NoMove;
-		flags |= ImGuiWindowFlags_NoTitleBar;
-
-		//Create a window for each viewport so that they can individually be selected
-		ImGui::SetNextWindowPos(ImVec2(viewPort1.x, viewPort1.y));
-		//ImGui::SetNextWindowSize(ImVec2(viewPort1.z, viewPort1.w), ImGuiCond_FirstUseEver);
-		ImGui::Begin("ViewPort 1", 0, flags);
-		bool view1Focus = ImGui::IsWindowHovered();
-		ImVec2 viewSize = ImGui::GetWindowSize();
-		viewportRatio = viewSize.x / static_cast<float>(windowWidth);
-		viewPort1.z = viewSize.x;
-		if (viewSize.y < viewPort1.w)
-		{
-			ImGui::SetWindowSize("ViewPort 1", ImVec2(viewSize.x, viewPort1.w));
-		}
-		ImGui::End();
+		//atomModel.Draw(atom3DShader, camera3D, camera3D.position);
+		visualiser3D.AttachWindow("3D Visualiser");
 
 		
-		viewPort2.x = viewPort1.x + viewPort1.z;
-		viewPort2.z = windowWidth - viewPort2.x;
-		ImGui::SetNextWindowPos(ImVec2(viewPort2.x, viewPort2.y));
-		ImGui::SetNextWindowSize(ImVec2(viewPort2.z, viewPort2.w));
-		ImGui::Begin("ViewPort 2", 0, flags);
-		bool view2Focus = ImGui::IsWindowHovered();
 		
-		ImGui::End();
 
 		//create a temparary UI to tweak atom size and clear of all atoms
 		ImGui::Begin("Atom Settings");
@@ -207,6 +190,9 @@ int main()
 		ImGui::DragFloat("bond length", &globalClass::bondLengthMultiplier, 0.001f, 0.001f, 1000.0f);
 		ImGui::DragFloat("bond seperation Dist", &globalClass::bondSeperationDist, 0.001f, 0.001f, 10.0f);
 		ImGui::DragFloat("chemical seperation Dist", &globalClass::chemicalSeperationDist, 0.001f, 0.001f, 10.0f);
+
+		//trying to get a value that can alter the speed of rotation
+		ImGui::DragFloat("cameraSpeed", &camera3D.speed, 0.01f, 0.0001f, 10.0f);
 		
 		if (ImGui::Button("Clear Chemicals"))
 		{
@@ -217,38 +203,30 @@ int main()
 			globalClass::chemicals.clear();
 		}
 
+		
+
 		ImGui::End();
 
-		if (isResizing(viewSize, prevSize))
-		{
-			ResizingCounter = 5;
-		}
-		ResizingCounter--;
-
 		//if the GUI is being hovered over ignore user inputs to the visualiser
-		if (view1Focus && !(ResizingCounter > 0))
+		if (visualiser3D.getHovered())
 		{  
-			//do any inputs
-			if (ImGui::IsKeyDown(ImGuiKey_T))
-			{
-				camera3D.Inputs(window, GUI.io->DeltaTime, GUI.io->MouseWheel);
-			}
-			else
-			{
-				CameraControls::Inputs3D(camera3D, *GUI.io);
-			}
-			
+			camera3D.MouseInputs(*GUI.io);
 		}
-		prevSize = viewSize;
+		if (visualiser3D.getFocussed())
+		{
+			camera3D.KeyInputs(*GUI.io);
+		}
 		//update the size of the window in the camera class
-		camera3D.UpdateSize(viewport1.getPos(), viewport1.getSize());
-
+		camera3D.UpdateSize(visualiser3D.getPos(), visualiser3D.getSize());
+		
 
 		//update any matrices for the camera
 		camera3D.UpdateMatrix(GUI.renderOptions.FOV, GUI.renderOptions.nearPlane, GUI.renderOptions.farPlane);
-
 		
-
+		//update the light source direction so that the atoms are always lit
+		glm::vec3 lightSourceDir = camera3D.getPos();
+		atom3DShader.Activate();
+		glUniform3f(glGetUniformLocation(atom3DShader.ID, "lightSource"), lightSourceDir.x, lightSourceDir.y, lightSourceDir.z);
 
 
 		if (globalClass::chemicals.size() > 0)
@@ -256,29 +234,29 @@ int main()
 			DrawChemical::Draw(globalClass::chemicals, atomModel, bondModel, camera3D, atom3DShader, bondShader, Chemical::_3D);	
 		}
 		
-		viewport2.setPos(glm::vec2(viewPort2.x, 0));
-		viewport2.setSize(glm::vec2(windowWidth * (1.0f - viewportRatio), windowHeight));
-		viewport2.Update(GUI.renderOptions.bgColour2);
 
-		if (view2Focus)
+		visualiser2D.AttachWindow("2D Visualiser");
+
+		visualiser2D.setPos(visualiser3D.getPos().x + visualiser3D.getSize().x, 0);
+		visualiser2D.setSize(windowWidth - (visualiser3D.getPos().x + visualiser3D.getSize().x), windowHeight);
+		visualiser2D.Update(GUI.renderOptions.bgColour2);
+
+		if (visualiser2D.getHovered())
 		{
 			//do any inputs
-			if (ImGui::IsKeyDown(ImGuiKey_T))
-			{
-				camera2D.Inputs(window, GUI.io->DeltaTime, GUI.io->MouseWheel);
-			}
-			else
-			{
-				CameraControls::Inputs2D(camera2D, *GUI.io);
-			}
-			
+			camera2D.MouseInputs(*GUI.io);
 		}
+		if (visualiser2D.getFocussed())
+		{
+			camera2D.KeyInputs(*GUI.io);
+		}
+		
 
 		//update the size of the window in the camera class
-		camera2D.UpdateSize(viewport2.getPos(), viewport2.getSize());
+		camera2D.UpdateSize(visualiser2D.getPos(), visualiser2D.getSize());
 
 		//update any matrices for the camera
-		camera2D.UpdateMatrix(GUI.renderOptions.FOV, GUI.renderOptions.nearPlane, GUI.renderOptions.farPlane, 1);
+		camera2D.UpdateMatrix(GUI.renderOptions.nearPlane, GUI.renderOptions.farPlane);
 
 		if (GUI.renderOptions.grid)
 		{
@@ -297,6 +275,7 @@ int main()
 		
 		//check for window events such as closing or resizing
 		glfwPollEvents();
+		prevWindowSize = glm::vec2(windowWidth, windowHeight);
 	}
 	grid.gridLine.Delete();
 	grid.axisLine.Delete();

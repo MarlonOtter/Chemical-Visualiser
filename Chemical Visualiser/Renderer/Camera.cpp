@@ -2,13 +2,16 @@
 
 #include <iostream>
 
+Camera::Camera()
+{
+
+}
+
 Camera::Camera(int width, int height, glm::vec3 position)
 {
 	Camera::width = width;
 	Camera::height = height;
 	Camera::position = position;
-
-	speed = baseSpeed;
 }
 
 void Camera::UpdateSize(GLFWwindow* window)
@@ -25,43 +28,22 @@ void Camera::UpdateSize(int width, int height)
 
 void Camera::UpdateSize(glm::vec4 viewport)
 {
-	Camera::viewport = viewport;
+	Camera::viewportPos = glm::vec2(viewport.x, viewport.y);
 	width = viewport.z;
 	height = viewport.w;
 }
 
 void Camera::UpdateSize(glm::vec2 pos, glm::vec2 size)
 {
-	Camera::viewport = glm::vec4(pos, size);
+	viewportPos = pos;
 	width = size.x;
 	height = size.y;
 }
 
 void Camera::UpdateMatrix(float FOVdeg, float nearPlane, float farPlane, int view)
 {
-	//define the matrices
-	glm::mat4 viewMat = glm::mat4(1.0f);
-	glm::mat4 proj = glm::mat4(1.0f);
-
-	//move the camera away so the model can be seen better
-	viewMat = glm::lookAt(position, position + orientation, Up);
-
-	//calculate the aspect ratio of the screen
-	// * encountered issue due to not being turned to floats so it was doing integer division *
-	
-	float aspectRatio = static_cast<float>(width) / static_cast<float>(height);
-	if (width == 0 || height == 0) aspectRatio = 1.0f;
-
-	//calculate the matrix for perspective
-	if (view == 0) proj = glm::perspective(glm::radians(FOVdeg), aspectRatio, nearPlane, farPlane);
-
-	//Calcualte 
-	if (view == 1) proj = glm::ortho(-0.5f * (float)width * orthoScale, (float)width * orthoScale * 0.5f, -0.5f * (float)height * orthoScale, (float)height * orthoScale * 0.5f, float(nearPlane), float(farPlane));
-
-	
-
 	//multiply the matrices into one
-	cameraMatrix = proj * viewMat;
+	cameraMatrix = calculateProjectionMatrix(FOVdeg, nearPlane, farPlane, view) * calculateViewMatrix();
 }
 
 
@@ -71,36 +53,36 @@ void Camera::Matrix(Shader& shader, const char* uniform)
 	glUniformMatrix4fv(glGetUniformLocation(shader.ID, "camMatrix"), 1, GL_FALSE, glm::value_ptr(cameraMatrix));
 }
 
-void Camera::Inputs(GLFWwindow* window, float deltaTime, float scrollOffset)
+void Camera::Inputs(GLFWwindow* window, float deltaTime, float scrollOffset, float speed)
 {
 	//handle keyboard inputs for the camera
 
 	//WASD
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 	{
-		position += speed * deltaTime * orientation;
+		Forward(speed * deltaTime);
 	}
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 	{
-		position += speed * deltaTime * -glm::normalize(glm::cross(orientation, Up));
+		Left(speed * deltaTime);
 	}
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 	{
-		position += speed * deltaTime * -orientation;
+		Backward(speed * deltaTime);
 	}
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 	{
-		position += speed * deltaTime * glm::normalize(glm::cross(orientation, Up));
+		Right(speed * deltaTime);
 	}
 	
 	//Up and down
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
 	{
-		position += speed * deltaTime * Up;
+		Up(speed * deltaTime);
 	}
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
 	{
-		position += speed * deltaTime * -Up;
+		Down(speed * deltaTime);
 	}
 
 	//mouse control
@@ -126,16 +108,16 @@ void Camera::Inputs(GLFWwindow* window, float deltaTime, float scrollOffset)
 		float rotY = sensitivity * (float)(mouseX - prevCursorPosX);
 
 		//calculate the new orientation
-		glm::vec3 newOrientation = glm::rotate(orientation, glm::radians(-rotX), glm::normalize(glm::cross(orientation, Up)));
+		glm::vec3 newOrientation = glm::rotate(orientation, glm::radians(-rotX), glm::normalize(glm::cross(orientation, UpVec)));
 
 		//make so that the camera can't just do barrel rolls (limits how far up ypu can look)
-		if (!((glm::angle(newOrientation, Up) <= glm::radians(5.0f)) or (glm::angle(newOrientation, -Up) <= glm::radians(5.0f))))
+		if (!((glm::angle(newOrientation, UpVec) <= glm::radians(5.0f)) or (glm::angle(newOrientation, -UpVec) <= glm::radians(5.0f))))
 		{
 			orientation = newOrientation;
 		}
 
 		//rotate the camera around the Y axis the desired amount
-		orientation = glm::rotate(orientation, glm::radians(-rotY), Up);
+		orientation = glm::rotate(orientation, glm::radians(-rotY), UpVec);
 		//sets the mouse to the center of the window
 		glfwGetCursorPos(window, &prevCursorPosX, &prevCursorPosY);
 	}
@@ -145,5 +127,58 @@ void Camera::Inputs(GLFWwindow* window, float deltaTime, float scrollOffset)
 		//set value to true so that it can be reused
 		firstClick = true;
 	}
+}
+
+void Camera::Up(float value)
+{
+	position += UpVec * value;
+}
+
+void Camera::Down(float value)
+{
+	position += -UpVec * value;
+}
+
+void Camera::Left(float value)
+{
+	position += -glm::normalize(glm::cross(orientation, UpVec)) * value;
+}
+
+void Camera::Right(float value)
+{
+	position += glm::normalize(glm::cross(orientation, UpVec)) * value;
+}
+
+void Camera::Forward(float value)
+{
+	position += orientation * value;
+}
+
+void Camera::Backward(float value)
+{
+	position += -orientation * value;
+}
+
+
+glm::mat4 Camera::calculateViewMatrix()
+{
+	return glm::lookAt(position, position + orientation, UpVec);
+}
+
+glm::mat4 Camera::calculateProjectionMatrix(float FOV, float near, float far, int view)
+{
+	float aspectRatio = static_cast<float>(width) / static_cast<float>(height);
+	if (width == 0 || height == 0) aspectRatio = 1.0f;
+
+	//calculate the matrix for perspective
+	if (view == 0) return glm::perspective(glm::radians(FOV), aspectRatio, near, far);
+
+	//if the view is 1 : calculate the orthographic projection matrix
+	if (view == 1) return glm::ortho(-0.5f * (float)width * orthoScale, (float)width * orthoScale * 0.5f, -0.5f * (float)height * orthoScale, (float)height * orthoScale * 0.5f, float(near), float(far));
+}
+
+glm::mat4 Camera::calculateProjectionMatrix(float near, float far, int view)
+{
+	return calculateProjectionMatrix(60.0f, near, far, view);
 }
 

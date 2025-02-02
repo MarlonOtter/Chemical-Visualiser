@@ -31,12 +31,6 @@
     <Filter Include="Source Files\ChemVis">
       <UniqueIdentifier>{fa55c786-eff0-441f-ae25-2b11989f1651}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\lib">
-      <UniqueIdentifier>{bfba8d43-34de-4eee-955d-e394566f5f9c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\lib\ImGUI">
-      <UniqueIdentifier>{ba6bb28d-9d00-4a4b-8d44-c7ce9afdf3c5}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\ChemVis\GUI">
       <UniqueIdentifier>{f1f7e683-3a0c-4f20-99df-439ee44756f1}</UniqueIdentifier>
     </Filter>
@@ -64,12 +58,21 @@
     <Filter Include="Source Files\MultiViewport">
       <UniqueIdentifier>{e685d56d-ee1b-4504-bcf6-c4a24f7ec3ba}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Camera">
+      <UniqueIdentifier>{15c6d4ad-07f2-4593-8563-4390fb4f244b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Camera">
+      <UniqueIdentifier>{8e72acb5-a1c6-4e4a-9eef-5585a53c69d6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Library Files">
+      <UniqueIdentifier>{d0a2fe05-f04c-4aff-876d-b9df6f912c4b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Library Files\ImGUI">
+      <UniqueIdentifier>{ba6bb28d-9d00-4a4b-8d44-c7ce9afdf3c5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Renderer\VBO.cpp">
-      <Filter>Source Files\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="Renderer\Camera.cpp">
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="Renderer\EBO.cpp">
@@ -105,32 +108,26 @@
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Renderer\glad.c">
-      <Filter>Source Files\lib</Filter>
-    </ClCompile>
-    <ClCompile Include="Renderer\stb.cpp">
-      <Filter>Source Files\lib</Filter>
-    </ClCompile>
     <ClCompile Include="Libraries\include\imgui\imgui_demo.cpp">
-      <Filter>Source Files\lib\ImGUI</Filter>
+      <Filter>Library Files\ImGUI</Filter>
     </ClCompile>
     <ClCompile Include="Libraries\include\imgui\imgui_draw.cpp">
-      <Filter>Source Files\lib\ImGUI</Filter>
+      <Filter>Library Files\ImGUI</Filter>
     </ClCompile>
     <ClCompile Include="Libraries\include\imgui\imgui_widgets.cpp">
-      <Filter>Source Files\lib\ImGUI</Filter>
+      <Filter>Library Files\ImGUI</Filter>
     </ClCompile>
     <ClCompile Include="Libraries\include\imgui\imgui.cpp">
-      <Filter>Source Files\lib\ImGUI</Filter>
+      <Filter>Library Files\ImGUI</Filter>
     </ClCompile>
     <ClCompile Include="Libraries\include\imgui\backends\imgui_impl_opengl3.cpp">
-      <Filter>Source Files\lib\ImGUI</Filter>
+      <Filter>Library Files\ImGUI</Filter>
     </ClCompile>
     <ClCompile Include="Libraries\include\imgui\backends\imgui_impl_glfw.cpp">
-      <Filter>Source Files\lib\ImGUI</Filter>
+      <Filter>Library Files\ImGUI</Filter>
     </ClCompile>
     <ClCompile Include="Libraries\include\imgui\imgui_tables.cpp">
-      <Filter>Source Files\lib\ImGUI</Filter>
+      <Filter>Library Files\ImGUI</Filter>
     </ClCompile>
     <ClCompile Include="ChemicalVis\GUI.cpp">
       <Filter>Source Files\ChemVis\GUI</Filter>
@@ -162,11 +159,23 @@
     <ClCompile Include="ChemicalVis\DrawChemical.cpp">
       <Filter>Source Files\ChemVis</Filter>
     </ClCompile>
-    <ClCompile Include="ChemicalVis\CameraControls.cpp">
-      <Filter>Source Files\ChemVis</Filter>
-    </ClCompile>
     <ClCompile Include="Viewport.cpp">
       <Filter>Source Files\MultiViewport</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera2D.cpp">
+      <Filter>Source Files\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="ArcBallCamera.cpp">
+      <Filter>Source Files\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\Camera.cpp">
+      <Filter>Source Files\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\glad.c">
+      <Filter>Library Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\stb.cpp">
+      <Filter>Library Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -211,9 +220,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Renderer\Camera.h">
-      <Filter>Header Files\Renderer</Filter>
-    </ClInclude>
     <ClInclude Include="Renderer\EBO.h">
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
@@ -280,11 +286,17 @@
     <ClInclude Include="ChemicalVis\DrawChemical.h">
       <Filter>Header Files\ChemVis</Filter>
     </ClInclude>
-    <ClInclude Include="ChemicalVis\CameraControls.h">
-      <Filter>Header Files\ChemVis</Filter>
-    </ClInclude>
     <ClInclude Include="Viewport.h">
       <Filter>Header Files\MultiViewport</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera2D.h">
+      <Filter>Header Files\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="ArcBallCamera.h">
+      <Filter>Header Files\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\Camera.h">
+      <Filter>Header Files\Camera</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

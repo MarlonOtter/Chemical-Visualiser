@@ -46,9 +46,6 @@ void RenderOptionsWindow::ListSettings()
 		ImGui::DragFloat("Camera Speed", &cameraSpeed, 0.1f, 0.001f, 1000.0f);
 		ImGui::DragFloat("ortho Scale", &orthoScale, 0.00001f, 0.000001f, 1.0f, "%.5f");
 		
-		
-
-		globalClass::camera3D->speed = cameraSpeed;
 		ImGuiIO& io = ImGui::GetIO();
 		ImGui::DragFloat("Global Font Size", &io.FontGlobalScale, 0.01f);
 		
