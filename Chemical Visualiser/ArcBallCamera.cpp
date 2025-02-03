@@ -9,7 +9,7 @@ ArcBallCamera::ArcBallCamera(int width, int height, glm::vec3 position)
 	ArcBallCamera::position = position;
 }
 
-//don't know if i need to redefine this but i will try removing it when finished
+// calculate the cameraMatrix from projection matrix and view matrix
 void ArcBallCamera::UpdateMatrix(float FOVdeg, float nearPlane, float farPlane)
 {
 	cameraMatrix = calculateProjectionMatrix(FOVdeg, nearPlane, farPlane, 0) * calculateViewMatrix();
@@ -19,58 +19,39 @@ void ArcBallCamera::UpdateMatrix(float FOVdeg, float nearPlane, float farPlane)
 void ArcBallCamera::MouseInputs(ImGuiIO& io)
 {
 	position.z *= 1 - io.MouseWheel * 0.1f;
+	if (position.z < -250.0f) position.z = -250;
 	radius = glm::abs(position.z);
-
-	// camera translation
-
+	
+	// move camera position from mouse inputs
 	if (ImGui::IsMouseDown(ImGuiMouseButton_Middle))
 	{
 		//get mouse offset
 		ImVec2 mouseOffset = io.MouseDelta;
-		position.x += mouseOffset.x * io.DeltaTime * 1.0f;
-		position.y += -mouseOffset.y * io.DeltaTime * 1.0f;
-	}
-
-
-
-	// arcball Camera movement
-	
-	//get the mouse position
-	ImVec2 mousePos = ImGui::GetMousePos();
-
-	// when the user first clicks the left mouse button
-	if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
-	{
-		// convert to normalised device coordinates (NDC)
-		startPos = convertToNDC(glm::vec2(mousePos.x, mousePos.y), width, height, radius);
-		flag = true;
+		float multiplier = 0.05f;
+		float moveSpeed = io.DeltaTime * glm::abs(position.z) * multiplier;
+		//move the centre point based on mouse offset
+		MoveRight(mouseOffset.x * moveSpeed);
+		MoveUp(-mouseOffset.y * moveSpeed);
 	}
 
 	// while the mouse button is held down
 	if (ImGui::IsMouseDown(ImGuiMouseButton_Left))
 	{
-		// convert the current mouse position to NDC
-		currentPos = convertToNDC(glm::vec2(mousePos.x, mousePos.y), width, height, radius);
-
-		// Apply rotation
-		rotation();
+		// add mouse offset to the movement vector
+		mouseVec.x += io.MouseDelta.x;
+		mouseVec.y += io.MouseDelta.y;
 	}
+
 	
-
-	if (ImGui::IsMouseReleased(ImGuiMouseButton_Left))
-	{
-		keyInputs = glm::vec2(0);
-		lastQuaternion.cosine = cosValue_2;
-		lastQuaternion.axis = rotationalAxis_2;
-		flag = false;
-	}
 }
 
 void ArcBallCamera::KeyInputs(ImGuiIO& io)
 {
-
+	
 	if (!ImGui::IsKeyDown(ImGuiKey_LeftCtrl))
 	{
+		// orbit controls
+		// when the user is not holding Control
 		float lookAmount = io.DeltaTime * 300.0f;
 		if (ImGui::IsKeyDown(ImGuiKey_UpArrow)) Up(lookAmount);
 		if (ImGui::IsKeyDown(ImGuiKey_DownArrow)) Down(lookAmount);
@@ -79,13 +60,16 @@ void ArcBallCamera::KeyInputs(ImGuiIO& io)
 	}
 	else
 	{
+		// Zooming and panning
+
 		//zooming 
 		float zoomAmount = io.DeltaTime * 5.0f;
 		if (ImGui::IsKeyDown(ImGuiKey_Minus)) Backward(zoomAmount);
 		if (ImGui::IsKeyDown(ImGuiKey_Equal)) Forward(zoomAmount);
 
 		//moving the centre point
-		float moveAmount = io.DeltaTime * -7.5f;
+		float multiplier = 0.5f;
+		float moveAmount = io.DeltaTime * glm::abs(position.z) * multiplier;
 		if (ImGui::IsKeyDown(ImGuiKey_UpArrow)) MoveUp(moveAmount);
 		if (ImGui::IsKeyDown(ImGuiKey_DownArrow)) MoveDown(moveAmount);
 		if (ImGui::IsKeyDown(ImGuiKey_LeftArrow)) MoveLeft(moveAmount);
@@ -93,25 +77,45 @@ void ArcBallCamera::KeyInputs(ImGuiIO& io)
 	}
 }
 
+void ArcBallCamera::ApplyInputs()
+{
+	// a constant (based on the viewport size)
+	glm::vec2 cameraMiddle(width / 2, height / 2);
+
+	// the vector that the mouse and key inputs create
+	glm::vec2 moveVec = cameraMiddle + keyVec + mouseVec;
+
+	// reset inputs otherwise it keeps on spinning
+	keyVec = glm::vec2(0);
+	mouseVec = glm::vec2(0);
+
+	// If the user hasn't input anythingI don't need to calculate 
+	// a new rotation as it hasn't changed since last frame
+	if (moveVec == cameraMiddle) return;
+
+	calculateRotation(cameraMiddle, moveVec);
+	
+}
+
 //Directional movements
 void ArcBallCamera::Up(float value)
 {
-	keyInputs.y += value;
+	keyVec.y += value;
 }
 
 void ArcBallCamera::Down(float value)
 {
-	keyInputs.y += -value;
+	keyVec.y += -value;
 }
 
 void ArcBallCamera::Left(float value)
 {
-	keyInputs.x -= value;
+	keyVec.x += value;
 }
 
 void ArcBallCamera::Right(float value)
 {
-	keyInputs.x += value;
+	keyVec.x += -value;
 }
 
 void ArcBallCamera::Forward(float value)
@@ -145,55 +149,102 @@ void ArcBallCamera::MoveRight(float value)
 	position.x += value;
 }
 
-
-
 glm::vec3 ArcBallCamera::getPos()
 {
 	//calculate the position of the camera from its view matrix
 	return glm::vec3(glm::inverse(viewMat) * glm::vec4(glm::vec3(0), 1.0f));
 }
 
+void ArcBallCamera::calculateRotation(glm::vec2 startVec, glm::vec2 crntVec) 
+{
+	// Convert the start and current vectors to Normalised Device Coordinates
+	glm::vec3 startPos = convertToNDC(startVec, width, height, radius);
+	glm::vec3 currentPos = convertToNDC(crntVec, width, height, radius);
 
-void ArcBallCamera::rotation() {
-	//now i can simplify this, testing that i works every now and then
-	
-	startPosUnitVector = glm::normalize(startPos);
-	currentPosUnitVector = glm::normalize(currentPos);
+	// Calculate the unit/normalised vectors of the NDCs
+	glm::vec3 startPosUnitVector = glm::normalize(startPos);
+	glm::vec3 currentPosUnitVector = glm::normalize(currentPos);
+
+	// Calculate the quaternions axis
+	Quaternion currentQuaternion;
 	currentQuaternion.axis = getUnitVector(glm::cross(startPos, currentPos));
-	//currentQuaternion.axis = getUnitVector(currentQuaternion.axis); //something wrong with just normalising this using GLM, causes it to flicker
 	
-	cosValue = glm::dot(startPosUnitVector, currentPosUnitVector);
+	// Calculate cosValue, ensuring that it is not above one
+	float cosValue = glm::min(glm::dot(startPosUnitVector, currentPosUnitVector), 1.0f);
 
-	if (cosValue > 1) cosValue = 1; // when dot product gives '1' as result, it isn't equal to 1. It is very close to one: 1.00000000001 . 
-	theta = (acos(cosValue) * 180 / PI) * speed; //theta is the angle now. multiply angle by speed to increase sens
-	currentQuaternion.cosine = cos((theta / 2) * PI / 180); //currentQuaternion.cosine is cos of half the angle now.
+	// Theta is the angle now
+	// Multiply angle by speed to increase sensitvity of inputs
+	float theta = (acos(cosValue) * 180 / PI) * speed; 
+
+	//currentQuaternion.cosine is cos of half the angle
+	currentQuaternion.cosine = cos((theta / 2) * PI / 180); 
 
 	currentQuaternion.axis *= sin((theta / 2) * PI / 180);
 
-	cosValue_2 = (currentQuaternion.cosine * lastQuaternion.cosine)
-		- glm::dot(currentQuaternion.axis, lastQuaternion.axis);
+	float cosValue_2 = (currentQuaternion.cosine * lastQuaternion.cosine) - glm::dot(currentQuaternion.axis, lastQuaternion.axis);
+
+	glm::vec3 temporaryVector = glm::cross(currentQuaternion.axis, lastQuaternion.axis);
 
 
-	glm::vec3 temporaryVector;
+	glm::vec3 rotationalAxis_2;
+	rotationalAxis_2 = (lastQuaternion.axis * currentQuaternion.cosine) + (lastQuaternion.cosine * currentQuaternion.axis) + temporaryVector;
 
-	temporaryVector = glm::cross(currentQuaternion.axis, lastQuaternion.axis);
-
-
-	rotationalAxis_2.x = (currentQuaternion.cosine * lastQuaternion.axis.x) +
-		(lastQuaternion.cosine * currentQuaternion.axis.x) +
-		temporaryVector.x;
-
-	rotationalAxis_2.y = (currentQuaternion.cosine * lastQuaternion.axis.y) +
-		(lastQuaternion.cosine * currentQuaternion.axis.y) +
-		temporaryVector.y;
-
-	rotationalAxis_2.z = (currentQuaternion.cosine * lastQuaternion.axis.z) +
-		(lastQuaternion.cosine * currentQuaternion.axis.z) +
-		temporaryVector.z;
-
+	// Calculate the angle that will be rotated by
 	angle = (acos(cosValue_2) * 180 / PI) * 2;
 
+	// Calculate the axis that will be rotated around
 	rotationalAxis = rotationalAxis_2 / static_cast<float>(sin((angle / 2) * PI / 180));
+
+
+	// Reset the values so that any axis can be rotated around
+	lastQuaternion.cosine = cosValue_2;
+	lastQuaternion.axis = rotationalAxis_2;
+}
+
+
+
+
+
+glm::mat4 ArcBallCamera::calculateViewMatrix()
+{
+	// Define the default matrix
+	glm::mat4 view = glm::mat4(1.0f);
+
+	// Move it to the centre position
+	view = glm::translate(view, position);
+
+	// Rotate it around that point from what was calculated from inputs
+	view = glm::rotate(view, glm::radians(angle), rotationalAxis);
+
+	// Store the matrix in the class
+	viewMat = view;
+
+	// Return the matrix to the camera matrix function
+	return view;
+}
+
+
+
+
+
+
+//Static Functions
+
+//formula from https://oguz81.github.io/ArcballCamera/
+float ArcBallCamera::CalcZAxis(float x, float y, float radius)
+{
+	float z = 0;
+	if (sqrt((x * x) + (y * y)) <= radius) z = (float)sqrt((radius * radius) - (x * x) - (y * y));
+	return z;
+}
+
+glm::vec3 ArcBallCamera::convertToNDC(glm::vec2 mousePos, int width, int height, float radius)
+{
+	glm::vec3 NDCpos;
+	NDCpos.x = ((mousePos.x - (width) / 2) / (width / 2)) * radius;
+	NDCpos.y = (((height / 2) - mousePos.y) / (height / 2)) * radius;
+	NDCpos.z = CalcZAxis(NDCpos.x, NDCpos.y, radius);
+	return NDCpos;
 }
 
 glm::vec3 ArcBallCamera::getUnitVector(glm::vec3 vectr) {
@@ -212,36 +263,4 @@ glm::vec3 ArcBallCamera::getUnitVector(glm::vec3 vectr) {
 		unitVector.z = vectr.z / magnitude1;
 	}
 	return unitVector;
-}
-
-
-
-
-glm::mat4 ArcBallCamera::calculateViewMatrix()
-{
-	glm::mat4 view = glm::mat4(1.0f);//Camera::calculateViewMatrix();
-	view = glm::translate(view, position);// this, too.  
-	view = glm::rotate(view, glm::radians(angle), rotationalAxis);
-	//view = glm::translate(view, cameraCentre);
-	viewMat = view;
-
-	return view;
-}
-
-//formula from https://oguz81.github.io/ArcballCamera/
-float ArcBallCamera::CalcZAxis(float x, float y, float radius)
-{
-	float z = 0;
-	if (sqrt((x * x) + (y * y)) <= radius) z = (float)sqrt((radius * radius) - (x * x) - (y * y));
-	return z;
-}
-
-
-glm::vec3 ArcBallCamera::convertToNDC(glm::vec2 mousePos, int width, int height, float radius)
-{
-	glm::vec3 NDCpos;
-	NDCpos.x = ((mousePos.x - (width) / 2) / (width / 2)) * radius;
-	NDCpos.y = (((height / 2) - mousePos.y) / (height / 2)) * radius;
-	NDCpos.z = CalcZAxis(NDCpos.x, NDCpos.y, radius);
-	return NDCpos;
 }

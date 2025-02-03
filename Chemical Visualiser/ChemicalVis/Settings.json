@@ -12,48 +12,161 @@
 
 
 {
-  "Camera Settings": {
-    "FOV": 60.0,
-    "Near Plane": 0.1,
-    "Far Plane": 100.0
-  },
-  //------------------------------------------//
-  "Visualiser Settings": {
-    "3D Background Colour": {
-      "count": 3,
-      "format": "colour",
-      "data": [ 0.0, 0.0, 0.0 ]
+  "Camera Settings": [
+    {
+      "Type": "Slider",
+      "Name": "FOV",
+      "Value": 60.0,
+      "Default": 60.0,
+      "Min": 0.0001,
+      "Max": 180.0
     },
-    "2D Background Colour": {
-      "count": 3,
-      "format": "colour",
-      "data": [ 0.0, 0.0, 0.0 ]
+    {
+      "Type": "Slider",
+      "Name": "Near Plane",
+      "Value": 0.1,
+      "Default": 0.1,
+      "Min": 0.0001,
+      "Max": 1000.0
     },
-    "Atom Size": 1.0,
-    "Bond Width": 1.0,
-    "Bond Length Multiplier": 1.0,
-    "Bond Seperation Distance": 1.0,
-    "Chemical Seperation Distance": 10.0
-  },
-  //------------------------------------------//
-  "UI Settings": {
-    "Dark Mode": false,
-    "Scale": 1.0,
-    "2D-3D Ratio": 0.5
-  },
-  //------------------------------------------//
-  "Colours": {
-    "Tab": true, //on a new page/tab
-    "count": 3, //number of pieces of data per array
-    "format" : "colour",
-    "H": [ 0.0, 0.0, 0.0 ],
-    "He": [ 0.0, 0.0, 0.0 ],
-    "Na": [ 0.0, 0.0, 0.0 ] //etc
-  },
-  //------------------------------------------//
-  "Display Element Text": {
-    "Tab": true,
-    "Overide All": false,
-    "H": true //etc
+    {
+      "Type": "Slider",
+      "Name": "Far Plane",
+      "Value": 300.0,
+      "Default": 300.0,
+      "Min": 0.0001,
+      "Max": 5000.0
+    }
+  ],
+
+
+  "Visualiser Settings": [
+    {
+      "Type": "Colour",
+      "Name": "3D Visualiser Background Colour",
+      "Value": [ 0, 0, 0 ],
+      "Default": [ 0, 0, 0 ]
+    },
+    {
+      "Type": "Colour",
+      "Name": "2D Visualiser Background Colour",
+      "Value": [ 0, 0, 0 ],
+      "Default": [ 0, 0, 0 ]
+    },
+    {
+      "Type": "Slider",
+      "Name": "Atom Size",
+      "Value": 1.0,
+      "Default": 1.0,
+      "Min": 0.0001,
+      "Max": 5000.0
+    },
+    {
+      "Type": "Slider",
+      "Name": "Bond Width",
+      "Value": 300.0,
+      "Default": 300.0,
+      "Min": 0.0001,
+      "Max": 5000.0
+    },
+    {
+      "Type": "Slider",
+      "Name": "Bond Length Multiplier",
+      "Value": 300.0,
+      "Default": 300.0,
+      "Min": 0.0001,
+      "Max": 5000.0
+    },
+    {
+      "Type": "Slider",
+      "Name": "Bond Seperation Distance",
+      "Value": 300.0,
+      "Default": 300.0,
+      "Min": 0.0001,
+      "Max": 5000.0
+    },
+    {
+      "Type": "Slider",
+      "Name": "Chemical Seperation Distance",
+      "Value": 300.0,
+      "Default": 300.0,
+      "Min": 0.0001,
+      "Max": 5000.0
+    }
+  ],
+
+  "UI Settings": [
+    {
+      "Type": "Check Box",
+      "Name": "Dark Mode",
+      "Value": false,
+      "Default": false,
+    },
+
+    {
+      "Type": "Slider",
+      "Name": "Scale",
+      "Value": 1.0,
+      "Default": 1.0,
+      "Min": 0.01,
+      "Max": 10.0
+    }
+  ],
+
+  "Accessibility": [
+    {
+      "Type": "Check Box",
+      "Name": "Display Element's symbol'",
+      "Value": false,
+      "Default": false
+    }
+  ],
+
+  "Controls": {
+    "Mouse": [
+      {
+        "Type": "Slider",
+        "Name": "Sensitivity",
+        "Value": 100.0,
+        "Default": 100.0,
+        "Min": 0.0001,
+        "Max": 5000.0
+      }
+    ],
+    "Keyboard / Other": [
+      {
+        "Type": "Key",
+        "Name": "Up",
+        "Value": "ARROW_UP",
+        "Default": "ARROW_UP"
+      }
+      // ETC.
+    ]
   }
-}
+
+  "Colours": {
+    {
+      "Type": "Colour",
+      "Name": "Bonds",
+      "Value": [ 0, 0, 0 ],
+      "Default": [ 0, 0, 0 ]
+    },
+
+    "Elements": [
+      {
+        "Type": "Colour",
+        "Name": "H / Hydrogen",
+        "Value": [ 0, 0, 0 ],
+        "Default": [ 0, 0, 0 ]
+      },
+
+      {
+        "Type": "Colour",
+        "Name": "He / Helium",
+        "Value": [ 0, 0, 0 ],
+        "Default": [ 0, 0, 0 ]
+      }
+      // ETC.
+    ]
+
+  }

@@ -42,7 +42,8 @@ AtomDrawData DrawChemical::calcAtoms(Chemical& chemical, int index, int format, 
 	for (int i = 0; i < chemical.atoms.size(); i++)
 	{
 		Atom atom = chemical.atoms[i];
-		glm::vec3 atomPos = glm::vec3(atom.pos2D, 0.0f);
+		// Z is offset so that the model always overlays the bond model
+		glm::vec3 atomPos = glm::vec3(atom.pos2D, 1.0f);
 		if (format == 2)
 		{
 			atomPos = atom.pos3D;

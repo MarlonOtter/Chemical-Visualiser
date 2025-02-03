@@ -25,11 +25,11 @@ vec4 direcLight()
 	float diffuse = max(dot(normal, lightDirection), 0.0f);
 
 	//specular lighting
-	float specularLight = 0.8f;
+	float specularLight = 0.0f;
 	vec3 viewDirection = normalize(camPos - crntPos);
 	vec3 reflectionDir = reflect(-lightDirection, normal);
 	float specAmount = pow(max(dot(viewDirection, reflectionDir), 0.0f), 16);
-	float specular = specAmount * specularLight * 0.0f;
+	float specular = specAmount * specularLight;
 
 	//outputs pixel colour based on the texture and lighting
 	return ((diffuse + ambient) + 1.0f * specular) * vec4(lightColour, 1.0f);

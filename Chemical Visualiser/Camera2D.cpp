@@ -19,8 +19,8 @@ void Camera2D::UpdateMatrix(float nearPlane, float farPlane)
 
 void Camera2D::MouseInputs(ImGuiIO& io)
 {
-	//arbitary value
-	orthoScale *= 1.0f - (io.MouseWheel * scrollScale);
+	// Zoom in/out based on how much the user scroll
+	Forward(io.MouseWheel * scrollScale);
 
 	//The mouse is being dragged
 	if (ImGui::IsMouseDragging(ImGuiMouseButton_Middle))
@@ -51,6 +51,16 @@ void Camera2D::KeyInputs(ImGuiIO& io)
 	float zoomAmount = io.DeltaTime * 1.5f;
 	if (ImGui::IsKeyDown(ImGuiKey_Minus)) Backward(zoomAmount);
 	if (ImGui::IsKeyDown(ImGuiKey_Equal)) Forward(zoomAmount);
+}
+
+void Camera2D::Left(float value)
+{
+	position.x += value;
+}
+
+void Camera2D::Right(float value)
+{
+	position.x -= value;
 }
 
 void Camera2D::Forward(float value)

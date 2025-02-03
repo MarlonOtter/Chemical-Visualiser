@@ -49,19 +49,21 @@ void Chemical::ParseAtoms()
 		//get the x and y conformers from the data
 		int index = atomPosJson["aid"][i];
 
+
+		//get 2D structure data
+		glm::vec2 pos2D(0);
+		pos2D.x = atomPosJson["conformers"][0]["x"][i];
+		pos2D.y = atomPosJson["conformers"][0]["y"][i];
+
+
 		//if there is 3D data get it.
-		glm::vec3 pos3D(0);
+		glm::vec3 pos3D = glm::vec3(pos2D, 0.0f);
 		if (atomPosJson["conformers"].size() > 1)
 		{
 			pos3D.x = atomPosJson["conformers"][1]["x"][i];
 			pos3D.y = atomPosJson["conformers"][1]["y"][i];
 			pos3D.z = atomPosJson["conformers"][1]["z"][i];
 		}
-
-		//get 2D structure data
-		glm::vec2 pos2D(0);
-		pos2D.x = atomPosJson["conformers"][0]["x"][i];
-		pos2D.y = atomPosJson["conformers"][0]["y"][i];
 
 		Atom atom(atomTypeJson["element"][i], pos3D, pos2D);
 		atoms[index - 1] = atom;

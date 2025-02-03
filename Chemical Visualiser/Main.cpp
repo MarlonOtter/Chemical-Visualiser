@@ -1,30 +1,25 @@
 
 //includes to all the other files
+
+// I can probably remove this and the Object Class
+// As i won't Use it in the project
 #include "Renderer/ObjectArray.h"
+// Can remove this aswell
 #include "Renderer/Grid.h"
 
+// The 2 Different Types of Camera
 #include "Camera2D.h"
 #include "ArcBallCamera.h"
 
 #include "ChemicalVis/DrawChemical.h"
-
 #include "ChemicalVis/GUI.h"
 
 #include "Viewport.h"
 
 // width and height of the window that is going to be created in pixels
-
-
 int windowWidth = 800;
 int windowHeight = 800;
 glm::vec2 prevWindowSize(800, 800);
-
-bool isResizing(ImVec2 currentSize, ImVec2 prevSize)
-{
-	return (currentSize.x != prevSize.x || currentSize.y != prevSize.y) &&
-		ImGui::IsMouseDragging(0);  // Check for left mouse button drag
-		//ImGui::IsWindowHovered(ImGuiHoveredFlags_ChildWindows);
-}
 
 
 //main function
@@ -64,14 +59,8 @@ int main()
 	gladLoadGL();
 
 	//limit the FPS to the monitors refresh rate (V-SYNC)
-	//should probalby be a setting
+	//should probably be a setting
 	glfwSwapInterval(1);
-
-	//get the size of the window
-	glfwGetFramebufferSize(window, &windowWidth, &windowHeight);
-	//define the viewport first
-	glViewport(0, 0, windowWidth/2, windowHeight);
-
 
 	// create a shader program for bonds and atoms
 	// and attach its vertex and fragment shader
@@ -80,30 +69,26 @@ int main()
 
 	Shader bondShader("Shaders/bond.vert", "Shaders/bond.frag");
 
-	//define the shaders for the grid and axis
-	Shader gridShader("Shaders/DebugLine.vert", "Shaders/gridLines.frag");
-	Shader axisShader("Shaders/axisLines.vert", "Shaders/axisLines.frag");
-
-	//add the size of the lines
-	axisShader.Activate();
-	glUniform1f(glGetUniformLocation(axisShader.ID, "size"), 150.0f);
-
 	//define and import the models
-	Model atomModel("Resources/Models/Atoms/1x.obj");
-	Model bondModel("Resources/Models/Bonds/2x.obj");
+	Model atomModel3D("Resources/Models/Atoms/Atom3D.obj");
+	Model bondModel3D("Resources/Models/Bonds/Bond3D.obj");
 
+	Model atomModel2D("Resources/Models/Atoms/Atom2D.obj");
 	
-	// creates the debugGrid with a size of 80 square and and interval of 1.0m
-	Grid grid(80, 1.0f);
+	// Bond cannot be 2D as some are rotated and cannot be seen
+	//Model bondModel2D("Resources/Models/Bonds/Bond2D.obj");
 
 	//set the colour of the light in the shaderss
 	glm::vec3 lightColour = glm::vec3(1.0f, 1.0f, 1.0f);
 	
 	atom3DShader.Activate();
+	// Add the colour and the source vector to the atom 3d shader
 	glUniform3f(glGetUniformLocation(atom3DShader.ID, "lightColour"), lightColour.r, lightColour.g, lightColour.b);
 	glUniform3f(glGetUniformLocation(atom3DShader.ID, "lightSource"), 0, 1, 0);
 	bondShader.Activate();
 	glUniform3f(glGetUniformLocation(bondShader.ID, "lightColour"), lightColour.r, lightColour.g, lightColour.b);
+	glUniform3f(glGetUniformLocation(bondShader.ID, "lightSource"), 0, 1, 0);
+	glUniform3f(glGetUniformLocation(bondShader.ID, "bondColour"), 0,0,0);
 
 	// enable camera depth to work properly
 	glEnable(GL_DEPTH_TEST);
@@ -119,18 +104,14 @@ int main()
 	GUI GUI;
 	GUI.Setup(window);
 
-	//create the camera object
-	ArcBallCamera camera3D(800, 800, glm::vec3(0,0,-10));
+	//create the arcball camera object
+	//the Z position has to be <0
+	ArcBallCamera camera3D(800, 800, glm::vec3(0,0, -10));
 	
 	globalClass::camera3D = &camera3D;
 
-	//second viewport
-	glViewport(windowWidth / 2, 0, windowWidth / 2, windowHeight);
 	Camera2D camera2D(800, 800, glm::vec3(8, 2, 10));
 	globalClass::camera2D = &camera2D;
-
-	ImVec2 prevSize;
-	int ResizingCounter = 0;
 
 	glm::vec2 viewportRatio = glm::vec2(0.5f, 1.0f);
 
@@ -146,7 +127,7 @@ int main()
 		glfwGetFramebufferSize(window, &windowWidth, &windowHeight);
 		
 		glfwSwapInterval(frameInterval);
-		frameInterval = 1;
+		frameInterval = 2;
 		// if the window is minimised/unfocussed. don't draw anything
 		if (windowWidth == 0 || windowHeight == 0 || !glfwGetWindowAttrib(window, GLFW_FOCUSED))
 		{
@@ -170,17 +151,8 @@ int main()
 
 		GUI.CreateElements();
 
-		//debug settings
-		//tempory for development
-		if (GUI.renderOptions.grid)
-		{
-			//draw a grid and axis
-			grid.Draw(gridShader, axisShader, camera3D);
-		}
 		//atomModel.Draw(atom3DShader, camera3D, camera3D.position);
 		visualiser3D.AttachWindow("3D Visualiser");
-
-		
 		
 
 		//create a temparary UI to tweak atom size and clear of all atoms
@@ -202,20 +174,23 @@ int main()
 			}
 			globalClass::chemicals.clear();
 		}
-
-		
-
 		ImGui::End();
 
-		//if the GUI is being hovered over ignore user inputs to the visualiser
+		// If the viewport is being hovered over
 		if (visualiser3D.getHovered())
 		{  
+			// Do mouse Inputs 
 			camera3D.MouseInputs(*GUI.io);
 		}
+		// If the viewport is focussed (clicked on)
 		if (visualiser3D.getFocussed())
 		{
+			// Do Keyboard Inputs
 			camera3D.KeyInputs(*GUI.io);
 		}
+		// Apply the rotation to the camera using the inputs
+		camera3D.ApplyInputs();
+
 		//update the size of the window in the camera class
 		camera3D.UpdateSize(visualiser3D.getPos(), visualiser3D.getSize());
 		
@@ -228,26 +203,31 @@ int main()
 		atom3DShader.Activate();
 		glUniform3f(glGetUniformLocation(atom3DShader.ID, "lightSource"), lightSourceDir.x, lightSourceDir.y, lightSourceDir.z);
 
-
 		if (globalClass::chemicals.size() > 0)
 		{
-			DrawChemical::Draw(globalClass::chemicals, atomModel, bondModel, camera3D, atom3DShader, bondShader, Chemical::_3D);	
+			// Passing in the arcballCamera as the base class Camera, is bad practice as it can cause issues
+			// However I can't think of anouther solution that wouldn't be more work.
+			DrawChemical::Draw(globalClass::chemicals, atomModel3D, bondModel3D, camera3D, atom3DShader, bondShader, Chemical::_3D);	
 		}
 		
-
+		// Give it a window so that detecting when it should be active is easier
 		visualiser2D.AttachWindow("2D Visualiser");
-
+		
+		// Set the size + position of the viewport based on the other 
 		visualiser2D.setPos(visualiser3D.getPos().x + visualiser3D.getSize().x, 0);
 		visualiser2D.setSize(windowWidth - (visualiser3D.getPos().x + visualiser3D.getSize().x), windowHeight);
 		visualiser2D.Update(GUI.renderOptions.bgColour2);
 
+		// If the viewport is being hovered on
 		if (visualiser2D.getHovered())
 		{
-			//do any inputs
+			// Do mouse Inputs
 			camera2D.MouseInputs(*GUI.io);
 		}
+		// If it is focussed
 		if (visualiser2D.getFocussed())
 		{
+			// Do Key Inputs
 			camera2D.KeyInputs(*GUI.io);
 		}
 		
@@ -258,13 +238,7 @@ int main()
 		//update any matrices for the camera
 		camera2D.UpdateMatrix(GUI.renderOptions.nearPlane, GUI.renderOptions.farPlane);
 
-		if (GUI.renderOptions.grid)
-		{
-			//draw a grid and axis
-			grid.Draw(gridShader, axisShader, camera2D);
-		}
-
-		DrawChemical::Draw(globalClass::chemicals, atomModel, bondModel, camera2D, atom2DShader, bondShader, Chemical::_2D);
+		DrawChemical::Draw(globalClass::chemicals, atomModel2D, bondModel3D, camera2D, atom2DShader, bondShader, Chemical::_2D);
 
 		//Draw the UI to the screen (ontop of everything)
 		GUI.Draw();
@@ -277,16 +251,22 @@ int main()
 		glfwPollEvents();
 		prevWindowSize = glm::vec2(windowWidth, windowHeight);
 	}
-	grid.gridLine.Delete();
-	grid.axisLine.Delete();
-	//delete the shader
+
+	//delete the shaders
 	atom3DShader.Delete();
 	atom2DShader.Delete();
 	bondShader.Delete();
 
-	gridShader.Delete();
-	axisShader.Delete();
+
+	//Delete the models (not really necessary)
+	atomModel2D.Delete();
+	atomModel3D.Delete();
+
+	//bondModel2D.Delete();
+	bondModel3D.Delete();
+
 	
+	// Shutdown the ImGui stuff
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();
 	ImGui::DestroyContext();

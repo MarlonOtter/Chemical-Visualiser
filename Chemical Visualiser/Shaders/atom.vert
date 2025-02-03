@@ -24,7 +24,7 @@ uniform mat4 meshMat4;
 
 void main()
 {
-    crntPos = vec3(aMatrix * meshMat4 * vec4(aPos, 1.0f));
+    crntPos = vec3(aMatrix * (meshMat4 * vec4(aPos, 1.0f)));
     //output the position of the vertex
     
     normals = aNormal;
