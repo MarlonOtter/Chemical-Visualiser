@@ -84,6 +84,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -113,6 +114,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -137,6 +139,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="3DVisualiser.cpp" />
     <ClCompile Include="Camera2D.cpp" />
     <ClCompile Include="ArcBallCamera.cpp" />
     <ClCompile Include="ChemicalDataCache.cpp" />
@@ -149,6 +152,7 @@
     <ClCompile Include="ChemicalVis\PubchemAccess.cpp" />
     <ClCompile Include="ChemicalVis\GUI.cpp" />
     <ClCompile Include="ChemicalVis\RenderOptions.cpp" />
+    <ClCompile Include="ChemicalVis\Settings.cpp" />
     <ClCompile Include="Libraries\include\imgui\backends\imgui_impl_glfw.cpp" />
     <ClCompile Include="Libraries\include\imgui\backends\imgui_impl_opengl3.cpp" />
     <ClCompile Include="Libraries\include\imgui\imgui.cpp" />
@@ -174,7 +178,8 @@
     <ClCompile Include="Viewport.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="ChemicalVis\Settings.json" />
+    <None Include="Settings.json" />
+    <None Include="SettingsDefault.json" />
     <None Include="Shaders\atom2D.frag" />
     <None Include="Shaders\atom3D.frag" />
     <None Include="Shaders\atom.vert" />
@@ -189,6 +194,8 @@
     <None Include="Shaders\gridLines.frag" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="2DVisualiser.h" />
+    <ClInclude Include="3DVisualiser.h" />
     <ClInclude Include="Camera2D.h" />
     <ClInclude Include="ArcBallCamera.h" />
     <ClInclude Include="ChemicalDataCache.h" />

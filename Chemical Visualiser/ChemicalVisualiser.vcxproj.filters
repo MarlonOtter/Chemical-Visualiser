@@ -31,9 +31,6 @@
     <Filter Include="Source Files\ChemVis">
       <UniqueIdentifier>{fa55c786-eff0-441f-ae25-2b11989f1651}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\ChemVis\GUI">
-      <UniqueIdentifier>{f1f7e683-3a0c-4f20-99df-439ee44756f1}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\ChemVis\GUI">
       <UniqueIdentifier>{ee7eea67-bf0a-4611-afc0-f12927124bb0}</UniqueIdentifier>
     </Filter>
@@ -69,6 +66,21 @@
     </Filter>
     <Filter Include="Library Files\ImGUI">
       <UniqueIdentifier>{ba6bb28d-9d00-4a4b-8d44-c7ce9afdf3c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ChemVis\Data">
+      <UniqueIdentifier>{c26af665-889b-4de8-ad77-707b4eecdd0d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ChemVis\Settings">
+      <UniqueIdentifier>{14a1f6b9-94cd-4d77-9385-31766460e53f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ChemVis\Chemical Input">
+      <UniqueIdentifier>{8446bd39-35a5-4be0-acb6-253717800283}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ChemVis\Data">
+      <UniqueIdentifier>{12ca8a48-38db-46cb-9ba8-77e278456f14}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ChemVis\Settings">
+      <UniqueIdentifier>{d7d0df48-f01b-4c60-b89f-cc5c192c4820}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -138,12 +150,6 @@
     <ClCompile Include="ChemicalDataCache.cpp">
       <Filter>Source Files\ChemVis</Filter>
     </ClCompile>
-    <ClCompile Include="ChemicalVis\Chemical.cpp">
-      <Filter>Source Files\ChemVis</Filter>
-    </ClCompile>
-    <ClCompile Include="ChemicalVis\Atom.cpp">
-      <Filter>Source Files\ChemVis</Filter>
-    </ClCompile>
     <ClCompile Include="ChemicalVis\GlobalClass.cpp">
       <Filter>Source Files\ChemVis</Filter>
     </ClCompile>
@@ -177,11 +183,20 @@
     <ClCompile Include="Renderer\stb.cpp">
       <Filter>Library Files</Filter>
     </ClCompile>
+    <ClCompile Include="ChemicalVis\Atom.cpp">
+      <Filter>Source Files\ChemVis\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="ChemicalVis\Chemical.cpp">
+      <Filter>Source Files\ChemVis\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="ChemicalVis\Settings.cpp">
+      <Filter>Source Files\ChemVis\Settings</Filter>
+    </ClCompile>
+    <ClCompile Include="3DVisualiser.cpp">
+      <Filter>Source Files\MultiViewport</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="ChemicalVis\Settings.json">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="Shaders\axisLines.frag">
       <Filter>Resource Files\Shaders\Grid</Filter>
     </None>
@@ -218,6 +233,12 @@
     <None Include="Shaders\atom2D.frag">
       <Filter>Resource Files\Shaders\Atom</Filter>
     </None>
+    <None Include="SettingsDefault.json">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Settings.json">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Renderer\EBO.h">
@@ -250,37 +271,10 @@
     <ClInclude Include="Renderer\Object.h">
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="ChemicalVis\Atom.h">
-      <Filter>Header Files\ChemVis</Filter>
-    </ClInclude>
     <ClInclude Include="Renderer\ObjectArray.h">
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="ChemicalVis\PubchemAccess.h">
-      <Filter>Header Files\ChemVis</Filter>
-    </ClInclude>
-    <ClInclude Include="ChemicalVis\GUI.h">
-      <Filter>Header Files\ChemVis\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="ChemicalVis\RenderOptions.h">
-      <Filter>Header Files\ChemVis\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="ChemicalVis\ChemicalWindow.h">
-      <Filter>Header Files\ChemVis\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="ChemicalDataCache.h">
-      <Filter>Header Files\ChemVis</Filter>
-    </ClInclude>
-    <ClInclude Include="ChemicalVis\Chemical.h">
-      <Filter>Header Files\ChemVis</Filter>
-    </ClInclude>
-    <ClInclude Include="ChemicalVis\ChemicalInputHandling.h">
-      <Filter>Header Files\ChemVis</Filter>
-    </ClInclude>
     <ClInclude Include="ChemicalVis\GlobalClass.h">
-      <Filter>Header Files\ChemVis</Filter>
-    </ClInclude>
-    <ClInclude Include="ChemicalVis\Settings.h">
       <Filter>Header Files\ChemVis</Filter>
     </ClInclude>
     <ClInclude Include="ChemicalVis\DrawChemical.h">
@@ -297,6 +291,39 @@
     </ClInclude>
     <ClInclude Include="Renderer\Camera.h">
       <Filter>Header Files\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="ChemicalVis\Atom.h">
+      <Filter>Header Files\ChemVis\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="ChemicalVis\Chemical.h">
+      <Filter>Header Files\ChemVis\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="ChemicalDataCache.h">
+      <Filter>Header Files\ChemVis\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="ChemicalVis\Settings.h">
+      <Filter>Header Files\ChemVis\Settings</Filter>
+    </ClInclude>
+    <ClInclude Include="ChemicalVis\ChemicalInputHandling.h">
+      <Filter>Header Files\ChemVis\Chemical Input</Filter>
+    </ClInclude>
+    <ClInclude Include="ChemicalVis\ChemicalWindow.h">
+      <Filter>Header Files\ChemVis\Chemical Input</Filter>
+    </ClInclude>
+    <ClInclude Include="ChemicalVis\GUI.h">
+      <Filter>Header Files\ChemVis</Filter>
+    </ClInclude>
+    <ClInclude Include="ChemicalVis\RenderOptions.h">
+      <Filter>Header Files\ChemVis</Filter>
+    </ClInclude>
+    <ClInclude Include="ChemicalVis\PubchemAccess.h">
+      <Filter>Header Files\ChemVis\Chemical Input</Filter>
+    </ClInclude>
+    <ClInclude Include="3DVisualiser.h">
+      <Filter>Header Files\MultiViewport</Filter>
+    </ClInclude>
+    <ClInclude Include="2DVisualiser.h">
+      <Filter>Header Files\MultiViewport</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

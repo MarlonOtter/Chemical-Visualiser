@@ -9,12 +9,12 @@
 
 // The 2 Different Types of Camera
 #include "Camera2D.h"
-#include "ArcBallCamera.h"
 
-#include "ChemicalVis/DrawChemical.h"
+#include "3DVisualiser.h"
+
 #include "ChemicalVis/GUI.h"
 
-#include "Viewport.h"
+#include "ChemicalVis/Settings.h"
 
 // width and height of the window that is going to be created in pixels
 int windowWidth = 800;
@@ -60,7 +60,7 @@ int main()
 
 	//limit the FPS to the monitors refresh rate (V-SYNC)
 	//should probably be a setting
-	glfwSwapInterval(1);
+	glfwSwapInterval(2);
 
 	// create a shader program for bonds and atoms
 	// and attach its vertex and fragment shader
@@ -74,7 +74,7 @@ int main()
 	Model bondModel3D("Resources/Models/Bonds/Bond3D.obj");
 
 	Model atomModel2D("Resources/Models/Atoms/Atom2D.obj");
-	
+
 	// Bond cannot be 2D as some are rotated and cannot be seen
 	//Model bondModel2D("Resources/Models/Bonds/Bond2D.obj");
 
@@ -119,6 +119,11 @@ int main()
 	Viewport visualiser2D(0, 0, 0, 0, false, true);
 
 	int frameInterval = 1;
+	char settingInp[128] = "Near Plane";
+	float num = 0;
+
+	// Read the settings from disk when the program boots up
+	Settings::Refresh();
 
 	//keep the window open
 	while (!glfwWindowShouldClose(window))
@@ -127,7 +132,7 @@ int main()
 		glfwGetFramebufferSize(window, &windowWidth, &windowHeight);
 		
 		glfwSwapInterval(frameInterval);
-		frameInterval = 2;
+		frameInterval = 2  ; // 0 : unlimitedFPS, 1 : 60FPS, 2 : 30FPS, 3 : 20FPS, 4 : 15FPS
 		// if the window is minimised/unfocussed. don't draw anything
 		if (windowWidth == 0 || windowHeight == 0 || !glfwGetWindowAttrib(window, GLFW_FOCUSED))
 		{
@@ -137,7 +142,6 @@ int main()
 			frameInterval = 4;
 			continue;
 		}
-
 
 		//if the glfw window was just resized, update the window size ratio
 		if (prevWindowSize.x == windowWidth && prevWindowSize.y == windowHeight)
@@ -154,6 +158,45 @@ int main()
 		//atomModel.Draw(atom3DShader, camera3D, camera3D.position);
 		visualiser3D.AttachWindow("3D Visualiser");
 		
+		ImGui::Begin("Settings Class Testing");
+
+		if (ImGui::Button("Read File"))
+		{
+			Settings::Refresh();
+		}
+
+		if (ImGui::Button("Save to File"))
+		{
+			Settings::Save();
+		}
+
+		ImGui::InputText("Setting", settingInp, IM_ARRAYSIZE(settingInp));
+
+		if (ImGui::Button("Find"))
+		{
+			double startTime = glfwGetTime();
+			Setting setting = Settings::GetAll(std::string(settingInp));
+
+			std::cout << "Duration: " << (glfwGetTime() - startTime) * 1000.0 << "ms\n";
+			std::cout << "Type: " << setting.type << "\nName: " << setting.name << "\n";
+		}
+		ImGui::SliderFloat("Number", &num, 0.001f, 100.0f);
+		if (ImGui::Button("Set"))
+		{
+			std::cout << Settings::Set(std::string(settingInp), num) << "\n";
+		}
+
+		if (ImGui::Button("List Children"))
+		{
+			auto vec = Settings::getChildren("/" + std::string(settingInp));
+			std::cout << "Found " << vec.size() << " Children Objects\n";
+		}
+
+		ImGui::End();
+
+
+
+
 
 		//create a temparary UI to tweak atom size and clear of all atoms
 		ImGui::Begin("Atom Settings");
@@ -230,7 +273,6 @@ int main()
 			// Do Key Inputs
 			camera2D.KeyInputs(*GUI.io);
 		}
-		
 
 		//update the size of the window in the camera class
 		camera2D.UpdateSize(visualiser2D.getPos(), visualiser2D.getSize());

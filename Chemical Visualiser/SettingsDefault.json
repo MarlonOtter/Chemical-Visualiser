@@ -1,20 +1,8 @@
-/*
-  I will look through all this data creating a UI element for each relevent piece of data,
-  meaning i won't have to manually create the UI.
-
-  I should also store a default version of this in the code so that even if it is deleted 
-  it can still be retrieved and not just cause the program to crash.
-
-  should i also include min/max values in this data, or will i be able to guess in the code
-
-  This may be quite large
-*/
-
-
 {
   "Camera Settings": [
     {
       "Type": "Slider",
+      "ID": "Camera FOV angle",
       "Name": "FOV",
       "Value": 60.0,
       "Default": 60.0,
@@ -23,6 +11,7 @@
     },
     {
       "Type": "Slider",
+      "ID": "3D Camera Near Plane",
       "Name": "Near Plane",
       "Value": 0.1,
       "Default": 0.1,
@@ -31,6 +20,7 @@
     },
     {
       "Type": "Slider",
+      "ID": "3D Camera Far Plane",
       "Name": "Far Plane",
       "Value": 300.0,
       "Default": 300.0,
@@ -43,18 +33,21 @@
   "Visualiser Settings": [
     {
       "Type": "Colour",
-      "Name": "3D Visualiser Background Colour",
+      "ID": "3D Visualiser Background Colour",
+      "Name" : "Background Colour for 3D visualiser",
       "Value": [ 0, 0, 0 ],
       "Default": [ 0, 0, 0 ]
     },
     {
       "Type": "Colour",
-      "Name": "2D Visualiser Background Colour",
+      "ID": "2D Visualiser Background Colour",
+      "Name": "Background Colour for 2D visualiser",
       "Value": [ 0, 0, 0 ],
       "Default": [ 0, 0, 0 ]
     },
     {
       "Type": "Slider",
+      "ID": "Atom size",
       "Name": "Atom Size",
       "Value": 1.0,
       "Default": 1.0,
@@ -63,6 +56,7 @@
     },
     {
       "Type": "Slider",
+      "ID": "Bond width",
       "Name": "Bond Width",
       "Value": 300.0,
       "Default": 300.0,
@@ -71,6 +65,7 @@
     },
     {
       "Type": "Slider",
+      "ID": "3D Visualiser Background Colour",
       "Name": "Bond Length Multiplier",
       "Value": 300.0,
       "Default": 300.0,
@@ -79,6 +74,7 @@
     },
     {
       "Type": "Slider",
+      "ID": "3D Visualiser Background Colour",
       "Name": "Bond Seperation Distance",
       "Value": 300.0,
       "Default": 300.0,
@@ -87,6 +83,7 @@
     },
     {
       "Type": "Slider",
+      "ID": "3D Visualiser Background Colour",
       "Name": "Chemical Seperation Distance",
       "Value": 300.0,
       "Default": 300.0,
@@ -98,13 +95,14 @@
   "UI Settings": [
     {
       "Type": "Check Box",
+      "ID": "3D Visualiser Background Colour",
       "Name": "Dark Mode",
       "Value": false,
-      "Default": false,
+      "Default": false
     },
-
     {
       "Type": "Slider",
+      "ID": "3D Visualiser Background Colour",
       "Name": "Scale",
       "Value": 1.0,
       "Default": 1.0,
@@ -116,7 +114,8 @@
   "Accessibility": [
     {
       "Type": "Check Box",
-      "Name": "Display Element's symbol'",
+      "ID": "3D Visualiser Background Colour",
+      "Name": "Display Element's symbol",
       "Value": false,
       "Default": false
     }
@@ -126,6 +125,7 @@
     "Mouse": [
       {
         "Type": "Slider",
+        "ID": "3D Visualiser Background Colour",
         "Name": "Sensitivity",
         "Value": 100.0,
         "Default": 100.0,
@@ -133,40 +133,47 @@
         "Max": 5000.0
       }
     ],
-    "Keyboard / Other": [
+    "Keyboard": [
       {
         "Type": "Key",
+        "ID": "3D Visualiser Background Colour",
         "Name": "Up",
         "Value": "ARROW_UP",
         "Default": "ARROW_UP"
       }
-      // ETC.
     ]
-  }
+  },
 
   "Colours": {
-    {
-      "Type": "Colour",
-      "Name": "Bonds",
-      "Value": [ 0, 0, 0 ],
-      "Default": [ 0, 0, 0 ]
-    },
+
+    "Bonds": [
+      {
+        "Type": "Colour",
+        "ID": "3D Visualiser Background Colour",
+        "Name": "Bond Colour",
+        "Value": [ 0, 0, 0 ],
+        "Default": [ 0, 0, 0 ]
+      }
+    ],
+
 
     "Elements": [
       {
         "Type": "Colour",
-        "Name": "H / Hydrogen",
+        "ID": "3D Visualiser Background Colour",
+        "Name": "H : Hydrogen",
         "Value": [ 0, 0, 0 ],
         "Default": [ 0, 0, 0 ]
       },
-
       {
         "Type": "Colour",
-        "Name": "He / Helium",
+        "ID": "3D Visualiser Background Colour",
+        "Name": "He : Helium",
         "Value": [ 0, 0, 0 ],
         "Default": [ 0, 0, 0 ]
       }
-      // ETC.
+
     ]
 
   }
+}
