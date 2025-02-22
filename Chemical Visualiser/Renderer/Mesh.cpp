@@ -1,4 +1,5 @@
 #include "Mesh.h"
+#include <iostream>
 
 Mesh::Mesh(
 	std::vector<Vertex>& vertices,
@@ -10,7 +11,8 @@ Mesh::Mesh(
 	// apply all the data to the class
 	Mesh::vertices = vertices;
 	Mesh::indices = indices;
-	Mesh::textures = textures;
+
+	Mesh::textures = textures; 
 	Mesh::instancing = instancing;
 
 	construct();
@@ -57,7 +59,7 @@ void Mesh::Draw
 	VAO.Bind();
 
 	// If there any textures add them to the shader
-	if (textures.size() > 0) AddTextures(shader);
+	//if (textures.size() > 0) AddTextures(shader);
 
 	//attach the camera position to the shader
 	glUniform3f(glGetUniformLocation(shader.ID, "camPos"), camera.position.x, camera.position.y, camera.position.z);
@@ -70,7 +72,7 @@ void Mesh::Draw
 
 	// Draw the triangles to the screen
 	
-	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, static_cast<int>(indices.size()), GL_UNSIGNED_INT, 0);
 }
 
 void Mesh::DrawInstanced
@@ -119,7 +121,7 @@ void Mesh::DrawInstanced
 	instanceVBO.Unbind();
 
 	//draw the instances
-	glDrawElementsInstanced(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0, matrices.size());
+	glDrawElementsInstanced(GL_TRIANGLES, static_cast<int>(indices.size()), GL_UNSIGNED_INT, 0, static_cast<int>(matrices.size()));
 	instanceVBO.Delete();
 }
 
@@ -127,7 +129,7 @@ void Mesh::DrawInstanced
 void Mesh::Delete()
 {
 	VAO.Delete();
-	for (int i = 0; i < textures.size(); i++)
+	for (int i = 0; i < static_cast<int>(textures.size()); i++)
 	{
 		textures[i].Delete();
 	}

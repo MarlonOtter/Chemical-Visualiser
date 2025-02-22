@@ -1,1 +1,208 @@
-{"Accessibility":[{"Default":false,"Name":"Display Element's symbol","Type":"Check Box","Value":false}],"Camera Settings":[{"Default":60.0,"Max":180.0,"Min":0.0001,"Name":"FOV","Type":"Slider","Value":60.0},{"Default":0.1,"Max":1000.0,"Min":0.0001,"Name":"Near Plane","Type":"Slider","Value":0.1},{"Default":300.0,"Max":5000.0,"Min":0.0001,"Name":"Far Plane","Type":"Slider","Value":300.0}],"Colours":{"Bonds":[{"Default":[0,0,0],"Name":"Bond Colour","Type":"Colour","Value":[0,0,0]}],"Elements":[{"Default":[0,0,0],"Name":"H : Hydrogen","Type":"Colour","Value":[0,0,0]},{"Default":[0,0,0],"Name":"He : Helium","Type":"Colour","Value":[0,0,0]}]},"Controls":{"Keyboard":[{"Default":"ARROW_UP","Name":"Up","Type":"Key","Value":"ARROW_UP"}],"Mouse":[{"Default":100.0,"Max":5000.0,"Min":0.0001,"Name":"Sensitivity","Type":"Slider","Value":100.0}]},"UI Settings":[{"Default":false,"Name":"Dark Mode","Type":"Check Box","Value":false},{"Default":1.0,"Max":10.0,"Min":0.01,"Name":"Scale","Type":"Slider","Value":1.0}],"Visualiser Settings":[{"Default":[0,0,0],"Name":"3D Visualiser Background Colour","Type":"Colour","Value":[0,0,0]},{"Default":[0,0,0],"Name":"2D Visualiser Background Colour","Type":"Colour","Value":[0,0,0]},{"Default":1.0,"Max":5000.0,"Min":0.0001,"Name":"Atom Size","Type":"Slider","Value":1.0},{"Default":300.0,"Max":5000.0,"Min":0.0001,"Name":"Bond Width","Type":"Slider","Value":300.0},{"Default":300.0,"Max":5000.0,"Min":0.0001,"Name":"Bond Length Multiplier","Type":"Slider","Value":300.0},{"Default":300.0,"Max":5000.0,"Min":0.0001,"Name":"Bond Seperation Distance","Type":"Slider","Value":300.0},{"Default":300.0,"Max":5000.0,"Min":0.0001,"Name":"Chemical Seperation Distance","Type":"Slider","Value":300.0}]}
+{
+  "Accessibility": [
+    {
+      "Default": false,
+      "ID": "3D Visualiser Background Colour",
+      "Name": "Display Element's symbol",
+      "Type": "Check Box",
+      "Value": false
+    }
+  ],
+  "Camera Settings": [
+    {
+      "Default": 60.0,
+      "ID": "Camera FOV angle",
+      "Max": 180.0,
+      "Min": 0.0001,
+      "Name": "FOV",
+      "Type": "Slider",
+      "Value": 60.0
+    },
+    {
+      "Default": 0.1,
+      "ID": "3D Camera Near Plane",
+      "Max": 1000.0,
+      "Min": 0.0001,
+      "Name": "Near Plane",
+      "Type": "Slider",
+      "Value": 0.1
+    },
+    {
+      "Default": 300.0,
+      "ID": "3D Camera Far Plane",
+      "Max": 5000.0,
+      "Min": 0.0001,
+      "Name": "Far Plane",
+      "Type": "Slider",
+      "Value": 300.0
+    }
+  ],
+  "Colours": {
+    "Bonds": [
+      {
+        "Default": [
+          0,
+          0,
+          0
+        ],
+        "ID": "3D Visualiser Background Colour",
+        "Name": "Bond Colour",
+        "Type": "Colour",
+        "Value": [
+          0,
+          0,
+          0
+        ]
+      }
+    ],
+    "Elements": [
+      {
+        "Default": [
+          0,
+          0,
+          0
+        ],
+        "ID": "3D Visualiser Background Colour",
+        "Name": "H : Hydrogen",
+        "Type": "Colour",
+        "Value": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "Default": [
+          0,
+          0,
+          0
+        ],
+        "ID": "3D Visualiser Background Colour",
+        "Name": "He : Helium",
+        "Type": "Colour",
+        "Value": [
+          0,
+          0,
+          0
+        ]
+      }
+    ]
+  },
+  "Controls": {
+    "Keyboard": [
+      {
+        "Default": "ARROW_UP",
+        "ID": "Control Up",
+        "Name": "Up",
+        "Type": "Key",
+        "Value": "ARROW_UP"
+      }
+    ],
+    "Mouse": [
+      {
+        "Default": 100.0,
+        "ID": "mouse sensitivity",
+        "Max": 5000.0,
+        "Min": 0.0001,
+        "Name": "Sensitivity",
+        "Type": "Slider",
+        "Value": 100.0
+      }
+    ]
+  },
+  "UI Settings": [
+    {
+      "Default": false,
+      "ID": "UI Dark Mode",
+      "Name": "Dark Mode",
+      "Type": "Check Box",
+      "Value": false
+    },
+    {
+      "Default": 1.0,
+      "ID": "UI Scale",
+      "Max": 10.0,
+      "Min": 0.01,
+      "Name": "Scale",
+      "Type": "Slider",
+      "Value": 1.0
+    }
+  ],
+  "Visualiser Settings": [
+    {
+      "Default": [
+        0,
+        0,
+        0
+      ],
+      "ID": "3D Visualiser Background Colour",
+      "Name": "Background Colour for 3D visualiser",
+      "Type": "Colour",
+      "Value": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "Default": [
+        0,
+        0,
+        0
+      ],
+      "ID": "2D Visualiser Background Colour",
+      "Name": "Background Colour for 2D visualiser",
+      "Type": "Colour",
+      "Value": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "Default": 1.0,
+      "ID": "Atom size",
+      "Max": 5000.0,
+      "Min": 0.0001,
+      "Name": "Atom Size",
+      "Type": "Slider",
+      "Value": 1.0
+    },
+    {
+      "Default": 300.0,
+      "ID": "Bond width",
+      "Max": 5000.0,
+      "Min": 0.0001,
+      "Name": "Bond Width",
+      "Type": "Slider",
+      "Value": 300.0
+    },
+    {
+      "Default": 300.0,
+      "ID": "3D Visualiser Background Colour",
+      "Max": 5000.0,
+      "Min": 0.0001,
+      "Name": "Bond Length Multiplier",
+      "Type": "Slider",
+      "Value": 300.0
+    },
+    {
+      "Default": 300.0,
+      "ID": "3D Visualiser Background Colour",
+      "Max": 5000.0,
+      "Min": 0.0001,
+      "Name": "Bond Seperation Distance",
+      "Type": "Slider",
+      "Value": 300.0
+    },
+    {
+      "Default": 300.0,
+      "ID": "3D Visualiser Background Colour",
+      "Max": 5000.0,
+      "Min": 0.0001,
+      "Name": "Chemical Seperation Distance",
+      "Type": "Slider",
+      "Value": 300.0
+    }
+  ]
+}

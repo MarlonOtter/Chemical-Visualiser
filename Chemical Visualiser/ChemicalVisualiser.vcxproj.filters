@@ -195,6 +195,12 @@
     <ClCompile Include="3DVisualiser.cpp">
       <Filter>Source Files\MultiViewport</Filter>
     </ClCompile>
+    <ClCompile Include="SettingsUI.cpp">
+      <Filter>Source Files\ChemVis\Settings</Filter>
+    </ClCompile>
+    <ClCompile Include="2DVisualiser.cpp">
+      <Filter>Source Files\MultiViewport</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\axisLines.frag">
@@ -325,5 +331,21 @@
     <ClInclude Include="2DVisualiser.h">
       <Filter>Header Files\MultiViewport</Filter>
     </ClInclude>
+    <ClInclude Include="SettingsUI.h">
+      <Filter>Header Files\ChemVis\Settings</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ChemicalVisualiser.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\..\Downloads\icon.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

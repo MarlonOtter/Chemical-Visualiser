@@ -5,19 +5,13 @@
 #include <variant>
 #include <string>
 #include <filesystem>
+#include "glm/glm.hpp"
 
 using json = nlohmann::json;
 
-
-// Colour structure
-// float pointer for a float array
-struct Colour {
-	float* data;
-};
-
 // All the possible datatypes that a setting can be stored in
 struct Value {
-	std::variant<int, float, std::string, bool, Colour> data;
+	std::variant<int, float, std::string, bool, glm::vec3> data;
 };
 
 // Contains all the information about a setting
@@ -56,7 +50,7 @@ public:
 	static int Set(std::string setting, int value);
 	static int Set(std::string setting, float value);
 	static int Set(std::string setting, bool value);
-	static int Set(std::string setting, Colour value);
+	static int Set(std::string setting, glm::vec3 value);
 	
 	// Get a piece of data about a setting
 	static std::string GetType(std::string setting);

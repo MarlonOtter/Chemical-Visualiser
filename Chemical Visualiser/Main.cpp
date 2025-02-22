@@ -11,10 +11,12 @@
 #include "Camera2D.h"
 
 #include "3DVisualiser.h"
+#include "2DVisualiser.h"
 
 #include "ChemicalVis/GUI.h"
-
+#include "ChemicalDataCache.h"
 #include "ChemicalVis/Settings.h"
+#include "SettingsUI.h"
 
 // width and height of the window that is going to be created in pixels
 int windowWidth = 800;
@@ -24,7 +26,7 @@ glm::vec2 prevWindowSize(800, 800);
 
 //main function
 //runs when the program is first executed
-int main() 
+int main()
 {
 	//initialise GLFW
 	glfwInit();
@@ -52,6 +54,13 @@ int main()
 	}
 	//bring the window to the front
 	glfwMakeContextCurrent(window);
+
+	// Attach an icon to the window.
+	GLFWimage images[1];
+	images[0].pixels = stbi_load("Resources/Textures/icon.png", &images[0].width, &images[0].height, 0, 4);
+	glfwSetWindowIcon(window, 1, images);
+	stbi_image_free(images[0].pixels);
+
 	//maximize the window
 	glfwMaximizeWindow(window);
 
@@ -60,7 +69,7 @@ int main()
 
 	//limit the FPS to the monitors refresh rate (V-SYNC)
 	//should probably be a setting
-	glfwSwapInterval(2);
+	glfwSwapInterval(0);
 
 	// create a shader program for bonds and atoms
 	// and attach its vertex and fragment shader
@@ -80,7 +89,7 @@ int main()
 
 	//set the colour of the light in the shaderss
 	glm::vec3 lightColour = glm::vec3(1.0f, 1.0f, 1.0f);
-	
+
 	atom3DShader.Activate();
 	// Add the colour and the source vector to the atom 3d shader
 	glUniform3f(glGetUniformLocation(atom3DShader.ID, "lightColour"), lightColour.r, lightColour.g, lightColour.b);
@@ -88,7 +97,7 @@ int main()
 	bondShader.Activate();
 	glUniform3f(glGetUniformLocation(bondShader.ID, "lightColour"), lightColour.r, lightColour.g, lightColour.b);
 	glUniform3f(glGetUniformLocation(bondShader.ID, "lightSource"), 0, 1, 0);
-	glUniform3f(glGetUniformLocation(bondShader.ID, "bondColour"), 0,0,0);
+	glUniform3f(glGetUniformLocation(bondShader.ID, "bondColour"), 0, 0, 0);
 
 	// enable camera depth to work properly
 	glEnable(GL_DEPTH_TEST);
@@ -106,22 +115,29 @@ int main()
 
 	//create the arcball camera object
 	//the Z position has to be <0
-	ArcBallCamera camera3D(800, 800, glm::vec3(0,0, -10));
-	
+	ArcBallCamera camera3D(800, 800, glm::vec3(0, 0, -10));
+
 	globalClass::camera3D = &camera3D;
 
 	Camera2D camera2D(800, 800, glm::vec3(8, 2, 10));
 	globalClass::camera2D = &camera2D;
 
-	glm::vec2 viewportRatio = glm::vec2(0.5f, 1.0f);
+	float screenRatio = 0.5f;
 
 	Viewport visualiser3D(0, 0, 0, 0, false, true);
 	Viewport visualiser2D(0, 0, 0, 0, false, true);
+
+	ImGuiIO io = ImGui::GetIO();
+	//Visualiser2D vis2D(screenRatio, io, atomModel2D, bondModel3D, atom2DShader, bondShader);
+	//Visualiser3D vis3D(screenRatio, io);
 
 	int frameInterval = 1;
 	char settingInp[128] = "Near Plane";
 	float num = 0;
 
+	ChemicalDataCache::Refresh();
+
+	SettingsUI settingsUI;
 	// Read the settings from disk when the program boots up
 	Settings::Refresh();
 
@@ -130,9 +146,9 @@ int main()
 	{
 		//update the size of the frame that is created depending on the size of the window
 		glfwGetFramebufferSize(window, &windowWidth, &windowHeight);
-		
+
 		glfwSwapInterval(frameInterval);
-		frameInterval = 2  ; // 0 : unlimitedFPS, 1 : 60FPS, 2 : 30FPS, 3 : 20FPS, 4 : 15FPS
+		frameInterval = 1; // 0 : unlimitedFPS, 1 : 60FPS, 2 : 30FPS, 3 : 20FPS, 4 : 15FPS
 		// if the window is minimised/unfocussed. don't draw anything
 		if (windowWidth == 0 || windowHeight == 0 || !glfwGetWindowAttrib(window, GLFW_FOCUSED))
 		{
@@ -143,59 +159,60 @@ int main()
 			continue;
 		}
 
-		//if the glfw window was just resized, update the window size ratio
+		//! if the glfw window was just resized, don't update the window size ratio
 		if (prevWindowSize.x == windowWidth && prevWindowSize.y == windowHeight)
 		{
-			viewportRatio = visualiser3D.calculateRelativeSize(windowWidth, windowHeight);
+			screenRatio = visualiser3D.calculateRelativeSize(windowWidth, windowHeight).x;
 		}
-
-		visualiser3D.setPos(0, 0);
-		visualiser3D.setSize(viewportRatio, glm::vec2(windowWidth, windowHeight));
-		visualiser3D.Update(GUI.renderOptions.bgColour);
 
 		GUI.CreateElements();
 
-		//atomModel.Draw(atom3DShader, camera3D, camera3D.position);
+		visualiser3D.setPos(0, 0);
+		visualiser3D.setSize(glm::vec2(screenRatio, 1.0f), glm::vec2(windowWidth, windowHeight));
+		float* bgcolour = GUI.renderOptions.bgColour;
+		visualiser3D.Update(glm::vec3(bgcolour[0], bgcolour[1], bgcolour[2]));
+
 		visualiser3D.AttachWindow("3D Visualiser");
 		
-		ImGui::Begin("Settings Class Testing");
-
-		if (ImGui::Button("Read File"))
+		if (ImGui::Begin("Settings Class Testing"))
 		{
-			Settings::Refresh();
+
+
+			if (ImGui::Button("Read File"))
+			{
+				Settings::Refresh();
+			}
+
+			if (ImGui::Button("Save to File"))
+			{
+				Settings::Save();
+			}
+
+			ImGui::InputText("Setting", settingInp, IM_ARRAYSIZE(settingInp));
+
+			if (ImGui::Button("Find"))
+			{
+				double startTime = glfwGetTime();
+				Setting setting = Settings::GetAll(std::string(settingInp));
+
+				std::cout << "Duration: " << (glfwGetTime() - startTime) * 1000.0 << "ms\n";
+				std::cout << "Type: " << setting.type << "\nName: " << setting.name << "\n";
+			}
+			ImGui::SliderFloat("Number", &num, 0.001f, 100.0f);
+			if (ImGui::Button("Set"))
+			{
+				std::cout << Settings::Set(std::string(settingInp), num) << "\n";
+			}
+
+			if (ImGui::Button("List Children"))
+			{
+				auto vec = Settings::getChildren("/" + std::string(settingInp));
+				std::cout << "Found " << vec.size() << " Children Objects\n";
+			}
 		}
-
-		if (ImGui::Button("Save to File"))
-		{
-			Settings::Save();
-		}
-
-		ImGui::InputText("Setting", settingInp, IM_ARRAYSIZE(settingInp));
-
-		if (ImGui::Button("Find"))
-		{
-			double startTime = glfwGetTime();
-			Setting setting = Settings::GetAll(std::string(settingInp));
-
-			std::cout << "Duration: " << (glfwGetTime() - startTime) * 1000.0 << "ms\n";
-			std::cout << "Type: " << setting.type << "\nName: " << setting.name << "\n";
-		}
-		ImGui::SliderFloat("Number", &num, 0.001f, 100.0f);
-		if (ImGui::Button("Set"))
-		{
-			std::cout << Settings::Set(std::string(settingInp), num) << "\n";
-		}
-
-		if (ImGui::Button("List Children"))
-		{
-			auto vec = Settings::getChildren("/" + std::string(settingInp));
-			std::cout << "Found " << vec.size() << " Children Objects\n";
-		}
-
 		ImGui::End();
-
-
-
+		
+		settingsUI.Draw();
 
 
 		//create a temparary UI to tweak atom size and clear of all atoms
@@ -257,9 +274,11 @@ int main()
 		visualiser2D.AttachWindow("2D Visualiser");
 		
 		// Set the size + position of the viewport based on the other 
-		visualiser2D.setPos(visualiser3D.getPos().x + visualiser3D.getSize().x, 0);
-		visualiser2D.setSize(windowWidth - (visualiser3D.getPos().x + visualiser3D.getSize().x), windowHeight);
-		visualiser2D.Update(GUI.renderOptions.bgColour2);
+		
+		visualiser2D.setPos(static_cast<int>(visualiser3D.getPos().x + visualiser3D.getSize().x), 0);
+		visualiser2D.setSize(static_cast<int>(windowWidth - (visualiser3D.getPos().x + visualiser3D.getSize().x)), windowHeight);
+		float* bgcolour2 = GUI.renderOptions.bgColour2;
+		visualiser2D.Update(glm::vec3(bgcolour2[0], bgcolour2[1], bgcolour2[2]));
 
 		// If the viewport is being hovered on
 		if (visualiser2D.getHovered())
@@ -281,6 +300,8 @@ int main()
 		camera2D.UpdateMatrix(GUI.renderOptions.nearPlane, GUI.renderOptions.farPlane);
 
 		DrawChemical::Draw(globalClass::chemicals, atomModel2D, bondModel3D, camera2D, atom2DShader, bondShader, Chemical::_2D);
+		/*vis2D.Update(windowWidth, windowHeight);
+		vis2D.Draw(globalClass::chemicals);*/
 
 		//Draw the UI to the screen (ontop of everything)
 		GUI.Draw();

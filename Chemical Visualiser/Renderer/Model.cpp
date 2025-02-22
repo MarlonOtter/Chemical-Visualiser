@@ -36,7 +36,7 @@ void Model::LoadModel()
 
 
 	// loop through each mesh
-	for (int i = 0; i < scene->mNumMeshes; i++)
+	for (int i = 0; i < static_cast<int>(scene->mNumMeshes); i++)
 	{
 		// Proccess each mesh
 		aiMesh* mesh = scene->mMeshes[i];
@@ -52,7 +52,7 @@ void Model::ProccessMesh(aiMesh* mesh)
 	std::vector<GLuint> indices;
 
 	// Loop through each vertex
-	for (int i = 0; i < mesh->mNumVertices;i++)
+	for (int i = 0; i < static_cast<int>(mesh->mNumVertices);i++)
 	{
 		// get the position, normal and uv coordinates
 		aiVector3D pos = mesh->mVertices[i];
@@ -72,7 +72,7 @@ void Model::ProccessMesh(aiMesh* mesh)
 	}
 
 	//loop through each face
-	for (int i = 0; i < mesh->mNumFaces; i++)
+	for (int i = 0; i < static_cast<int>(mesh->mNumFaces); i++)
 	{
 		aiFace& face = mesh->mFaces[i];
 		if (face.mNumIndices == 3)
@@ -123,7 +123,7 @@ void Model::DrawInstanced
 	std::vector<glm::mat4> matrices;
 	//get the maximum number of items
 	//incase that there are more of one than the other
-	int maxSize = std::max(scale.size(), std::max(pos.size(), rot.size()));
+	int maxSize = static_cast<int>(std::max(scale.size(), std::max(pos.size(), rot.size())));
 	for (int i = 0; i < maxSize; i++)
 	{
 		//calculate matrix
@@ -153,7 +153,7 @@ void Model::DrawInstanced
 {
 	for (int i = 0; i < meshes.size(); i++)
 	{
-		meshes[i].DrawInstanced(shader, camera, matrices.size(), matrices);
+		meshes[i].DrawInstanced(shader, camera, static_cast<int>(matrices.size()), matrices);
 	}
 }
 

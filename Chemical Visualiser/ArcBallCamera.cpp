@@ -174,10 +174,10 @@ void ArcBallCamera::calculateRotation(glm::vec2 startVec, glm::vec2 crntVec)
 
 	// Theta is the angle now
 	// Multiply angle by speed to increase sensitvity of inputs
-	float theta = (acos(cosValue) * 180 / PI) * speed; 
+	float theta = static_cast<float>(acos(cosValue) * 180 / PI) * speed; 
 
 	//currentQuaternion.cosine is cos of half the angle
-	currentQuaternion.cosine = cos((theta / 2) * PI / 180); 
+	currentQuaternion.cosine = static_cast<float>(cos((theta / 2) * PI / 180)); 
 
 	currentQuaternion.axis *= sin((theta / 2) * PI / 180);
 
@@ -190,7 +190,7 @@ void ArcBallCamera::calculateRotation(glm::vec2 startVec, glm::vec2 crntVec)
 	rotationalAxis_2 = (lastQuaternion.axis * currentQuaternion.cosine) + (lastQuaternion.cosine * currentQuaternion.axis) + temporaryVector;
 
 	// Calculate the angle that will be rotated by
-	angle = (acos(cosValue_2) * 180 / PI) * 2;
+	angle = static_cast<float>((acos(cosValue_2) * 180 / PI) * 2);
 
 	// Calculate the axis that will be rotated around
 	rotationalAxis = rotationalAxis_2 / static_cast<float>(sin((angle / 2) * PI / 180));

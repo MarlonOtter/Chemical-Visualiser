@@ -98,6 +98,7 @@ int Settings::Set(std::string setting, float value)
 
 	settings.at(ptr)["Value"] = value;
 	changed = true;
+	return 0;
 }
 
 int Settings::Set(std::string setting, bool value)
@@ -112,7 +113,7 @@ int Settings::Set(std::string setting, bool value)
 	changed = true;
 }
 
-int Settings::Set(std::string setting, Colour value)
+int Settings::Set(std::string setting, glm::vec3 value)
 {
 	json::json_pointer ptr = Find(setting);
 	if (ptr == json::json_pointer("")) return -1;
@@ -120,7 +121,8 @@ int Settings::Set(std::string setting, Colour value)
 	json& location = settings.at(ptr);
 	if (location["Default"].type() != json::value_t::array) return -1;
 
-	settings.at(ptr)["Value"] = *value.data;
+	float col[3] = { value.x, value.y, value.z };
+	settings.at(ptr)["Value"] = col;
 	changed = true;
 }
 
@@ -264,7 +266,7 @@ json::json_pointer Settings::Find(std::string setting)
 			if (!branch[j].contains("ID")) continue;
 
 			// If the correct setting is found, return sits pointer
-			if (branch[j]["ID"].get<std::string>() == etting) return json::json_pointer(branches[i] + "/" + std::to_string(j));
+			if (branch[j]["ID"].get<std::string>() == setting) return json::json_pointer(branches[i] + "/" + std::to_string(j));
 			
 			// Otherwise move onto the next one
 		}
@@ -388,8 +390,8 @@ Setting Settings::CreateSetting(json settingData)
 			arr1[i] = settingData["Value"][i];
 			arr2[i] = settingData["Default"][i];
 		}
-		value.data = Colour{ arr1 };
-		defaultValue.data = Colour{ arr2 };
+		value.data = glm::vec3(arr1[0],arr1[1], arr1[2]);
+		defaultValue.data = glm::vec3(arr2[0], arr2[1], arr2[2]);
 		break;
 
 	case json::value_t::string:

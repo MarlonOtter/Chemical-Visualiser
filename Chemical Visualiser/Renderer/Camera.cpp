@@ -29,15 +29,15 @@ void Camera::UpdateSize(int width, int height)
 void Camera::UpdateSize(glm::vec4 viewport)
 {
 	Camera::viewportPos = glm::vec2(viewport.x, viewport.y);
-	width = viewport.z;
-	height = viewport.w;
+	width = static_cast<int>(viewport.z);
+	height = static_cast<int>(viewport.w);
 }
 
 void Camera::UpdateSize(glm::vec2 pos, glm::vec2 size)
 {
 	viewportPos = pos;
-	width = size.x;
-	height = size.y;
+	width = static_cast<int>(size.x);
+	height = static_cast<int>(size.y);
 }
 
 void Camera::UpdateMatrix(float FOVdeg, float nearPlane, float farPlane, int view)
@@ -175,6 +175,7 @@ glm::mat4 Camera::calculateProjectionMatrix(float FOV, float near, float far, in
 
 	//if the view is 1 : calculate the orthographic projection matrix
 	if (view == 1) return glm::ortho(-0.5f * (float)width * orthoScale, (float)width * orthoScale * 0.5f, -0.5f * (float)height * orthoScale, (float)height * orthoScale * 0.5f, float(near), float(far));
+	return glm::mat4(1.0f);
 }
 
 glm::mat4 Camera::calculateProjectionMatrix(float near, float far, int view)

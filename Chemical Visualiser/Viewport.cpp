@@ -1,5 +1,9 @@
 #include "Viewport.h"
 #include <iostream>
+Viewport::Viewport()
+{
+	return;
+}
 
 Viewport::Viewport(int x, int y, int width, int height, bool lockWidth, bool lockHeight)
 {
@@ -20,47 +24,50 @@ Viewport::Viewport(glm::vec2 pos, glm::vec2 size, bool lockWidth, bool lockHeigh
 void Viewport::Update(glm::vec3 colour)
 {
 	//create the viewport
-	glViewport(pos.x, pos.y, size.x, size.y);
+	glViewport(static_cast<float>(pos.x), static_cast<float>(pos.y), static_cast<float>(size.x), static_cast<float>(size.y));
 
 	//set the background colour
 	glClearColor(colour.r, colour.g, colour.b, 1.0f);
 
 	//split the two viewports into seperate render targets
-	glScissor(pos.x, pos.y, size.x, size.y);
+	glScissor(static_cast<float>(pos.x), static_cast<float>(pos.y), static_cast<float>(size.x), static_cast<float>(size.y));
 	glEnable(GL_SCISSOR_TEST);
 
 	//clears the buffer bits
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void Viewport::Update(float colour[3])
-{
-	Update(glm::vec3(colour[0], colour[1], colour[2]));
-}
-
 void Viewport::AttachWindow(std::string name)
 {
+	// Flags that define how the window will be shown to the user
 	ImGuiWindowFlags flags = 0;
 	flags |= ImGuiWindowFlags_NoBackground;
 	flags |= ImGuiWindowFlags_NoBringToFrontOnFocus;
 	flags |= ImGuiWindowFlags_NoMove;
 	flags |= ImGuiWindowFlags_NoTitleBar;
-
+	
+	// Set the window size and position to the same as the viewport
 	ImGui::SetNextWindowPos(ImVec2(pos.x, pos.y));
-	//need to find a way to detect when the user is resizeing a window reliably
 	ImGui::SetNextWindowSize(ImVec2(size.x, size.y));
+	// Create the window
 	ImGui::Begin(name.c_str(), 0, flags);
+
+	// Read if the user is using that window
 	hovered = ImGui::IsWindowHovered();
 	focussed = ImGui::IsWindowFocused();
-
+	
+	// get the window size if it has been resized by the user
 	ImVec2 windowSize = ImGui::GetWindowSize();
-	//if axis is locked. keep the original value
-	setSize(lockWidth ? size.x : windowSize.x, lockHeight ? size.y : windowSize.y);
+	// If axis is locked. keep the original value
+	setSize(static_cast<int>(lockWidth ? size.x : windowSize.x), static_cast<int>(lockHeight ? size.y : windowSize.y));
 
+	// Get the new pos and set the viewport as the same position
 	ImVec2 windowPos = ImGui::GetWindowPos();
-	setPos(windowPos.x, windowPos.y);
+	setPos(static_cast<int>(windowPos.x), static_cast<int>(windowPos.y));
 
+	// Done creating the window
 	ImGui::End();
+	return;
 }
 
 glm::vec2 Viewport::getPos()

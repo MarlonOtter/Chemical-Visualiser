@@ -8,12 +8,26 @@
 
 class Visualiser2D
 {
-	Visualiser2D();
+public:
+	Visualiser2D(float& screenRatio, ImGuiIO& io, Model& atomModel, Model& bondModel, Shader& atomShader, Shader& bondShader);
 
 	Camera2D* camera;
 	Viewport* viewport;
 
-	void Update();
+	void Update(float windowWidth, float windowHeight);
 
 	void Draw(std::vector<Chemical> chemicals);
+
+private:
+	Model* atomModel;
+	Model* bondModel;
+	Shader* atomShader;
+	Shader* bondShader;
+
+	ImGuiIO* io;
+	glm::vec3 bgColour = glm::vec3(0.85, 0.85, 0.85);
+	float* screenRatio;
+
+	float cameraNear;
+	float cameraFar;
 };

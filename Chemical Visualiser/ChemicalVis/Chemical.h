@@ -10,7 +10,7 @@ struct Bond
 {
 	int atomA;
 	int atomB;
-	unsigned int count;
+	int count;
 };
 
 class Chemical 

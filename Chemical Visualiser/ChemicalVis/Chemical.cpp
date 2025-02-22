@@ -42,7 +42,7 @@ void Chemical::ParseAtoms()
 	json atomPosJson = data.at(json::json_pointer(atomPosAddr));
 
 
-	int numberOfAtoms = atomPosJson["aid"].size();
+	int numberOfAtoms = static_cast<int>(atomPosJson["aid"].size());
 	atoms.assign(numberOfAtoms, Atom(0));
 	for (int i = 0; i < numberOfAtoms; i++)
 	{
@@ -80,7 +80,7 @@ void Chemical::AddBonds()
 	//if (!bondsJson.contains("aid1")) return;
 	
 	//loop through each bond and add it to the list
-	int numBonds = bondsJson["aid1"].size();
+	int numBonds = static_cast<int>(bondsJson["aid1"].size());
 	for (int i = 0; i < numBonds; i++)
 	{
 		bool skip = false;
@@ -94,7 +94,7 @@ void Chemical::AddBonds()
 		//if the bond has already been added to the list skip
 		if (skip) continue;
 
-		bonds.push_back(Bond{ atomA, atomB, static_cast<unsigned int>(order) });
+		bonds.push_back(Bond{ atomA, atomB, static_cast<int>(order) });
 	}
 }
 

@@ -78,13 +78,13 @@ void DebugLine::Draw(Shader& shader, Camera& camera)
 	if (hasIndices())
 	{
 		//draw elements makes it use the index buffer instead of just the vertices
-		glDrawElements(GL_LINES, indices.size(), GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_LINES, static_cast<int>(indices.size()), GL_UNSIGNED_INT, 0);
 	}
 	else
 	{
 		// this only uses the vertices so extra effort is not needed to define the indices
 		// however it will just draw them one after anouther
-		glDrawArrays(GL_LINE_STRIP, 0, points.size());
+		glDrawArrays(GL_LINE_STRIP, 0, static_cast<int>(points.size()));
 	}
 	
 }
