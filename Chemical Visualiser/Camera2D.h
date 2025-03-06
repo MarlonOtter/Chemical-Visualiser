@@ -4,10 +4,11 @@
 #include"Renderer/Camera.h"
 
 
-class Camera2D : public Camera
+class Camera2D
 {
 public: 
 	float scrollScale = 0.1f;
+	Camera camera;
 
 	Camera2D(int width, int height, glm::vec3 position);
 

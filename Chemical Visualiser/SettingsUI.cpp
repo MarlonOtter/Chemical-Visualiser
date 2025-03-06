@@ -2,15 +2,29 @@
 
 SettingsUI::SettingsUI()
 {
-	Refresh();
+	
+}
+
+void SettingsUI::Init()
+{
+	for (int i = 0; i < NUM_ELEMENTS; i++)
+	{
+		elementColours[i] = elementData[i].data();
+	}
+	bondPointer = bondColour.data();
 }
 
 void SettingsUI::Refresh()
 {
-	for (int i = 0; i < 118; i++)
+	// This is really inefficient
+	// it goes over the same elements like 117 times, unnecessarily
+	for (int i = 0; i < NUM_ELEMENTS; i++)
 	{
-		float base[3] = { 0, 1, 0 };
-		elementColours.push_back(base);
+		glm::vec3 elementColour = std::get<glm::vec3>(Settings::GetValue("element_" + std::to_string(i + 1) + "_colour").data);
+		for (int j = 0; j < 3; j++)
+		{
+			elementData[i][j] = elementColour[j];
+		}
 	}
 }
 
@@ -42,7 +56,9 @@ void SettingsUI::Draw()
 				drawElementList();
 				ImGui::TreePop();
 			}
-			ImGui::ColorEdit3("Bonds", bondColour);
+			
+			ImGui::ColorEdit3("Bonds", bondPointer);
+
 			ImGui::TreePop();
 		}
 
@@ -66,15 +82,40 @@ void SettingsUI::Draw()
 
 	
 
-
+	if (ImGui::Button("Save"))
+	{
+		Save();
+	}
 
 	ImGui::End();
 }
+
+void SettingsUI::Save()
+{
+	for (int i = 0; i < NUM_ELEMENTS; i++)
+	{
+		glm::vec3 val = toVec3(elementColours[i]);
+		Settings::Set("element_" + std::to_string(i + 1) + "_colour", val);
+	}
+	Settings::Save();
+}
+
 
 void SettingsUI::drawElementList()
 {
 	for (int i = 0; i < elementColours.size(); i++)
 	{
-		ImGui::ColorEdit3(std::to_string(i).c_str(), elementColours[i]);
+		ImGui::ColorEdit3(std::to_string(i + 1).c_str(), elementColours[i]);
 	}
+}
+
+glm::vec3 SettingsUI::toVec3(float* col)
+{
+	glm::vec3 vec = 
+	{
+		col[0],
+		col[1],
+		col[2]
+	};
+	return vec;
 }

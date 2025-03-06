@@ -28,6 +28,6 @@ private:
 	glm::vec3 bgColour = glm::vec3(0.85, 0.85, 0.85);
 	float* screenRatio;
 
-	float cameraNear;
-	float cameraFar;
+	float cameraNear = 0;
+	float cameraFar = 0;
 };

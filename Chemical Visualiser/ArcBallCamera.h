@@ -10,14 +10,16 @@ struct Quaternion {
 	glm::vec3 axis; //unit vector scaled by the sine of half the angle
 };
 
-class ArcBallCamera : public Camera
+class ArcBallCamera
 {
 public:
+	Camera camera;
+
 	//speed that the camera moves at
 	float speed = 3.0f;
 
 	// the position that the camera moves about
-	glm::vec3 cameraCentre;
+	glm::vec3 cameraCentre = { 0,0,0 };
 
 	// Define the Camera
 	ArcBallCamera(int width, int height, glm::vec3 position);
@@ -59,11 +61,11 @@ private:
 	float radius = 1.0f;
 
 	// Input vectors that get changed in their respective functions
-	glm::vec2 mouseVec;
-	glm::vec2 keyVec;
+	glm::vec2 mouseVec = { 0,0 };;
+	glm::vec2 keyVec = { 0,0 };;
 
 	// The view matrix so that the function getPos works
-	glm::mat4 viewMat;
+	glm::mat4 viewMat = glm::mat4(1.0f);
 	
 	// data needed for the arcball camera movement
 	Quaternion lastQuaternion = { 0.0f, glm::vec3(1, 0, 0) };

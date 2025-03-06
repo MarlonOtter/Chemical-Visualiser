@@ -14,6 +14,7 @@ class Model
 	public:
 		std::vector<Mesh> meshes;
 
+		Model();
 		Model(const char* path, std::vector<Texture> textures = std::vector<Texture>());
 
 		void Draw
@@ -42,9 +43,11 @@ class Model
 		);
 		
 		void Delete();
+
+		static std::vector<glm::mat4> convertToMatrices(std::vector<glm::vec3> pos, std::vector<glm::quat> rot, std::vector<glm::vec3> scale);
 	private:
 
-		const char* dir;
+		const char* dir = "";
 		std::vector<Texture> textures;
 		
 		

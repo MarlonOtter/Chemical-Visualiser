@@ -14,9 +14,20 @@ std::string get_file_contents(const char* filename)
 		in.close();
 		return(contents);
 	}
+	//throw an error if the file cannot be opened
+	std::cout << "Error: Could not open file: " << filename << std::endl;
 	throw(errno);
 }
 
+Shader::Shader()
+{
+
+}
+
+Shader::~Shader()
+{
+	//Delete();
+}
 
 Shader::Shader(const char* vertexFile, const char* fragmentFile)
 {

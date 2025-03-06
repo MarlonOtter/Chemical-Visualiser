@@ -51,7 +51,7 @@ void Visualiser2D::Update(float windowWidth, float windowHeight)
 		camera->KeyInputs(*io);
 	}
 	//update the size of the window in the camera class
-	camera->UpdateSize(viewport.getPos(), viewport.getSize());
+	camera->camera.UpdateSize(viewport.getPos(), viewport.getSize());
 
 	//update any matrices for the camera
 	camera->UpdateMatrix(cameraNear, cameraFar);
@@ -59,5 +59,5 @@ void Visualiser2D::Update(float windowWidth, float windowHeight)
 
 void Visualiser2D::Draw(std::vector<Chemical> chemicals)
 {
-	DrawChemical::Draw(globalClass::chemicals, *atomModel, *bondModel, *camera, *atomShader, *bondShader, Chemical::_2D);
+	DrawChemical::Draw(globalClass::chemicals, *atomModel, *bondModel, camera->camera, *atomShader, *bondShader, Chemical::_2D);
 }

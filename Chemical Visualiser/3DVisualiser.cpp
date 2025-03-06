@@ -47,7 +47,7 @@ void Visualiser3D::Update(float windowWidth, float windowHeight)
 	camera->ApplyInputs();
 
 	//update the size of the window in the camera class
-	camera->UpdateSize(viewport->getPos(), viewport->getSize());
+	camera->camera.UpdateSize(viewport->getPos(), viewport->getSize());
 
 	//update any matrices for the camera
 	camera->UpdateMatrix(cameraFOV, cameraNear, cameraFar);

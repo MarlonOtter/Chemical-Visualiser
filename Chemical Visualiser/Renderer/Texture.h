@@ -14,8 +14,9 @@ public:
 	GLuint unit;
 	//	Image Directory, Texture Type (1D, 2D, etc) ????	(RGB, RGBA, etc), ????????
 	Texture(const char* image, const char* texType, GLenum slot);
+	~Texture();
 
-	void texUnit(Shader shader, const char* uniform, GLuint unit);
+	void texUnif(Shader shader, const char* uniform, GLuint unit);
 	void Bind();
 	void Unbind();
 	void Delete();

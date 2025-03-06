@@ -1,0 +1,1005 @@
+{
+  "Accessibility": [
+    {
+      "Default": false,
+      "ID": "display_element_symbol",
+      "Name": "Display Element's symbol",
+      "Type": "Check Box",
+      "Value": false
+    }
+  ],
+  "Camera Settings": [
+    {
+      "Default": 60.0,
+      "ID": "camera_fov",
+      "Max": 180.0,
+      "Min": 0.0001,
+      "Name": "FOV",
+      "Type": "Slider",
+      "Value": 59.83599853515625
+    },
+    {
+      "Default": 0.1,
+      "ID": "camera_near",
+      "Max": 1000.0,
+      "Min": 0.0001,
+      "Name": "Near Plane",
+      "Type": "Slider",
+      "Value": 0.0010000000474974513
+    },
+    {
+      "Default": 300.0,
+      "ID": "camera_far",
+      "Max": 5000.0,
+      "Min": 0.0001,
+      "Name": "Far Plane",
+      "Type": "Slider",
+      "Value": 300.0
+    }
+  ],
+  "Colours": {
+    "Bonds": [
+      {
+        "Default": [
+          0,
+          0,
+          0
+        ],
+        "ID": "bond_colour",
+        "Name": "Bond Colour",
+        "Type": "Colour",
+        "Value": [
+          0,
+          0,
+          0
+        ]
+      }
+    ],
+    "Elements": [
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_1_colour",
+        "Name": " H : Hydrogen ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_2_colour",
+        "Name": " He : Helium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_3_colour",
+        "Name": " Li : Lithium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_4_colour",
+        "Name": " Be : Beryllium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_5_colour",
+        "Name": " B : Boron ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_6_colour",
+        "Name": " C : Carbon ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_7_colour",
+        "Name": " N : Nitrogen ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_8_colour",
+        "Name": " O : Oxygen ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_9_colour",
+        "Name": " F : Fluorine ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_10_colour",
+        "Name": " Ne : Neon ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_11_colour",
+        "Name": " Na : Sodium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_12_colour",
+        "Name": " Mg : Magnesium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_13_colour",
+        "Name": " Al : Aluminum ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_14_colour",
+        "Name": " Si : Silicon ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_15_colour",
+        "Name": " P : Phosphorus ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_16_colour",
+        "Name": " S : Sulfur ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_17_colour",
+        "Name": " Cl : Chlorine ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_18_colour",
+        "Name": " Ar : Argon ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_19_colour",
+        "Name": " K : Potassium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_20_colour",
+        "Name": " Ca : Calcium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_21_colour",
+        "Name": " Sc : Scandium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_22_colour",
+        "Name": " Ti : Titanium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_23_colour",
+        "Name": " V : Vanadium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_24_colour",
+        "Name": " Cr : Chromium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_25_colour",
+        "Name": " Mn : Manganese ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_26_colour",
+        "Name": " Fe : Iron ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_27_colour",
+        "Name": " Co : Cobalt ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_28_colour",
+        "Name": " Ni : Nickel ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_29_colour",
+        "Name": " Cu : Copper ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_30_colour",
+        "Name": " Zn : Zinc ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_31_colour",
+        "Name": " Ga : Gallium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_32_colour",
+        "Name": " Ge : Germanium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_33_colour",
+        "Name": " As : Arsenic ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_34_colour",
+        "Name": " Se : Selenium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_35_colour",
+        "Name": " Br : Bromine ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_36_colour",
+        "Name": " Kr : Krypton ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_37_colour",
+        "Name": " Rb : Rubidium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_38_colour",
+        "Name": " Sr : Strontium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_39_colour",
+        "Name": " Y : Yttrium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_40_colour",
+        "Name": " Zr : Zirconium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_41_colour",
+        "Name": " Nb : Niobium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_42_colour",
+        "Name": " Mo : Molybdenum ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_43_colour",
+        "Name": " Tc : Technetium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_44_colour",
+        "Name": " Ru : Ruthenium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_45_colour",
+        "Name": " Rh : Rhodium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_46_colour",
+        "Name": " Pd : Palladium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_47_colour",
+        "Name": " Ag : Silver ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_48_colour",
+        "Name": " Cd : Cadmium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_49_colour",
+        "Name": " In : Indium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_50_colour",
+        "Name": " Sn : Tin ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_51_colour",
+        "Name": " Sb : Antimony ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_52_colour",
+        "Name": " Te : Tellurium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_53_colour",
+        "Name": " I : Iodine ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_54_colour",
+        "Name": " Xe : Xenon ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_55_colour",
+        "Name": " Cs : Cesium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_56_colour",
+        "Name": " Ba : Barium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_57_colour",
+        "Name": " La : Lanthanum ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_58_colour",
+        "Name": " Ce : Cerium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_59_colour",
+        "Name": " Pr : Praseodymium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_60_colour",
+        "Name": " Nd : Neodymium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_61_colour",
+        "Name": " Pm : Promethium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_62_colour",
+        "Name": " Sm : Samarium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_63_colour",
+        "Name": " Eu : Europium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_64_colour",
+        "Name": " Gd : Gadolinium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_65_colour",
+        "Name": " Tb : Terbium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_66_colour",
+        "Name": " Dy : Dysprosium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_67_colour",
+        "Name": " Ho : Holmium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_68_colour",
+        "Name": " Er : Erbium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_69_colour",
+        "Name": " Tm : Thulium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_70_colour",
+        "Name": " Yb : Ytterbium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_71_colour",
+        "Name": " Lu : Lutetium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_72_colour",
+        "Name": " Hf : Hafnium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_73_colour",
+        "Name": " Ta : Tantalum ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_74_colour",
+        "Name": " W : Tungsten ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_75_colour",
+        "Name": " Re : Rhenium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_76_colour",
+        "Name": " Os : Osmium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_77_colour",
+        "Name": " Ir : Iridium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_78_colour",
+        "Name": " Pt : Platinum ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_79_colour",
+        "Name": " Au : Gold ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_80_colour",
+        "Name": " Hg : Mercury ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_81_colour",
+        "Name": " Tl : Thallium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_82_colour",
+        "Name": " Pb : Lead ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_83_colour",
+        "Name": " Bi : Bismuth ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_84_colour",
+        "Name": " Po : Polonium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_85_colour",
+        "Name": " At : Astatine ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_86_colour",
+        "Name": " Rn : Radon ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_87_colour",
+        "Name": " Fr : Francium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_88_colour",
+        "Name": " Ra : Radium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_89_colour",
+        "Name": " Ac : Actinium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_90_colour",
+        "Name": " Th : Thorium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_91_colour",
+        "Name": " Pa : Protactinium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_92_colour",
+        "Name": " U : Uranium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_93_colour",
+        "Name": " Np : Neptunium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_94_colour",
+        "Name": " Pu : Plutonium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_95_colour",
+        "Name": " Am : Americium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_96_colour",
+        "Name": " Cm : Curium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_97_colour",
+        "Name": " Bk : Berkelium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_98_colour",
+        "Name": " Cf : Californium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_99_colour",
+        "Name": " Es : Einsteinium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_100_colour",
+        "Name": " Fm : Fermium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_101_colour",
+        "Name": " Md : Mendelevium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_102_colour",
+        "Name": " No : Nobelium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_103_colour",
+        "Name": " Lr : Lawrencium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_104_colour",
+        "Name": " Rf : Rutherfordium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_105_colour",
+        "Name": " Db : Dubnium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_106_colour",
+        "Name": " Sg : Seaborgium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_107_colour",
+        "Name": " Bh : Bohrium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_108_colour",
+        "Name": " Hs : Hassium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_109_colour",
+        "Name": " Mt : Meitnerium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_110_colour",
+        "Name": " Ds : Darmstadtium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_111_colour",
+        "Name": " Rg : Roentgenium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_112_colour",
+        "Name": " Cn : Copernicium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_113_colour",
+        "Name": " Nh : Nihonium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_114_colour",
+        "Name": " Fl : Flerovium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_115_colour",
+        "Name": " Mc : Moscovium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_116_colour",
+        "Name": " Lv : Livermorium ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_117_colour",
+        "Name": " Ts : Tennessine ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      },
+      {
+        "Default": [ 0.0, 0.0, 0.0 ],
+        "ID": "element_118_colour",
+        "Name": " Og : Oganesson ",
+        "Type": "Colour",
+        "Value": [ 0.0, 0.0, 0.0 ]
+      }
+    ]
+
+  },
+  "Controls": {
+    "Keyboard": [
+      {
+        "Default": "ARROW_UP",
+        "ID": "control_up",
+        "Name": "Up",
+        "Type": "Key",
+        "Value": "ARROW_UP"
+      }
+    ],
+    "Mouse": [
+      {
+        "Default": 100.0,
+        "ID": "mouse_sens",
+        "Max": 5000.0,
+        "Min": 0.0001,
+        "Name": "Sensitivity",
+        "Type": "Slider",
+        "Value": 100.0
+      }
+    ]
+  },
+  "UI Settings": [
+    {
+      "Default": false,
+      "ID": "dark_mode",
+      "Name": "Dark Mode",
+      "Type": "Check Box",
+      "Value": false
+    },
+    {
+      "Default": 1.0,
+      "ID": "ui_scale",
+      "Max": 10.0,
+      "Min": 0.01,
+      "Name": "Scale",
+      "Type": "Slider",
+      "Value": 1.0
+    }
+  ],
+  "Visualiser Settings": [
+    {
+      "Default": [
+        0.15,
+        0.15,
+        0.15
+      ],
+      "ID": "3D_background_colour",
+      "Name": "Background Colour for 3D visualiser",
+      "Type": "Colour",
+      "Value": [
+        0.15,
+        0.15,
+        0.15
+      ]
+    },
+    {
+      "Default": [
+        0.85,
+        0.85,
+        0.85
+      ],
+      "ID": "2D_background_colour",
+      "Name": "Background Colour for 2D visualiser",
+      "Type": "Colour",
+      "Value": [
+        0.85,
+        0.85,
+        0.85
+      ]
+    },
+    {
+      "Default": 1.0,
+      "ID": "atom_radius",
+      "Max": 5000.0,
+      "Min": 0.0001,
+      "Name": "Atom Size",
+      "Type": "Slider",
+      "Value": 1.0
+    },
+    {
+      "Default": 300.0,
+      "ID": "bond_radius",
+      "Max": 5000.0,
+      "Min": 0.0001,
+      "Name": "Bond Width",
+      "Type": "Slider",
+      "Value": 300.0
+    },
+    {
+      "Default": 300.0,
+      "ID": "bond_length",
+      "Max": 5000.0,
+      "Min": 0.0001,
+      "Name": "Bond Length Multiplier",
+      "Type": "Slider",
+      "Value": 300.0
+    },
+    {
+      "Default": 300.0,
+      "ID": "bond_distance",
+      "Max": 5000.0,
+      "Min": 0.0001,
+      "Name": "Bond Seperation Distance",
+      "Type": "Slider",
+      "Value": 300.0
+    },
+    {
+      "Default": 300.0,
+      "ID": "chemical_distance",
+      "Max": 5000.0,
+      "Min": 0.0001,
+      "Name": "Chemical Seperation Distance",
+      "Type": "Slider",
+      "Value": 300.0
+    }
+  ]
+}

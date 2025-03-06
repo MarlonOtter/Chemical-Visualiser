@@ -12,37 +12,45 @@
 #include "PubchemAccess.h"
 #include "ChemicalInputHandling.h"
 
+static int InputTextCallback(ImGuiInputTextCallbackData* data);
 
 class ChemicalFetchWindow
 {
 public:
-	ImGuiIO* io;
+	ImGuiIO* io = nullptr;
 
 	bool gotChemical = false;
 
 	void Display();
 
+	void setBuff(char* buf, int size);
 private:
 	// is true only on the first frame
 	bool init = true;
 
 	//the chemical data as a string
-	std::string chemicalData;
+	chemicalData chemicalData;
 	
 	int Chemcount = 1;
 
 	// is the chemical input or popup selected
-	bool chemicalInputIsActive;
-	bool autoCompleteActive;
+	bool chemicalInputIsActive = false;
+	bool autoCompleteActive = false;
+	bool inputFocus = false;
 
 	// string that displays error to user
 	std::string inputError = "";
 
 	// stores the input text
-	char inp[128];
+	char inpBuf[128] = "";
+	std::string inpValue = "";
+
+	bool queueTab = false;
 
 	// autocomplete Stuff
-	std::string autoCompleteOptions;
+	std::string autoCompleteOptions = "";
+	std::vector<std::string> AutoCompleteOptionArr = { };
+	int selectedAutoCompleteOption = -1;
 
 	// combo for selecting input type
 	const char* inputTypes[3] = { "Name", "CID", "SMILES" };
@@ -58,4 +66,6 @@ private:
 
 	// Ran when user selects name as method of input
 	void NameInput(ImVec2& chemicalInputPos);	
+	void CIDInput();
+	void SMILESInput();
 };

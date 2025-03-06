@@ -82,6 +82,12 @@
     <Filter Include="Source Files\ChemVis\Settings">
       <UniqueIdentifier>{d7d0df48-f01b-4c60-b89f-cc5c192c4820}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\Shaders\Startup">
+      <UniqueIdentifier>{e5c589b6-66b6-4ed6-81cc-e3109f8d985a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\ChemicalData">
+      <UniqueIdentifier>{dbcb6742-9487-4eb6-ba75-4291467683d7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Renderer\VBO.cpp">
@@ -201,6 +207,9 @@
     <ClCompile Include="2DVisualiser.cpp">
       <Filter>Source Files\MultiViewport</Filter>
     </ClCompile>
+    <ClCompile Include="StartupScreen.cpp">
+      <Filter>Source Files\ChemVis</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\axisLines.frag">
@@ -239,11 +248,20 @@
     <None Include="Shaders\atom2D.frag">
       <Filter>Resource Files\Shaders\Atom</Filter>
     </None>
-    <None Include="SettingsDefault.json">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="Settings.json">
       <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Shaders\Startup.frag">
+      <Filter>Resource Files\Shaders\Startup</Filter>
+    </None>
+    <None Include="Shaders\Startup.vert">
+      <Filter>Resource Files\Shaders\Startup</Filter>
+    </None>
+    <None Include="ChemicalData\65157.json">
+      <Filter>Resource Files\ChemicalData</Filter>
+    </None>
+    <None Include="ChemicalData\65157_conformers.json">
+      <Filter>Resource Files\ChemicalData</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -336,6 +354,9 @@
     </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StartupScreen.h">
+      <Filter>Header Files\ChemVis</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

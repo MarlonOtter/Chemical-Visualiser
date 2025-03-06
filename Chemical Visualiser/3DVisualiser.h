@@ -27,5 +27,5 @@ private:
 	ImGuiIO* io;
 	float* screenRatio;
 
-	glm::vec3 bgColour;
+	glm::vec3 bgColour = glm::vec3(0,0,0);
 };

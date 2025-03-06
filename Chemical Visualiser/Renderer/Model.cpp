@@ -1,6 +1,9 @@
 #include "Model.h"
 
+Model::Model()
+{
 
+}
 
 Model::Model(const char* path, std::vector<Texture> textures)
 {
@@ -120,25 +123,8 @@ void Model::DrawInstanced
 	std::vector<glm::vec3> scale
 )
 {
-	std::vector<glm::mat4> matrices;
-	//get the maximum number of items
-	//incase that there are more of one than the other
-	int maxSize = static_cast<int>(std::max(scale.size(), std::max(pos.size(), rot.size())));
-	for (int i = 0; i < maxSize; i++)
-	{
-		//calculate matrix
-		glm::mat4 trans = glm::mat4(1.0f);
-		glm::mat4 rotat = glm::mat4(1.0f);
-		glm::mat4 scaling = glm::mat4(1.0f);
-
-		//apply transformations to the matrix if able to
-		if (i < pos.size())   trans = glm::translate(trans, pos[i]);
-		if (i < rot.size())   rotat = glm::mat4_cast(rot[i]);
-		if (i < scale.size()) scaling = glm::scale(scaling, scale[i]);
-
-		//add matrix to list
-		matrices.push_back(trans * rotat * scaling);
-	}
+	//convert the vectors to matrices
+	std::vector<glm::mat4> matrices = convertToMatrices(pos, rot, scale);
 
 	//draw the instanced meshes
 	DrawInstanced(shader, camera, matrices);
@@ -168,3 +154,28 @@ void Model::Delete()
 	meshes.clear();
 }
 
+
+
+std::vector<glm::mat4> Model::convertToMatrices(std::vector<glm::vec3> pos, std::vector<glm::quat> rot, std::vector<glm::vec3> scale)
+{
+	std::vector<glm::mat4> matrices;
+	//get the maximum number of items
+	//incase that there are more of one than the other
+	int maxSize = static_cast<int>(std::max(scale.size(), std::max(pos.size(), rot.size())));
+	for (int i = 0; i < maxSize; i++)
+	{
+		//calculate matrix
+		glm::mat4 trans = glm::mat4(1.0f);
+		glm::mat4 rotat = glm::mat4(1.0f);
+		glm::mat4 scaling = glm::mat4(1.0f);
+
+		//apply transformations to the matrix if able to
+		if (i < pos.size())   trans = glm::translate(trans, pos[i]);
+		if (i < rot.size())   rotat = glm::mat4_cast(rot[i]);
+		if (i < scale.size()) scaling = glm::scale(scaling, scale[i]);
+
+		//add matrix to list
+		matrices.push_back(trans * rotat * scaling);
+	}
+	return matrices;
+}

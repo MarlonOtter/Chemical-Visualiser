@@ -7,20 +7,70 @@ bool CIH::autoCompleteQueue = true;
 int CIH::ValidateData(std::string& data)
 {
 	if (data.size() == 0) return -1;
-	nlohmann::json json = nlohmann::json::parse(data);
-
-	if (json.begin().key() == "Fault")
+	
+	try
 	{
+		nlohmann::json json = nlohmann::json::parse(data);
+		if (json.begin().key() == "Fault")
+		{
+			data = "";
+			return -1;
+		}
+	}
+	catch (const std::exception& e)
+	{
+		std::cout << "ERROR - exception: " << e.what() << "\n";
 		data = "";
 		return -1;
-	}
+	};
+
+	
 	return 0;
 }
 
-std::string CIH::GetData(std::string chemName)
+chemicalData CIH::GetData(std::string chemInp, int type)
 {
-	//get the normal data about the chemical (also contains 2D conformers)
-	return PubChem::name(chemName);
+	if (type == 0)
+	{
+		chemicalData data;
+		data.data = PubChem::name(chemInp);
+		if (data.data.size() < 10) return chemicalData{ };
+		data.conformers = PubChem::conformers_name(chemInp);
+		return data;
+	}
+	else if (type == 1)
+	{
+		chemicalData data;
+		int cid;
+
+		// Validate the the input can be turned to a number
+		
+		try {
+			cid = std::stoi(chemInp);
+		}
+		// If it can't output an error to the terminal
+		// and return nothing
+		catch (const std::exception err)
+		{
+			std::cout << "ERROR : Input is not a number\n";
+			return { "", "" };
+		} 
+		
+		data.data = PubChem::cid(cid);
+		if (data.data.size() < 10) return chemicalData{ };
+		data.conformers = PubChem::conformers_cid(cid);
+		return data;
+	}
+	else if (type == 2)
+	{
+		chemicalData data;
+		data.data = PubChem::structure(chemInp);
+		if (data.data.size() < 10) return chemicalData{ };
+		data.conformers = PubChem::conformers_struc(chemInp);
+		return data;
+	}
+	std::cout << "ERROR: Invalid type: " << type << "\n";
+	return { "", "" };
 }
 
 std::string CIH::GetConformers(std::string chemName)

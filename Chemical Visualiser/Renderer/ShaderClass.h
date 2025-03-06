@@ -5,6 +5,7 @@
 #include <fstream>
 #include <sstream>
 #include <cerrno>
+#include <iostream>
 
 //Graphics libraries
 #include <glad/glad.h>
@@ -17,7 +18,12 @@ class Shader
 	public:
 		//unsigned int
 		//this is the id of the shader that is used by openGL to tell the GPU which code to run
-		GLuint ID;
+		GLuint ID = 0;
+
+		// default constructor
+		Shader();
+		// deconstructor
+		~Shader();
 
 		//constructor that will take in 2 character arrays, one for the vertex shader and one for the fragment shader 
 		Shader(const char* vertFile, const char* fragFile);

@@ -36,10 +36,10 @@ private:
 	bool hovered = false;
 	bool focussed = false;
 
-	bool lockWidth;
-	bool lockHeight;
+	bool lockWidth = false;
+	bool lockHeight = false;
 	
 	glm::vec2 relativeSize = glm::vec2(0.5, 1.0);
-	glm::vec2 pos;
-	glm::vec2 size;
+	glm::vec2 pos = glm::vec2(0,0);
+	glm::vec2 size = glm::vec2(0,0);
 };

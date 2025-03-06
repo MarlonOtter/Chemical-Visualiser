@@ -17,12 +17,17 @@ class VBO
 {
 	public:
 		GLuint ID;
-
+		
+		VBO();
 		VBO(std::vector<Vertex>& vertices);
 		VBO(std::vector<glm::mat4>& mat4s);
 		VBO(std::vector<glm::vec3>& vec3s);
 
+		// Deconstructor
+		~VBO();
+
 		void SetData(std::vector<glm::mat4>& mat4s);
+		void SetData(std::vector<glm::vec3>& vec3s);
 
 		void Bind();
 		void Unbind();

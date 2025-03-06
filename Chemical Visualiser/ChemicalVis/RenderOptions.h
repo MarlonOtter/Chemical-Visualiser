@@ -16,7 +16,7 @@ public:
 	float FOV = 60.0f;
 	float nearPlane = 0.1f;
 	float farPlane = 100.0f;
-	bool wireFrame;
+	bool wireFrame = false;
 	bool grid = false;
 	float bgColour[3] = { 0.15f, 0.15f, 0.15f };
 	float bgColour2[3] = { 0.8f, 0.8f, 0.8f};

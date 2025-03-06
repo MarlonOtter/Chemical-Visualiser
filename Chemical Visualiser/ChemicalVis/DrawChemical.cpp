@@ -1,24 +1,69 @@
 #include "DrawChemical.h"
 
+int DrawChemical::prevChemicalCount = 0;
+std::vector<glm::vec3> DrawChemical::atomColours;
+
+drawData DrawChemical::chemicalDrawData;
 
 void DrawChemical::Draw(std::vector<Chemical> chemicals, Model& atomModel, Model& bondModel, Camera camera, Shader& atomShader, Shader& bondShader, int format)
 {
-	AtomDrawData allAtomDrawData;
-	Transforms allBondTransforms;
-	for (int i = 0; i < chemicals.size(); i++)
+	assert((format == 1 || format == 2) && "Format should be either 2:3D or 1:2D to be valid");
+
+	int newSize = static_cast<int>(chemicals.size());
+	
+	if (chemicals.size() == 0)
 	{
-		glm::vec3 chemOffset = glm::vec3(0.0f, 0.0f, i * globalClass::chemicalSeperationDist);
-		if (format == Chemical::_2D) chemOffset = glm::vec3(i * globalClass::chemicalSeperationDist, 0, 0);
+		chemicalDrawData.clear();
+		return;
+	}
 
-		AtomDrawData atomDrawData = calcAtoms(chemicals[i], i, format, chemOffset);
-		merge(atomDrawData, allAtomDrawData);
+	if (prevChemicalCount != newSize || !chemicalDrawData.done2D || !chemicalDrawData.done3D)
+	{
+		if (prevChemicalCount != newSize)
+		{
+			prevChemicalCount = newSize;
+			chemicalDrawData.clear();
+		}
 
-		Transforms bondTransforms = calcBonds(chemicals[i], i, format, chemOffset);
-		merge(bondTransforms, allBondTransforms);
+		if (format == 1)
+		{
+			chemicalDrawData.done2D = true;
+		}
+		else if (format == 2)
+		{
+			chemicalDrawData.done3D = true;
+		}
+
+		//std::cout << "New Data\n";
+
+		Transforms atomTransforms;
+		Transforms bondTransforms;
+
+		atomColours.clear();
+
+		for (int i = 0; i < chemicals.size(); i++)
+		{
+			glm::vec3 chemOffset = glm::vec3(0.0f, 0.0f, i * globalClass::chemicalSeperationDist);
+			if (format == Chemical::_2D) chemOffset = glm::vec3(i * globalClass::chemicalSeperationDist, 0, 0);
+
+			AtomDrawData nAtomDrawData = calcAtoms(chemicals[i], i, format, chemOffset);
+			merge(nAtomDrawData.transforms, atomTransforms);
+			merge(nAtomDrawData.colours, atomColours);
+
+			Transforms nBondTransforms = calcBonds(chemicals[i], i, format, chemOffset);
+			merge(nBondTransforms, bondTransforms);
+		}
+		std::vector<glm::mat4> atomMat4s = Model::convertToMatrices(atomTransforms.pos, atomTransforms.rotat, atomTransforms.scale);
+		std::vector<glm::mat4> bondMat4s = Model::convertToMatrices(bondTransforms.pos, bondTransforms.rotat, bondTransforms.scale);
+
+		chemicalDrawData[2 * (format - 1)] = atomMat4s;
+		chemicalDrawData[2 * (format - 1) + 1] = bondMat4s;
+
 	}
 	//add the colours
 	VAO& atomVAO = atomModel.meshes[0].VAO;
-	VBO atomVBO(allAtomDrawData.colours);
+	VBO atomVBO(atomColours);
+
 	atomVAO.Bind();
 	atomVBO.Bind();
 	//does this need  to be called every frame?
@@ -27,9 +72,11 @@ void DrawChemical::Draw(std::vector<Chemical> chemicals, Model& atomModel, Model
 	glVertexAttribDivisor(4, 1);
 	atomVBO.Unbind();
 
+	
+
 	//draw the model
-	atomModel.DrawInstanced(atomShader, camera, allAtomDrawData.transforms.pos, allAtomDrawData.transforms.rotat, allAtomDrawData.transforms.scale);
-	bondModel.DrawInstanced(bondShader, camera, allBondTransforms.pos, allBondTransforms.rotat, allBondTransforms.scale);
+	atomModel.DrawInstanced(atomShader, camera, chemicalDrawData[2*(format-1)]);
+	bondModel.DrawInstanced(bondShader, camera, chemicalDrawData[2*(format-1)+1]);
 
 	atomVBO.Delete();
 }

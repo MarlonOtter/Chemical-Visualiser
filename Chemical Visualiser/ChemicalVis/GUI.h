@@ -8,21 +8,21 @@
 class GUI
 {
 public:
-	ImGuiIO* io;
+	static ImGuiIO* io;
 
 	//the ImGui windows
-	RenderOptionsWindow renderOptions;
-	ChemicalFetchWindow chemicalFetch;
+	//static RenderOptionsWindow renderOptions;
+	static ChemicalFetchWindow chemicalFetch;
 
-	void Setup(GLFWwindow* window);
-	void CreateElements();
-	void Draw();
+	static void Setup(GLFWwindow* window);
+	static void CreateElements();
+	static void Draw();
 
-	GLFWwindow* getWindow();
+	static GLFWwindow* getWindow();
 
 private:
-	GLFWwindow* window;
-	ImGuiContext* context;
+	static GLFWwindow* window;
+	static ImGuiContext* context;
 };
 
 

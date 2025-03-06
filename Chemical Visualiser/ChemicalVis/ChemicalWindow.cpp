@@ -1,6 +1,18 @@
 #include "ChemicalWindow.h"
 #include <iostream>
 
+
+static int InputTextCallback(ImGuiInputTextCallbackData* data)
+{
+	auto* window = static_cast<ChemicalFetchWindow*>(data->UserData);
+	window->setBuff(data->Buf, data->BufSize);
+
+	//strcpy_s(data->Buf, data->BufSize, static_cast<std::string*>(data->UserData)->c_str());
+
+	return 0;
+}
+
+
 void ChemicalFetchWindow::Display()
 {
 	//runs at the start once
@@ -24,17 +36,47 @@ void ChemicalFetchWindow::Display()
 	ImGui::End();
 }
 
+void ChemicalFetchWindow::setBuff(char* buf, int size)
+{
+	if (queueTab)
+	{
+		queueTab = false;
+		strcpy_s(buf, size, inpValue.c_str());
+	}
+}
+
 void ChemicalFetchWindow::DisplayContent()
 {
-	if (ImGui::InputText("##Chemical Name", inp, IM_ARRAYSIZE(inp))) 
+	if (ImGui::InputText("##Chemical Name", inpBuf, IM_ARRAYSIZE(inpBuf), ImGuiInputTextFlags_CallbackEdit, InputTextCallback, this))
 	{
 		//if there is a change in the user input make a autocomplete request
 		CIH::queueAutoComplete();
 	}
+	if (ImGui::IsItemActive() && false)
+	{
+		if (ImGui::IsKeyPressed(ImGuiKey_Tab, false) && AutoCompleteOptionArr.size() > 0) {
+			queueTab = true;
+			selectedAutoCompleteOption++;
+			if (selectedAutoCompleteOption >= AutoCompleteOptionArr.size()) selectedAutoCompleteOption = 0;
+			std::cout << selectedAutoCompleteOption << ", " << AutoCompleteOptionArr.size() << "\n";
+			
+			inpValue = AutoCompleteOptionArr[selectedAutoCompleteOption];
+		}
+		else
+		{
+			inpValue = std::string(inpBuf);
+		}
+		
+	}
+	else
+	{
+		selectedAutoCompleteOption = -1;
+	}
+
 
 	// if the user pressed enter and their is an input get the data about chemical if possible 
 	// TODO : allow the enter key to be changed in a settings menu
-	bool entered = ImGui::IsItemDeactivatedAfterEdit() && ImGui::IsKeyDown(ImGuiKey::ImGuiKey_Enter) && std::string(inp).size() > 0;
+	bool entered = ImGui::IsItemDeactivatedAfterEdit() && ImGui::IsKeyDown(ImGuiKey::ImGuiKey_Enter) && std::string(inpBuf).size() > 0;
 
 	// Position of the input box
 	ImVec2 chemicalInputPos = ImGui::GetCursorScreenPos();
@@ -47,47 +89,43 @@ void ChemicalFetchWindow::DisplayContent()
 	//if name is being input do autocomplete checks
 	if (selectedInputType == 0) NameInput(chemicalInputPos);
 
-
-	ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x * 1.0f); //set the width of the next widget
-	if (ImGui::Combo("##Input Type", &selectedInputType, inputTypes, IM_ARRAYSIZE(inputTypes))) 
+	// Set the width of the next widget
+	ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x * 1.0f); 
+	
+	// The user can select the type of input they want to use: NAME, CID, SMILES
+	if (ImGui::Combo("##Input Type", &selectedInputType, inputTypes, IM_ARRAYSIZE(inputTypes)))
 	{
 		CIH::queueAutoComplete();
 	}
-	ImGui::PopItemWidth(); //reset widget width to default settings
+	// Reset widget width to default settings
+	ImGui::PopItemWidth(); 
 
-	
-	//ImGui::InputInt("Chemical Count", &Chemcount);
-	//ImGui::Text(CIH::isRequest() ? "1" : "0");
-
-	// get the data about the chemical when pressed
+	// Get the data about the chemical when pressed
 	if (ImGui::Button("Search") || entered)
 	{
-		//Get the data about a chemical from pubchem
-		//CIH::thread.wait();
-		chemicalData = CIH::GetData(inp); 
-		if (CIH::ValidateData(chemicalData) == -1) 
+		// Get the data about a chemical from pubchem
+		chemicalData = CIH::GetData(inpBuf, selectedInputType);
+		if (CIH::ValidateData(chemicalData.data) == -1)
 		{
 			inputError = "Invalid Input"; //state the error to the user
 		}
 		else
 		{
-			//reset error to display nothing
+			// Reset error to display nothing as the current chemical is likely valid
 			inputError = "";
-			//just for testing the power of the renderer
-			for (int i = 0; i < Chemcount; i++)
-			{
-				//create the chemical
-				std::cout << chemicalData << "\n\n-----------------------------------------------------------------------------\n\n";
-				globalClass::chemicals.push_back(Chemical(chemicalData, CIH::GetConformers(inp)));
-			}
+			
+			// Create the chemical
+			// And add it to the chemicals list
+			globalClass::chemicals.push_back(Chemical(chemicalData.data, chemicalData.conformers));
 		}
-		chemicalData = "";
 	}
+	chemicalData = { "", "" };
 
-	// autocomplete window position offset to not cover the button
+
+	// Autocomplete window position offset to not cover the button
 	acOffset = ImGui::GetItemRectSize().x;
 
-	//If there is an error to be displayed, display it to user
+	// If there is an error to be displayed, display it to user
 	if (inputError.size() > 0)
 	{
 		ImGui::SameLine();
@@ -97,53 +135,80 @@ void ChemicalFetchWindow::DisplayContent()
 
 void ChemicalFetchWindow::NameInput(ImVec2& chemicalInputPos)
 {
-	//show the autocomplete options in a menu
+	// Show the autocomplete options in a menu
 	DisplayAutoCompleteOptions(chemicalInputPos);
 
-	// if there is a request queued. make the request
-	CIH::makeAutoCompleteRequest(std::string(inp));
+	// If there is a request queued
+	// Make the request
+	CIH::makeAutoCompleteRequest(std::string(inpBuf));
 
-	//get the data from the ongoing autocomplete request 
+	// Get the data from the ongoing autocomplete request 
 	if (CIH::checkRequestProgress() == 1)
 	{
 		autoCompleteOptions = CIH::getRequestData();
 	}
 }
 
-
 void ChemicalFetchWindow::DisplayAutoCompleteOptions(ImVec2& chemicalInputPos)
 {
-	//don't run function if you don't have to
-	// if there is nothing to output or the textbox/popup is selected
+	// If there is nothing to output or the textbox/popup is selected
+	// Don't display the autocomplete options
 	if (autoCompleteOptions.size() <= 0 || (!chemicalInputIsActive && !autoCompleteActive)) return;
+	
+	// Convert the string to a JSON object
 	nlohmann::json optionsJson = nlohmann::json::parse(autoCompleteOptions);
 
-	//ImGui::SameLine();
+	// Define all the flags for the window
+	// Make it look more like a popup
 	ImGuiWindowFlags flags = 0;
 	flags |= ImGuiWindowFlags_NoTitleBar;
 	flags |= ImGuiWindowFlags_NoMove;
 	flags |= ImGuiWindowFlags_AlwaysAutoResize;
 	flags |= ImGuiWindowFlags_NoFocusOnAppearing;
 
+	// Set the position of the window
+	// Also applies an offset so that the popup doesn't cover the search button or the input box
 	ImGui::SetNextWindowPos(ImVec2(acOffset * 1.1f + chemicalInputPos.x, chemicalInputPos.y));
+
+	// Create the window
 	if (ImGui::Begin("AutoComplete", NULL, flags))
 	{
-		autoCompleteActive = ImGui::IsWindowHovered();
+		// Get if the user currently has the popup selected
+		// so that the user can select an option and it not close before it is selected
+		autoCompleteActive = ImGui::IsWindowHovered() || ImGui::IsWindowFocused();
 
+		// Get the number of options to display
 		int numOptions = optionsJson["total"];
+
+		AutoCompleteOptionArr.clear();
+		// Loop through each one
 		for (int i = 0; i < numOptions; i++)
 		{
-			//add the item to a list in a menu so that the user can select it 
+			// Read the chemical's name from the JSON object
 			std::string item = optionsJson["dictionary_terms"]["compound"][i];
+
+			// Store the option in the class so that it can be used for keyboard selection
+			AutoCompleteOptionArr.push_back(item);
+
+			// Create a selectable menu item that displays the chemical name
 			if (ImGui::MenuItem(item.c_str()))
 			{
-				strcpy_s(inp, item.c_str());
-				CIH::queueAutoComplete();
+				// Close the menu now that the user has selected an option
 				autoCompleteActive = false;
+
+				// If this menu item is selected
+				// Set the input box to the selected item, if it is different to what is already input
+				if (std::string(inpBuf) == item) continue;
+				strcpy_s(inpBuf, item.c_str());
+
+				// Queue anouther autocomplete request
+				// So that the popup menu will update with new options
+				CIH::queueAutoComplete();
 			}
 		}
-
+		// Finish creating the window
 		ImGui::End();
 	}
+	// Clear the JSON object
 	optionsJson.clear();
 }

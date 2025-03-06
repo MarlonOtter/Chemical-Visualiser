@@ -4,11 +4,22 @@
 #define CPPHTTPLIB_OPENSSL_SUPPORT
 #include <httplib.h>
 
+#include "../Renderer/ShaderClass.h"
+
+struct throttleValues
+{
+	float count;
+	float time;
+	float service;
+};
+
 class PubChem
 {
 public:
 	//INFO: chemical structure is in the SMILES format 
 	//		(e.g CCC = propane)
+
+	static throttleValues throttle;
 
 	//data input methods 
 	static std::string name(std::string name);
@@ -26,9 +37,6 @@ public:
 private:
 	//makes the request to the server
 	static std::string request(std::string url);
-
-	//gets the conformer data from its conformer ID
-	static std::string conformer(std::string ID);
 };
 
 

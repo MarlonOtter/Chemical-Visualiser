@@ -26,6 +26,11 @@ DebugLine::DebugLine(std::vector<glm::vec3> points, std::vector<GLuint> indices,
 	_Setup();
 }
 
+DebugLine::~DebugLine()
+{
+	Delete();
+}
+
 void DebugLine::_Setup()
 {
 	std::cout << "WARNING: This Code Contains a memory leak and should not be ran until Fixed\n";

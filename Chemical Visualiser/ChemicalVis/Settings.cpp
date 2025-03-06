@@ -2,7 +2,7 @@
 
 #include <iostream>
 json Settings::settings;
-bool Settings::changed = false;
+bool Settings::changed = true;
 
 
 int Settings::Save()
@@ -19,7 +19,8 @@ int Settings::Refresh()
 {
 	// Check file exists
 	// Otherwise read the settings from the backup source
-	if (!std::filesystem::exists("Settings.json")) return ParseFile("SettingsDefault.json");
+	if (!std::filesystem::exists("Settings.json")) return ParseFile("SettingsDefault.dat");
+	changed = true;
 
 	// If it does get the contents
 	return ParseFile("Settings.json");
@@ -67,10 +68,18 @@ std::vector<std::variant<std::string, Setting>> Settings::getChildren(std::strin
 int Settings::Set(std::string setting, std::string value)
 {
 	json::json_pointer ptr = Find(setting);
-	if (ptr == json::json_pointer("")) return -1;
+	if (ptr == json::json_pointer("")) 
+	{
+		std::cout << "Setting not found\n";
+		return -1;
+	}
 
 	json& location = settings.at(ptr);
-	if (location["Default"].type() != json::value_t::string) return -1;
+	if (location["Default"].type() != json::value_t::string) 
+	{
+		std::cout << "Setting is not a string\n";
+		return -1;
+	}
 
 	settings.at(ptr)["Value"] = value;
 	changed = true;
@@ -79,10 +88,18 @@ int Settings::Set(std::string setting, std::string value)
 int Settings::Set(std::string setting, int value)
 {
 	json::json_pointer ptr = Find(setting);
-	if (ptr == json::json_pointer("")) return -1;
+	if (ptr == json::json_pointer(""))
+	{
+		std::cout << "Setting not found\n";
+		return -1;
+	}
 
 	json& location = settings.at(ptr);
-	if (location["Default"].type() != json::value_t::number_integer) return -1;
+	if (location["Default"].type() != json::value_t::number_integer)
+	{
+		std::cout << "Setting is not a int\n";
+		return -1;
+	}
 
 	settings.at(ptr)["Value"] = value;
 	changed = true;
@@ -91,10 +108,18 @@ int Settings::Set(std::string setting, int value)
 int Settings::Set(std::string setting, float value)
 {
 	json::json_pointer ptr = Find(setting);
-	if (ptr == json::json_pointer("")) return -1;
+	if (ptr == json::json_pointer("")) 
+	{
+		std::cout << "Setting not found\n";
+		return -1;
+	}
 
 	json& location = settings.at(ptr);
-	if (location["Default"].type() != json::value_t::number_float) return -1;
+	if (location["Default"].type() != json::value_t::number_float) 
+	{
+		std::cout << "Setting is not a float\n";
+		return -1;
+	}
 
 	settings.at(ptr)["Value"] = value;
 	changed = true;
@@ -104,10 +129,18 @@ int Settings::Set(std::string setting, float value)
 int Settings::Set(std::string setting, bool value)
 {
 	json::json_pointer ptr = Find(setting);
-	if (ptr == json::json_pointer("")) return -1;
+	if (ptr == json::json_pointer("")) 
+	{
+		std::cout << "Setting not found\n";
+		return -1;
+	}
 	
 	json& location = settings.at(ptr);
-	if (location["Default"].type() != json::value_t::boolean) return -1;
+	if (location["Default"].type() != json::value_t::boolean)
+	{
+		std::cout << "Setting is not a bool\n";
+		return -1;
+	}
 
 	location["Value"] = value;
 	changed = true;
@@ -116,10 +149,18 @@ int Settings::Set(std::string setting, bool value)
 int Settings::Set(std::string setting, glm::vec3 value)
 {
 	json::json_pointer ptr = Find(setting);
-	if (ptr == json::json_pointer("")) return -1;
+	if (ptr == json::json_pointer("")) 
+	{
+		std::cout << "Setting not found\n";
+		return -1;
+	}
 
 	json& location = settings.at(ptr);
-	if (location["Default"].type() != json::value_t::array) return -1;
+	if (location["Default"].type() != json::value_t::array)
+	{
+		std::cout << "Setting is not an array\n";
+		return -1;
+	}
 
 	float col[3] = { value.x, value.y, value.z };
 	settings.at(ptr)["Value"] = col;
@@ -242,6 +283,8 @@ std::string Settings::Dump(std::string setting)
 
 json::json_pointer Settings::Find(std::string setting)
 {
+	if (settings.empty()) Refresh();
+
 	// Get a list of branches at the top level of the json tree 
 	std::vector<std::string> branches = SearchBranch(settings, "");
 
@@ -369,7 +412,8 @@ Setting Settings::CreateSetting(json settingData)
 
 		// I don't Handle these
 	case json::value_t::number_unsigned:
-		return Setting{};
+		value.data = settingData["Value"].get<int>();
+		defaultValue.data = settingData["Default"].get<int>();
 		break;
 
 	case json::value_t::number_float:
@@ -379,6 +423,7 @@ Setting Settings::CreateSetting(json settingData)
 
 		// I don't Handle these
 	case json::value_t::object:
+		std::cout << "object : not acceptable\n";
 		return Setting{};
 		break;
 
@@ -401,6 +446,7 @@ Setting Settings::CreateSetting(json settingData)
 
 		// I don't Handle these
 	case json::value_t::binary:
+		std::cout << "binary : not acceptable\n";
 		return Setting{};
 		break;
 	default:

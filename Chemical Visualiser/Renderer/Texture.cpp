@@ -71,7 +71,7 @@ Texture::Texture(const char* image, const char* texType, GLenum slot)
 			GL_UNSIGNED_BYTE,
 			bytes
 		);
-	else throw std::invalid_argument("Automatic Texture Type recognition failed"); //something wrong here
+	else throw std::invalid_argument("Automatic Texture Type recognition failed"); 
 
 	// create the mipmaps
 	glGenerateMipmap(GL_TEXTURE_2D);
@@ -82,7 +82,13 @@ Texture::Texture(const char* image, const char* texType, GLenum slot)
 	Unbind();
 }
 
-void Texture::texUnit(Shader shader, const char* uniform, GLuint unit)
+Texture::~Texture()
+{
+	//delete the texture
+	//Delete();
+}
+
+void Texture::texUnif(Shader shader, const char* uniform, GLuint unit)
 {
 	//get the location of the uniform
 	GLuint texUni = glGetUniformLocation(shader.ID, uniform);

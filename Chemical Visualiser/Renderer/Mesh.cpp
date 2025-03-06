@@ -160,7 +160,7 @@ void Mesh::AddTextures(Shader& shader)
 			num = std::to_string(numSpecular++);
 		}
 		//apply the texture to the shader named after its type and the number of that type
-		textures[i].texUnit(shader, (type + num).c_str(), i);
+		textures[i].texUnif(shader, (type + num).c_str(), i);
 		//bind the texture
 		textures[i].Bind();
 	}

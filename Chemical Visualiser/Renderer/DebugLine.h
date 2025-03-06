@@ -30,6 +30,7 @@ class DebugLine
 		EBO* ebo;
 
 		DebugLine();
+		~DebugLine();
 
 		DebugLine(
 			std::vector<glm::vec3> points,
