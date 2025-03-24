@@ -47,7 +47,7 @@ std::string PubChem::conformers_cid(int cid)
 // search chemicals with a similar name as the provided string
 std::string PubChem::autoComplete(std::string str, int out)
 {
-	if (throttle.count > 75.0 || throttle.service > 75.0) return "";
+	if (throttle.count >= 75.0 || throttle.service >= 75.0) return "";
 
 	//if (str == "") return get_file_contents();
 
@@ -119,6 +119,7 @@ std::string PubChem::request(std::string url)
 				++i;
 				offset = closeLoc + 1;
 			}
+			std::cout << "Throttle: " << throttle.count << ", " << throttle.time << ", " << throttle.service << "\n";
 
 			break;
 		}

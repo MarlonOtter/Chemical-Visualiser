@@ -67,7 +67,7 @@ void DrawChemical::Draw(std::vector<Chemical> chemicals, Model& atomModel, Model
 	atomVAO.Bind();
 	atomVBO.Bind();
 	//does this need  to be called every frame?
-	//it is the easiest way i can think of and its not particually intensive now that i fixed memory leak
+	//it is the easiest way i can think of and its not particually intensive now that i fixed memory leak i dont' think
 	atomVAO.LinkAttrib(atomVBO, 4, 3, GL_FLOAT, sizeof(glm::vec3), (void*)0);
 	glVertexAttribDivisor(4, 1);
 	atomVBO.Unbind();
@@ -90,7 +90,7 @@ AtomDrawData DrawChemical::calcAtoms(Chemical& chemical, int index, int format, 
 	{
 		Atom atom = chemical.atoms[i];
 		// Z is offset so that the model always overlays the bond model
-		glm::vec3 atomPos = glm::vec3(atom.pos2D, 1.0f);
+		glm::vec3 atomPos = glm::vec3(atom.pos2D, 0.5f);
 		if (format == 2)
 		{
 			atomPos = atom.pos3D;

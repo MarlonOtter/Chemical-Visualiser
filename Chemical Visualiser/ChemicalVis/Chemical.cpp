@@ -24,6 +24,7 @@ void Chemical::AddConformer(std::string conformer3D)
 	// if there is no 3D structure given return as there is no data to add 
 	if (conformer3D.size() == 0) return;
 	json conformerJson = json::parse(conformer3D);
+	if (conformerJson.contains("Fault")) return; // If there is no 3D conforms return
 	json conformerData = conformerJson.at(json::json_pointer(atomPosAddr))["conformers"][0];
 
 	//if the data being put in has no z, don't add it

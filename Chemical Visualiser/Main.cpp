@@ -1,13 +1,10 @@
 
-// Note:
-// I think my ip has been blocked by pubchem, so i cannot access 
-// the service without using a hotspot or vpn
-
 #include <map>
 
-//includes to all the other files
+// Might be useful : https://cactus.nci.nih.gov/chemical/structure/CCC/iupac_name
 
-// Startup is slow, so things that need to be done at start-up but not used straight away can be put on anouther thread
+
+//includes to all the other files
 
 #include "Camera2D.h"
 #include "3DVisualiser.h"
@@ -84,10 +81,9 @@ std::map<ModelType, Model> loadModels();
 std::map<ShaderType, Shader> loadShaders();
 void InitialiseShaderUniforms(std::map<ShaderType, Shader> shaders);
 
-int FrameStart(windowData& window, int swapInterval);
 void MainLoop(windowData& window, RenderData renderData, SettingsUI& settingsUI);
 
-
+int FrameStart(windowData& window, int swapInterval);
 
 void Visualiser3D(Viewport& view, float& screenRatio, windowData& window, RenderData& renderData, Cameras& cameras);
 void Visualiser2D(Viewport& view, Viewport& view3D, windowData& window, RenderData& renderData, Cameras& cameras);
@@ -140,7 +136,8 @@ int main()
 	// I could also make it a-sync as there is a lot of data that slows down boot time
 	//settingsUI.Refresh();
 	
-
+	// update the throttle values when starting the program
+	PubChem::name("water");
 
 	// Run the main loop of the program
 	MainLoop(window, renderData, settingsUI);
@@ -292,29 +289,6 @@ void InitialiseShaderUniforms(std::map<ShaderType, Shader> shaders)
 	glUniform3f(glGetUniformLocation(shaders[ShaderType::Bond3D].ID, "bondColour"), 0, 0, 0);
 }
 
-int FrameStart(windowData& window, int swapInterval)
-{
-	// Run code that needs to be ran at the start of the frame
-
-	//update the size of the frame that is created depending on the size of the window
-	glfwGetFramebufferSize(window.window, &window.width, &window.height);
-
-	if (swapInterval < 0 || swapInterval > 4) swapInterval = 1;
-	glfwSwapInterval(swapInterval); // 0 : unlimitedFPS, 1 : 60FPS, 2 : 30FPS, 3 : 20FPS, 4 : 15FPS
-	// if the window is minimised/unfocussed. don't draw anything
-	if (window.width == 0 || window.height == 0 || !glfwGetWindowAttrib(window.window, GLFW_FOCUSED))
-	{
-		glfwPollEvents();
-
-		// Reduce background usage by running the main loop at a fraction of its original speed
-		glfwSwapInterval(4);
-		std::this_thread::sleep_for(std::chrono::milliseconds(100));
-		// tell the program to not continue the entire main loop
-		return 1;
-	}
-	// Continue main loop like normal
-	return 0;
-}
 
 void MainLoop(windowData& window, RenderData renderData, SettingsUI& settingsUI)
 {
@@ -381,7 +355,7 @@ void MainLoop(windowData& window, RenderData renderData, SettingsUI& settingsUI)
 		}
 
 
-		//! if the glfw window was just resized, don't update the window size ratio
+		// if the glfw window was just resized, don't update the window size ratio
 		if (window.prevWidth == window.width && window.prevHeight == window.height)
 		{
 			screenRatio = visualiser3D.calculateRelativeSize(window.width, window.height).x;
@@ -407,6 +381,30 @@ void MainLoop(windowData& window, RenderData renderData, SettingsUI& settingsUI)
 	}
 	
 	return;
+}
+
+int FrameStart(windowData& window, int swapInterval)
+{
+	// Run code that needs to be ran at the start of the frame
+
+	//update the size of the frame that is created depending on the size of the window
+	glfwGetFramebufferSize(window.window, &window.width, &window.height);
+
+	if (swapInterval < 0 || swapInterval > 4) swapInterval = 1;
+	glfwSwapInterval(swapInterval); // 0 : unlimitedFPS, 1 : 60FPS, 2 : 30FPS, 3 : 20FPS, 4 : 15FPS
+	// if the window is minimised/unfocussed. don't draw anything
+	if (window.width == 0 || window.height == 0 || !glfwGetWindowAttrib(window.window, GLFW_FOCUSED))
+	{
+		glfwPollEvents();
+
+		// Reduce background usage by running the main loop at a fraction of its original speed
+		glfwSwapInterval(4);
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+		// tell the program to not continue the entire main loop
+		return 1;
+	}
+	// Continue main loop like normal
+	return 0;
 }
 
 void Visualiser3D(Viewport& view, float& screenRatio, windowData& window, RenderData& renderData, Cameras& cameras)
@@ -439,6 +437,8 @@ void Visualiser3D(Viewport& view, float& screenRatio, windowData& window, Render
 	//update the size of the window in the camera class
 	cameras.camera3D.camera.UpdateSize(view.getPos(), view.getSize());
 
+	// Don't make a draw call if the viewport is invisible
+	if (view.getSize().x <= 0) return;
 
 	//update any matrices for the camera
 	cameras.camera3D.UpdateMatrix(cameras.FOV, cameras.nearPlane, cameras.farPlane);
@@ -486,6 +486,10 @@ void Visualiser2D(Viewport& view, Viewport& view3D, windowData& window, RenderDa
 
 	//update the size of the window in the camera class
 	cameras.camera2D.camera.UpdateSize(view.getPos(), view.getSize());
+
+
+	// Don't make a draw call if the viewport is invisible
+	if (view.getSize().x <= 0) return;
 
 	//update any matrices for the camera
 	cameras.camera2D.UpdateMatrix(cameras.nearPlane, cameras.farPlane);
