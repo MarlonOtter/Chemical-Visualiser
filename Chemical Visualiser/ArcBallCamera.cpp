@@ -5,7 +5,7 @@
 ArcBallCamera::ArcBallCamera(int width, int height, glm::vec3 position)
 	: camera(width, height, position), keyVec(0.0f, 0.0f), mouseVec(0.0f, 0.0f), viewMat(1.0f)
 {
-	cameraCentre = glm::vec3(0.0f, 0.0f, 0.0f);
+	//cameraCentre = glm::vec3(0.0f, 0.0f, 0.0f);
 }
 
 // calculate the cameraMatrix from projection matrix and view matrix
@@ -128,24 +128,25 @@ void ArcBallCamera::Backward(float value)
 }
 
 
+// These need to be turned into relative movements to the camera rotation/position
 void ArcBallCamera::MoveUp(float value)
 {
-	camera.position.y += value;
+	cameraCentre += -camera.upVec * value;
 }
 
 void ArcBallCamera::MoveDown(float value)
 {
-	camera.position.y += -value;
+	cameraCentre += camera.upVec * value;
 }
 
 void ArcBallCamera::MoveLeft(float value)
 {
-	camera.position.x += -value;
+	cameraCentre += camera.rightVec * value;
 }
 
 void ArcBallCamera::MoveRight(float value)
-{
-	camera.position.x += value;
+{;
+	cameraCentre += -camera.rightVec * value;
 }
 
 glm::vec3 ArcBallCamera::getPos()
@@ -201,31 +202,31 @@ void ArcBallCamera::calculateRotation(glm::vec2 startVec, glm::vec2 crntVec)
 }
 
 
-
-
-
-
 glm::mat4 ArcBallCamera::calculateViewMatrix()
 {
 	// Define the default matrix
 	glm::mat4 view = glm::mat4(1.0f);
 
-	// Move it to the centre position
+	//Move it to the centre position
 	view = glm::translate(view, camera.position);
 
 	// Rotate it around that point from what was calculated from inputs
 	view = glm::rotate(view, glm::radians(angle), rotationalAxis);
 
+	view = glm::translate(view, cameraCentre);
+
 	// Store the matrix in the class
 	viewMat = view;
+
+	// Recalcualte the up and right vectors every frame
+	// As they are used to move the center point that the camera orbits around
+	glm::mat4 inverseView = glm::inverse(view);
+	camera.upVec = glm::vec3(inverseView[1]);
+	camera.rightVec = glm::vec3(inverseView[0]);
 
 	// Return the matrix to the camera matrix function
 	return view;
 }
-
-
-
-
 
 
 //Static Functions

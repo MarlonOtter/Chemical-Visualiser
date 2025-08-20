@@ -21,6 +21,8 @@ public:
 
 	bool gotChemical = false;
 
+	ChemicalFetchWindow();
+
 	void Display();
 
 	void setBuff(char* buf, int size);

@@ -88,8 +88,6 @@ int FrameStart(windowData& window, int swapInterval);
 void Visualiser3D(Viewport& view, float& screenRatio, windowData& window, RenderData& renderData, Cameras& cameras);
 void Visualiser2D(Viewport& view, Viewport& view3D, windowData& window, RenderData& renderData, Cameras& cameras);
 
-void TempararyGUI(char* settingInp, float* num, SettingsUI settingsUI, float& cameraSpeed);
-
 void FrameEnd(windowData& window);
 
 void Cleanup(windowData& window, RenderData renderData);
@@ -125,6 +123,9 @@ int main()
 	};
 
 	InitialiseShaderUniforms(renderData.shaders);
+
+	ImGui::CreateContext();
+	GUI::Setup(window.window);
 
 	SettingsUI settingsUI;
 	settingsUI.Init();
@@ -293,9 +294,6 @@ void InitialiseShaderUniforms(std::map<ShaderType, Shader> shaders)
 void MainLoop(windowData& window, RenderData renderData, SettingsUI& settingsUI)
 {
 	// Run the main loop of the program
-
-	GUI::Setup(window.window);
-
 	
 	// Store all the information about the cameras in a struct
 	// This is done so that the cameras can be passed around easily
@@ -361,18 +359,13 @@ void MainLoop(windowData& window, RenderData renderData, SettingsUI& settingsUI)
 			screenRatio = visualiser3D.calculateRelativeSize(window.width, window.height).x;
 		}
 
-		GUI::CreateElements();
+		GUI::CreateElements(settingInp, &num, settingsUI, cameras.camera3D.speed);
 
 		// Draw the 3D Visualiser
 		Visualiser3D(visualiser3D, screenRatio, window, renderData, cameras);
 		Visualiser2D(visualiser2D, visualiser3D, window, renderData, cameras);
 
-		threadDone = true;
 		Settings::changed = false;
-		if (threadDone)
-		{
-			TempararyGUI(settingInp, &num, settingsUI, cameras.camera3D.speed);
-		}
 
 		
 
@@ -506,75 +499,6 @@ void Visualiser2D(Viewport& view, Viewport& view3D, windowData& window, RenderDa
 
 }
 
-void TempararyGUI(char* settingInp, float* num, SettingsUI settingsUI, float& cameraSpeed)
-{
-	if (ImGui::Begin("Settings Class Testing"))
-	{
-
-		if (ImGui::Button("Read File"))
-		{
-			Settings::Refresh();
-		}
-
-		if (ImGui::Button("Save to File"))
-		{
-			Settings::Save();
-		}
-
-		ImGui::InputText("Setting", settingInp, 128);
-
-		if (ImGui::Button("Find"))
-		{
-			double startTime = glfwGetTime();
-			Setting setting = Settings::GetAll(std::string(settingInp));
-
-			std::cout << "Duration: " << (glfwGetTime() - startTime) * 1000.0 << "ms\n";
-			std::cout << "Type: " << setting.type << "\nName: " << setting.name << "\n";
-		}
-		ImGui::SliderFloat("Number", num, 0.001f, 100.0f);
-		if (ImGui::Button("Set"))
-		{
-			std::cout << Settings::Set(std::string(settingInp), *num) << "\n";
-		}
-
-		if (ImGui::Button("List Children"))
-		{
-			auto vec = Settings::getChildren("/" + std::string(settingInp));
-			std::cout << "Found " << vec.size() << " Children Objects\n";
-		}
-		ImGui::Checkbox("Settings Changed", &Settings::changed);
-
-	}
-	ImGui::End();
-
-	settingsUI.Draw();
-
-
-
-	//create a temparary UI to tweak atom size and clear of all atoms
-	ImGui::Begin("Atom Settings");
-	ImGui::DragFloat("atom scale", &globalClass::atomScale, 0.001f, 0.001f, 100.0f);
-	ImGui::DragFloat("bond width", &globalClass::bondRadius, 0.001f, 0.001f, 1000.0f);
-	ImGui::DragFloat("bond length", &globalClass::bondLengthMultiplier, 0.001f, 0.001f, 1000.0f);
-	ImGui::DragFloat("bond seperation Dist", &globalClass::bondSeperationDist, 0.001f, 0.001f, 10.0f);
-	ImGui::DragFloat("chemical seperation Dist", &globalClass::chemicalSeperationDist, 0.001f, 0.001f, 10.0f);
-
-	//trying to get a value that can alter the speed of rotation
-	ImGui::DragFloat("cameraSpeed", &cameraSpeed, 0.01f, 0.0001f, 10.0f);
-
-	if (ImGui::Button("Clear Chemicals"))
-	{
-		for (int i = 0; i < globalClass::chemicals.size(); i++)
-		{
-			globalClass::chemicals[i].atoms.clear();
-		}
-		globalClass::chemicals.clear();
-	}
-	ImGui::End();
-
-
-
-}
 
 void FrameEnd(windowData& window)
 {

@@ -43,6 +43,8 @@ void DrawChemical::Draw(std::vector<Chemical> chemicals, Model& atomModel, Model
 
 		for (int i = 0; i < chemicals.size(); i++)
 		{
+			//TODO: make this offset based on the furthest out atom in the previouse chemical
+			//      so that no matter how big the chemical is it will never overlap with others
 			glm::vec3 chemOffset = glm::vec3(0.0f, 0.0f, i * globalClass::chemicalSeperationDist);
 			if (format == Chemical::_2D) chemOffset = glm::vec3(i * globalClass::chemicalSeperationDist, 0, 0);
 

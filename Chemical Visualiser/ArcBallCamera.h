@@ -56,7 +56,6 @@ public:
 	void MoveRight(float value);
 
 private:
-
 	//not sure what this does to be honest
 	float radius = 1.0f;
 

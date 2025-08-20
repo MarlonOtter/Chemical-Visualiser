@@ -2,6 +2,11 @@
 #include <iostream>
 
 
+ChemicalFetchWindow::ChemicalFetchWindow()
+{
+	//io = &ImGui::GetIO();
+}
+
 static int InputTextCallback(ImGuiInputTextCallbackData* data)
 {
 	auto* window = static_cast<ChemicalFetchWindow*>(data->UserData);
@@ -15,19 +20,12 @@ static int InputTextCallback(ImGuiInputTextCallbackData* data)
 
 void ChemicalFetchWindow::Display()
 {
-	//runs at the start once
-	if (init)
-	{
-		//Get IO
-		io = &ImGui::GetIO();
-		//Set the position of the window
-		ImGui::SetNextWindowPos(ImVec2(0, 20));
-
-		init = false;
-	}
+	ImGui::SetNextWindowPos(ImVec2(0, 0));
 	
 	//create the window
-	if (ImGui::Begin("Chemical Input Window", NULL, ImGuiWindowFlags_NoBringToFrontOnFocus))
+	ImGuiWindowFlags flags = ImGuiWindowFlags_NoBringToFrontOnFocus;
+	flags |= ImGuiWindowFlags_NoTitleBar;
+	if (ImGui::Begin("Chemical Input Window", NULL, flags))
 	{
 		//Display the input
 		DisplayContent();
@@ -47,7 +45,7 @@ void ChemicalFetchWindow::setBuff(char* buf, int size)
 
 void ChemicalFetchWindow::DisplayContent()
 {
-	if (ImGui::InputText("##Chemical Name", inpBuf, IM_ARRAYSIZE(inpBuf), ImGuiInputTextFlags_CallbackEdit, InputTextCallback, this))
+	if (ImGui::InputText("##Chemical Name", inpBuf, IM_ARRAYSIZE(inpBuf)))
 	{
 		//if there is a change in the user input make a autocomplete request
 		CIH::queueAutoComplete();
@@ -101,7 +99,7 @@ void ChemicalFetchWindow::DisplayContent()
 	ImGui::PopItemWidth(); 
 
 	// Get the data about the chemical when pressed
-	if (ImGui::Button("Search") || entered)
+	if (ImGui::Button("Search", ImVec2(150,0)) || entered)
 	{
 		// Get the data about a chemical from pubchem
 		chemicalData = CIH::GetData(inpBuf, selectedInputType);
@@ -121,6 +119,18 @@ void ChemicalFetchWindow::DisplayContent()
 	}
 	chemicalData = { "", "" };
 
+	// Display a button that will delete all the chemicals currently being displayed
+	ImGui::SameLine();
+	// Set the colour of the button red
+	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0f, 0.2f, 0.2f, 1.0f));           // Mid-red
+	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0f, 0.5f, 0.5f, 1.0f));    // Light-red
+	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.7f, 0.0f, 0.0f, 1.0f));     // Dark-red
+	if (ImGui::Button("Clear Chemicals"))
+	{
+		// Clear the chemicals list
+		globalClass::chemicals.clear();
+	}
+	ImGui::PopStyleColor(3);
 
 	// Autocomplete window position offset to not cover the button
 	acOffset = ImGui::GetItemRectSize().x;
@@ -128,7 +138,7 @@ void ChemicalFetchWindow::DisplayContent()
 	// If there is an error to be displayed, display it to user
 	if (inputError.size() > 0)
 	{
-		ImGui::SameLine();
+		
 		ImGui::TextColored(ImVec4(1.0, 0.0, 0.0, 1.0), (std::string("ERROR: ") + inputError).c_str());
 	}
 }

@@ -75,8 +75,8 @@
     <LibraryPath>C:\Users\marlo\OneDrive\Desktop\ChemicalVisualiser\Libraries\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Users\marlo\OneDrive\Desktop\ChemicalVisualiser\Libraries\include;C:\Users\marlo\OneDrive\Desktop\ChemicalVisualiser\Libraries\include\imgui;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\marlo\OneDrive\Desktop\ChemicalVisualiser\Libraries\DLL;C:\Users\marlo\OneDrive\Desktop\ChemicalVisualiser\Libraries\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)\Libraries\include;$(ProjectDir)\Libraries\include\imgui;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)\Libraries\DLL;$(ProjectDir)\Libraries\lib;$(LibraryPath)</LibraryPath>
     <ExecutablePath>$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -84,8 +84,8 @@
     <LibraryPath>C:\Users\marlo\OneDrive\Desktop\ChemicalVisualiser\Libraries\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>C:\Users\marlo\OneDrive\Desktop\ChemicalVisualiser\Libraries\include;C:\Users\marlo\OneDrive\Desktop\ChemicalVisualiser\Libraries\include\imgui;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\marlo\OneDrive\Desktop\ChemicalVisualiser\Libraries\DLL;C:\Users\marlo\OneDrive\Desktop\ChemicalVisualiser\Libraries\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)\Libraries\include;$(ProjectDir)\Libraries\include\imgui;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)\Libraries\DLL;$(ProjectDir)\Libraries\lib;$(LibraryPath)</LibraryPath>
     <ExecutablePath>$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -253,7 +253,7 @@
     <ResourceCompile Include="ChemicalVisualiser.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\..\..\Downloads\icon.ico" />
+    <Image Include="Resources\Textures\icon.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

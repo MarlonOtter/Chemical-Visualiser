@@ -108,16 +108,16 @@ void Camera::Inputs(GLFWwindow* window, float deltaTime, float scrollOffset, flo
 		float rotY = sensitivity * (float)(mouseX - prevCursorPosX);
 
 		//calculate the new orientation
-		glm::vec3 newOrientation = glm::rotate(orientation, glm::radians(-rotX), glm::normalize(glm::cross(orientation, UpVec)));
+		glm::vec3 newOrientation = glm::rotate(orientation, glm::radians(-rotX), glm::normalize(glm::cross(orientation, upVec)));
 
 		//make so that the camera can't just do barrel rolls (limits how far up ypu can look)
-		if (!((glm::angle(newOrientation, UpVec) <= glm::radians(5.0f)) or (glm::angle(newOrientation, -UpVec) <= glm::radians(5.0f))))
+		if (!((glm::angle(newOrientation, upVec) <= glm::radians(5.0f)) or (glm::angle(newOrientation, -upVec) <= glm::radians(5.0f))))
 		{
 			orientation = newOrientation;
 		}
 
 		//rotate the camera around the Y axis the desired amount
-		orientation = glm::rotate(orientation, glm::radians(-rotY), UpVec);
+		orientation = glm::rotate(orientation, glm::radians(-rotY), upVec);
 		//sets the mouse to the center of the window
 		glfwGetCursorPos(window, &prevCursorPosX, &prevCursorPosY);
 	}
@@ -131,22 +131,22 @@ void Camera::Inputs(GLFWwindow* window, float deltaTime, float scrollOffset, flo
 
 void Camera::Up(float value)
 {
-	position += UpVec * value;
+	position += upVec * value;
 }
 
 void Camera::Down(float value)
 {
-	position += -UpVec * value;
+	position += -upVec * value;
 }
 
 void Camera::Left(float value)
 {
-	position += -glm::normalize(glm::cross(orientation, UpVec)) * value;
+	position += -glm::normalize(glm::cross(orientation, upVec)) * value;
 }
 
 void Camera::Right(float value)
 {
-	position += glm::normalize(glm::cross(orientation, UpVec)) * value;
+	position += glm::normalize(glm::cross(orientation, upVec)) * value;
 }
 
 void Camera::Forward(float value)
@@ -162,7 +162,7 @@ void Camera::Backward(float value)
 
 glm::mat4 Camera::calculateViewMatrix()
 {
-	return glm::lookAt(position, position + orientation, UpVec);
+	return glm::lookAt(position, position + orientation, upVec);
 }
 
 glm::mat4 Camera::calculateProjectionMatrix(float FOV, float near, float far, int view)

@@ -365,8 +365,8 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\..\..\Downloads\icon.ico">
-      <Filter>Resource Files</Filter>
+    <Image Include="Resources\Textures\icon.ico">
+      <Filter>Resource Files\Textures</Filter>
     </Image>
   </ItemGroup>
 </Project>
