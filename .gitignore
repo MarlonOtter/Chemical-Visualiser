@@ -9,3 +9,5 @@ Chemical Visualiser/x64/Debug/ChemicalVisualiser.exe
 Chemical Visualiser/imgui.ini
 /OLD
 /build
+/.vs
+/out

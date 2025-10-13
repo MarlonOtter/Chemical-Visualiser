@@ -14,3 +14,12 @@ Libraries:
 -   Assimp for importing models
 -   Httplib for web requests
 -   ImGui for creating a user interface
+
+## Build
+
+```Bash
+mkdir -p build
+cd build
+cmake ..
+cmake --build . # or run in VS
+```
