@@ -11,6 +11,7 @@ namespace Core
 		std::string Title;
 		uint32_t Width = 1280;
 		uint32_t Height = 720;
+		Color ClearColor = BLACK;
 		bool IsResizeable = true;
 		bool VSync = true;
 	};

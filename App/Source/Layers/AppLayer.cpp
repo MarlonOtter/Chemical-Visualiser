@@ -15,8 +15,8 @@ void AppLayer::Update(float ts)
 		textX = -200.0f;
 }
 
-void AppLayer::OnRender()
+void AppLayer::OnComposite()
 {
-	ClearBackground(RAYWHITE);
-	DrawText("Hello from AppLayer!", textX, 200, 20, BLACK);
+	DrawText("Hello from AppLayer!", textX, 200, 20, RAYWHITE);
 }
+ 

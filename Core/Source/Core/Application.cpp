@@ -39,9 +39,9 @@ namespace Core
             if (m_Window->ShouldClose()) {
                 Stop();
                 break;
-			}
+            }
 
-			float currentTime = GetTime();
+            float currentTime = GetTime();
             float timestep = Clamp(currentTime - lastTime, 0.001f, 0.1f);
             lastTime = currentTime;
 
@@ -56,12 +56,23 @@ namespace Core
                 layer->LateUpdate(timestep);
 
             // Can be on seperate thread
-            BeginDrawing();
+            if (!m_Specification.eventRendering || m_NeedsRedraw) {
+                m_NeedsRedraw = false;
 
-            for (const std::unique_ptr<Layer>& layer : m_LayerStack)
-                layer->OnRender();
-        
-			EndDrawing();
+                // render textures, and other non-immediate stuff
+                for (const std::unique_ptr<Layer>& layer : m_LayerStack)
+                    layer->OnRender();
+
+                BeginDrawing();
+                ClearBackground(m_Specification.WindowSpec.ClearColor);
+
+                // draw to the screen
+                for (const std::unique_ptr<Layer>& layer : m_LayerStack)
+                    layer->OnComposite();
+
+                EndDrawing();
+            }
+
         }
     }
 
@@ -80,6 +91,11 @@ namespace Core
     float Application::GetTime()
     {
         return static_cast<float>(::GetTime());
+	}
+
+    Vector2 Application::GetWindowSize()
+    {
+        return m_Window->GetSize();
 	}
 
 }
