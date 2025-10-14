@@ -2,18 +2,17 @@
 
 #include "View3DLayer.h"
 
-View2DLayer::View2DLayer() {
+View2DLayer::View2DLayer()
+{
 	SetupRenderTexture();
 	ResetCamera();
 }
 
 
-View2DLayer::View2DLayer(ChemVis::Chemical& chem)
+View2DLayer::View2DLayer(std::shared_ptr<ChemVis::Chemical> chem) : chemical(chem)
 {
 	SetupRenderTexture();
 	ResetCamera();
-
-	// chem to be drawn/displayed
 }
 
 View2DLayer::~View2DLayer()
@@ -34,7 +33,7 @@ void View2DLayer::Update(float ts)
 	}
 
 	if (IsKeyPressed(KEY_TWO)) {
-		TransitionTo<View3DLayer>();
+		TransitionTo<View3DLayer>(chemical);
 		return;
 	}
 	
@@ -47,7 +46,19 @@ void View2DLayer::OnRender()
 	ClearBackground(clearColor);
 	BeginMode2D(camera);
 
-	DrawCircle(400, 400, 500, RED);
+	std::string chemName = "N/a";
+	if (chemical) {
+		chemName = chemical->GetInfo().name; // ERROR
+
+		ChemVis::AtomsInfo atoms = chemical->GetAtoms();
+
+		for (size_t i = 0; i < atoms.Types.size(); i++)
+		{
+			DrawCircle(atoms.Positions2D.x[i] * 20.0f, atoms.Positions2D.y[i] * 20.0f, 2, BLUE);
+		}
+	}
+
+	DrawText(chemName.c_str(), 0, 50, 20, RAYWHITE);
 	
 	EndMode2D();
 	EndTextureMode();

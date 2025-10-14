@@ -23,9 +23,8 @@ void AppLayer::Update(float ts)
 	if (textX > 800.0f)
 		textX = -200.0f;
 
-	if (IsKeyPressed(KEY_SPACE)) {
-		auto r = Core::Http::Client::Get("https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/water/JSON");
-		std::cout << r.body << "\n";
+	if (IsKeyPressed(KEY_M)) {
+		DisplayChemicalStructure();
 	}
 }
 
@@ -36,19 +35,21 @@ void AppLayer::OnComposite()
 
 void AppLayer::OnEvent(Core::Event& event)
 {
+	
+}
+
+void AppLayer::DisplayChemicalStructure()
+{
 	// if the user inputs chemical name
 
-	// fetch data from pubchem
+	//TODO also include the 3D structure
+	auto r = Core::Http::Client::Get("https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/water/JSON");
 
-	// on recieve event that the fetch is complete
 
-	// parse the data into a chemical obj
-
-	// push to View2DLayer and View3DLayer
-	//ChemVis::Chemical chem();
+	auto chem = std::make_shared<ChemVis::Chemical>(ChemVis::Chemical::Parse(r.body));
 
 	//! this don't work for some reason
-	Core::Application::Get().GetLayer<View2DLayer>()->TransitionTo<View2DLayer>();
+	Core::Application::Get().GetLayer<View2DLayer>()->TransitionTo<View2DLayer>(chem);
 	//Core::Application::Get().GetLayer<View3DLayer>()->TransitionTo<View3DLayer>(chem);
 }
  

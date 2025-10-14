@@ -3,6 +3,7 @@
 #include "Core/Layer.h"
 
 
+
 #include "raylib.h"
 
 class AppLayer : public Core::Layer
@@ -16,5 +17,7 @@ public:
 	virtual void OnEvent(Core::Event& event) override;
 
 private:
+	void DisplayChemicalStructure();
+
 	float textX = 0.0f;
 };

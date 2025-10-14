@@ -11,7 +11,7 @@ class View2DLayer : public Core::Layer
 {
 public:
 	View2DLayer();
-	View2DLayer(ChemVis::Chemical& chem);
+	View2DLayer(std::shared_ptr<ChemVis::Chemical> chem);
 	virtual ~View2DLayer();
 
 	virtual void Update(float ts) override;
@@ -22,6 +22,8 @@ private:
 	Camera2D camera;
 	RenderTexture2D target;
 	Color clearColor = BLACK;
+
+	std::shared_ptr<ChemVis::Chemical> chemical;
 
 	void SetupRenderTexture();
 	void ResetCamera();

@@ -11,7 +11,7 @@ class View3DLayer : public Core::Layer
 {
 public:
 	View3DLayer();
-	View3DLayer(ChemVis::Chemical& chem);
+	View3DLayer(std::shared_ptr<ChemVis::Chemical> chem);
 	virtual ~View3DLayer();
 
 	virtual void Update(float ts) override;
@@ -24,6 +24,8 @@ private:
 
 	RenderTexture2D target;
 	Color clearColor = BLACK;
+
+	std::shared_ptr<ChemVis::Chemical> chemical;
 
 	void SetupRenderTexture();
 	void ResetCamera();

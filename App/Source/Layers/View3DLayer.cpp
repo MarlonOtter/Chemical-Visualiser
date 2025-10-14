@@ -9,12 +9,10 @@ View3DLayer::View3DLayer() {
 }
 
 
-View3DLayer::View3DLayer(ChemVis::Chemical& chem)
+View3DLayer::View3DLayer(std::shared_ptr<ChemVis::Chemical> chem) : chemical(chem)
 {
 	SetupRenderTexture();
 	ResetCamera();
-
-	// chem to be drawn/displayed
 }
 
 View3DLayer::~View3DLayer()
@@ -54,7 +52,16 @@ void View3DLayer::OnRender()
 	ClearBackground(clearColor);
 	BeginMode3D(camera);
 
-	DrawSphere({ 0,0,0 }, 1.0f, RED);
+	if (chemical) {
+		ChemVis::AtomsInfo atoms = chemical->GetAtoms();
+		if (!atoms.Positions3D.x.empty() || true) 
+		{
+			for (size_t i = 0; i < atoms.Types.size(); i++)
+			{
+				DrawSphere({ atoms.Positions3D.x[i], atoms.Positions3D.y[i], atoms.Positions3D.z[i] }, 0.2f, BLUE);
+			}
+		}
+	}
 	
 	EndMode3D();
 	EndTextureMode();

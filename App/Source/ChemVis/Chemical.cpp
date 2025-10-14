@@ -65,6 +65,17 @@ namespace ChemVis
 
 	ChemicalInfo Chemical::ParseInfo(Core::json data)
 	{
+		
+		
+
+		const std::string NameAddr = "/PC_Compounds/0/props/6/value/sval";
+
+
+
+		return ChemicalInfo{
+			data.at(Core::json::json_pointer(NameAddr)).get<std::string>()
+		};
+
 		//! need to check this
 		return ChemicalInfo{ data["PC_Compounds"][0]["title"].get<std::string>(),
 							 data["PC_Compounds"][0]["molecular_formula"].get<std::string>(),
