@@ -1,19 +1,26 @@
 # Chemical Visualiser
 
-Visualise chemicals in 3D. made with C++ and OpenGL.
+Visualise chemical structure in 2D and 3D.
 
-This project was created for my A-Level Final Project in 2024-2025
+This project was originally created for my A-Level Final Project in 2024-2025 however I have since made significant changes to the entire codebase.
 
-Learning Resources:
+## Requirements
 
--   [OpenGL Tutorial by Victor Gordan](https://youtu.be/45MIykWJ-C4?si=pr_lk02W70C3H-nP)
--   [Assimp Tutorial by OGLDev](https://youtu.be/sP_kiODC25Q?si=q0IIRT-qoheRaMJz)
+CMake should download all the required external libraries automatically on build.
 
-Libraries:
+However for cpr (the library that I am using for http requests) meson is required. This requires a seperate setup.
 
--   Assimp for importing models
--   Httplib for web requests
--   ImGui for creating a user interface
+If you have python setup, it can be installed by running:
+
+```Bash
+pip install meson
+```
+
+### Libaries
+
+-   RayLib - Rendering, input handling, etc.
+-   cpr - HTTP Requests
+-   nlohmann::json - parsing json data
 
 ## Build
 
@@ -21,5 +28,7 @@ Libraries:
 mkdir -p build
 cd build
 cmake ..
-cmake --build . # or run in VS
+cmake --build .
 ```
+
+Alternatively, you can open the folder in Visual Studio and it should be able to be ran as usual (Run button / F5).

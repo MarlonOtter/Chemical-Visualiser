@@ -7,6 +7,8 @@
 
 #include "ChemVis/Chemical.h"
 
+#include "Core/Http/HttpClient.h"
+
 AppLayer::AppLayer()
 {
 }
@@ -20,6 +22,11 @@ void AppLayer::Update(float ts)
 	textX += 100.0f * ts;
 	if (textX > 800.0f)
 		textX = -200.0f;
+
+	if (IsKeyPressed(KEY_SPACE)) {
+		auto r = Core::Http::Client::Get("https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/water/JSON");
+		std::cout << r.body << "\n";
+	}
 }
 
 void AppLayer::OnComposite()
@@ -38,7 +45,7 @@ void AppLayer::OnEvent(Core::Event& event)
 	// parse the data into a chemical obj
 
 	// push to View2DLayer and View3DLayer
-	ChemVis::Chemical chem();
+	//ChemVis::Chemical chem();
 
 	//! this don't work for some reason
 	Core::Application::Get().GetLayer<View2DLayer>()->TransitionTo<View2DLayer>();
