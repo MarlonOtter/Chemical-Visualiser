@@ -9,6 +9,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # Dependencies
 include(Dependencies.cmake)
 
+
 # Projects
 add_subdirectory(Core)
 add_subdirectory(App)

@@ -5,11 +5,13 @@
 #include "raymath.h"
 
 #include "Core/Application.h"
+#include "ChemVis/Chemical.h"
 
 class View2DLayer : public Core::Layer
 {
 public:
 	View2DLayer();
+	View2DLayer(ChemVis::Chemical& chem);
 	virtual ~View2DLayer();
 
 	virtual void Update(float ts) override;
@@ -17,9 +19,13 @@ public:
 	virtual void OnComposite() override;
 
 private:
-	void HandleCameraMovement(float ts, Vector2 windowSize);
-
 	Camera2D camera;
 	RenderTexture2D target;
 	Color clearColor = BLACK;
+
+	void SetupRenderTexture();
+	void ResetCamera();
+	void HandleCameraMovement(float ts, Vector2 windowSize);
+
+	
 };

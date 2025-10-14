@@ -4,7 +4,7 @@
 
 include(FetchContent)
 
-# raylib
+# raylib - Abstracts away the graphics API
 set(RAYLIB_VERSION 5.5)
 find_package(raylib ${RAYLIB_VERSION} QUIET) # QUIET or REQUIRED
 if (NOT raylib_FOUND) # If there's none, fetch and build raylib
@@ -20,3 +20,12 @@ if (NOT raylib_FOUND) # If there's none, fetch and build raylib
     FetchContent_MakeAvailable(raylib)
   endif()
 endif()
+
+# nlohmann::json - JSON for Modern C++
+FetchContent_Declare(
+  json
+  GIT_REPOSITORY https://github.com/nlohmann/json.git
+  GIT_TAG v3.11.2 # or latest stable tag
+)
+
+FetchContent_MakeAvailable(json)

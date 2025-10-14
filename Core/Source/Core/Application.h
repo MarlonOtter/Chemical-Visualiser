@@ -41,8 +41,8 @@ namespace Core
             requires(std::is_base_of_v<Layer, TLayer>)
         TLayer* GetLayer() {
             for (const auto& layer : m_LayerStack) {
-                if (dynamic_cast<TLayer*>(layer.get())) {
-                    return layer.get();
+                if (auto typed = dynamic_cast<TLayer*>(layer.get())) {
+                    return typed;
                 }
             }
             return static_cast<TLayer*>(nullptr);

@@ -2,19 +2,19 @@
 
 #include "View2DLayer.h"
 
-View3DLayer::View3DLayer()
+
+View3DLayer::View3DLayer() {
+	SetupRenderTexture();
+	ResetCamera();
+}
+
+
+View3DLayer::View3DLayer(ChemVis::Chemical& chem)
 {
-	Core::Application& app = Core::Application::Get();
-	Vector2 windowSize = app.GetWindowSize();
-	target = LoadRenderTexture(static_cast<int>(windowSize.x), static_cast<int>(windowSize.y));
+	SetupRenderTexture();
+	ResetCamera();
 
-	camera.target = { 0,0,0 };
-	camera.position = { 5, 0, 0 };
-	camera.fovy = 60.0f;
-	camera.up = { 0,1,0 };
-	camera.projection = CAMERA_PERSPECTIVE;
-
-	
+	// chem to be drawn/displayed
 }
 
 View3DLayer::~View3DLayer()
@@ -75,4 +75,23 @@ void View3DLayer::HandleCameraMovement(float ts, Vector2 windowSize)
 	}
 	
 	// custom-orbit style camera
+}
+
+void View3DLayer::SetupRenderTexture()
+{
+	Core::Application& app = Core::Application::Get();
+	Vector2 windowSize = app.GetWindowSize();
+	target = LoadRenderTexture(static_cast<int>(windowSize.x), static_cast<int>(windowSize.y));
+
+}
+
+void View3DLayer::ResetCamera()
+{
+	camera = {};
+
+	camera.target = { 0,0,0 };
+	camera.position = { 5, 0, 0 };
+	camera.fovy = 60.0f;
+	camera.up = { 0,1,0 };
+	camera.projection = CAMERA_PERSPECTIVE;
 }

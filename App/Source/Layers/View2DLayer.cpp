@@ -2,15 +2,18 @@
 
 #include "View3DLayer.h"
 
-View2DLayer::View2DLayer()
-{
-	Core::Application& app = Core::Application::Get();
-	Vector2 windowSize = app.GetWindowSize();
-	target = LoadRenderTexture(static_cast<int>(windowSize.x), static_cast<int>(windowSize.y));
+View2DLayer::View2DLayer() {
+	SetupRenderTexture();
+	ResetCamera();
+}
 
-	camera.zoom = 10.0f;
-	camera.rotation = 0.0f;
-	camera.target = { 0,0 };
+
+View2DLayer::View2DLayer(ChemVis::Chemical& chem)
+{
+	SetupRenderTexture();
+	ResetCamera();
+
+	// chem to be drawn/displayed
 }
 
 View2DLayer::~View2DLayer()
@@ -69,4 +72,20 @@ void View2DLayer::HandleCameraMovement(float ts, Vector2 windowSize)
 
 	float scroll = Clamp(GetMouseWheelMove(), -1.0f, 1.0f) * 0.1f + 1.0f;
 	camera.zoom *= scroll;
+}
+
+void View2DLayer::SetupRenderTexture()
+{
+	Core::Application& app = Core::Application::Get();
+	Vector2 windowSize = app.GetWindowSize();
+	target = LoadRenderTexture(static_cast<int>(windowSize.x), static_cast<int>(windowSize.y));
+
+}
+
+void View2DLayer::ResetCamera()
+{
+	camera = {};
+	camera.zoom = 10.0f;
+	camera.rotation = 0.0f;
+	camera.target = { 0,0 };
 }
