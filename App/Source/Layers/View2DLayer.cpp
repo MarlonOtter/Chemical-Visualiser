@@ -1,6 +1,8 @@
 #include "View2DLayer.h"
 
 #include "View3DLayer.h"
+#include "Core/Renderer/Text.h"
+#include "Core/Renderer/Shape.h"
 
 View2DLayer::View2DLayer()
 {
@@ -16,7 +18,7 @@ View2DLayer::View2DLayer(std::shared_ptr<ChemVis::Chemical> chem) : chemical(che
 }
 
 View2DLayer::~View2DLayer()
-{
+{	
 	UnloadRenderTexture(target);
 }
 
@@ -25,19 +27,18 @@ void View2DLayer::Update(float ts)
 	Core::Application& app = Core::Application::Get();
 	Vector2 windowSize = app.GetWindowSize();
 
-	if (IsWindowResized())
+	if (viewportSize != prevSize)
 	{
+		prevSize = viewportSize;
 		// resize render texture
 		UnloadRenderTexture(target);
-		target = LoadRenderTexture(static_cast<int>(windowSize.x), static_cast<int>(windowSize.y));
+		target = LoadRenderTexture(static_cast<int>(viewportSize.x), static_cast<int>(viewportSize.y));
 	}
 
-	if (IsKeyPressed(KEY_TWO)) {
-		TransitionTo<View3DLayer>(chemical);
-		return;
+	if (IsKeyPressed(KEY_P))
+	{
+		HandleCameraMovement(ts, windowSize);
 	}
-	
-	HandleCameraMovement(ts, windowSize);
 }
 
 void View2DLayer::OnRender()
@@ -54,12 +55,13 @@ void View2DLayer::OnRender()
 
 		for (size_t i = 0; i < atoms.Types.size(); i++)
 		{
-			DrawCircle(atoms.Positions2D.x[i] * 20.0f, atoms.Positions2D.y[i] * 20.0f, 2, BLUE);
+			Core::Shape::Circle::Draw(atoms.Positions2D.x[i] * 20.0f, atoms.Positions2D.y[i] * 20.0f, 2, BLUE);
 		}
 	}
 
-	DrawText(chemName.c_str(), 0, 50, 20, RAYWHITE);
-	
+	Core::Text::Draw(chemName.c_str(), 0, 50, 20, Core::Color{255,255,255});
+	Core::Shape::Circle::Draw(0, 0, 5, RED); 
+
 	EndMode2D();
 	EndTextureMode();
 }
@@ -89,7 +91,7 @@ void View2DLayer::SetupRenderTexture()
 {
 	Core::Application& app = Core::Application::Get();
 	Vector2 windowSize = app.GetWindowSize();
-	target = LoadRenderTexture(static_cast<int>(windowSize.x), static_cast<int>(windowSize.y));
+	target = LoadRenderTexture(static_cast<int>(viewportSize.x), static_cast<int>(viewportSize.y));
 
 }
 

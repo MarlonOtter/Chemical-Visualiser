@@ -2,9 +2,7 @@
 
 #include "Core/Layer.h"
 #include "raylib.h"
-#include "raymath.h"
 
-#include "Core/Application.h"
 #include "ChemVis/Chemical.h"
 
 class View3DLayer : public Core::Layer
@@ -18,6 +16,7 @@ public:
 	virtual void OnRender() override;
 	virtual void OnComposite() override;
 
+	RenderTexture2D& getRenderTexture() { return target; }
 private:
 	Camera3D camera;
 	bool DebugCamera = false;

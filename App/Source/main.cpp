@@ -2,7 +2,8 @@
 
 #include "Layers/AppLayer.h"
 #include "Layers/View2DLayer.h"
-//#include "Layers/View3DLayer.h"
+#include "Layers/View3DLayer.h"
+#include "Layers/InterfaceLayer.h"
 
 
 int main()
@@ -16,12 +17,12 @@ int main()
 
 	Core::Application app(appSpec);
 
-	// application logic: fetch data, etc.
 	app.PushLayer<AppLayer>();
-	
-	// The structure rendering
 	app.PushLayer<View2DLayer>();
-	//app.PushLayer<View3DLayer>();
 	
+	app.PushLayer<View3DLayer>();
+	app.PushLayer<InterfaceLayer>();
+
+
 	app.Run();
 }

@@ -4,10 +4,12 @@
 
 #include "View2DLayer.h"
 #include "View3DLayer.h"
+#include "InterfaceLayer.h"
 
 #include "ChemVis/Chemical.h"
 
 #include "Core/Http/HttpClient.h"
+#include "Core/Renderer/Text.h"
 
 AppLayer::AppLayer()
 {
@@ -30,7 +32,11 @@ void AppLayer::Update(float ts)
 
 void AppLayer::OnComposite()
 {
-	DrawText("Hello from AppLayer!", textX, 200, 20, RAYWHITE);
+	Core::Application& app = Core::Application::Get();
+	auto& rt2D = app.GetLayer<View2DLayer>()->getRenderTexture();
+	auto& rt3D = app.GetLayer<View3DLayer>()->getRenderTexture();
+
+	app.GetLayer<InterfaceLayer>()->setRenderTextures(rt2D, rt3D);
 }
 
 void AppLayer::OnEvent(Core::Event& event)

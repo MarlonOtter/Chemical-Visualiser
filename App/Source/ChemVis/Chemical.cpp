@@ -1,6 +1,5 @@
 #include "Chemical.h"
 
-
 namespace ChemVis 
 {
 	Chemical::Chemical()

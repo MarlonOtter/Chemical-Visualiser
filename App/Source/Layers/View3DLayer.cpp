@@ -1,7 +1,7 @@
 #include "View3DLayer.h"
 
 #include "View2DLayer.h"
-
+#include "Core/Renderer/Model.h"
 
 View3DLayer::View3DLayer() {
 	SetupRenderTexture();
@@ -33,11 +33,6 @@ void View3DLayer::Update(float ts)
 		target = LoadRenderTexture(static_cast<int>(windowSize.x), static_cast<int>(windowSize.y));
 	}
 
-	if (IsKeyPressed(KEY_ONE)) {
-		TransitionTo<View2DLayer>();
-		return;
-	}
-
 	// move to dubug UI
 	if (IsKeyPressed(KEY_L)) {
 		DebugCamera = !DebugCamera;
@@ -54,11 +49,11 @@ void View3DLayer::OnRender()
 
 	if (chemical) {
 		ChemVis::AtomsInfo atoms = chemical->GetAtoms();
-		if (!atoms.Positions3D.x.empty() || true) 
+		if (!atoms.Positions3D.x.empty())
 		{
 			for (size_t i = 0; i < atoms.Types.size(); i++)
 			{
-				DrawSphere({ atoms.Positions3D.x[i], atoms.Positions3D.y[i], atoms.Positions3D.z[i] }, 0.2f, BLUE);
+				Core::Model::Sphere::Draw(atoms.Positions3D.x[i], atoms.Positions3D.y[i], atoms.Positions3D.z[i], 0.2f, BLUE);
 			}
 		}
 	}

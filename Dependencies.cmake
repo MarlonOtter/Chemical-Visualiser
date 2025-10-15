@@ -40,3 +40,14 @@ FetchContent_Declare(
 )
 
 FetchContent_MakeAvailable(cpr)
+
+
+# ImGui
+FetchContent_Declare(
+  imgui
+  GIT_REPOSITORY https://github.com/ocornut/imgui.git
+  GIT_TAG docking  # or latest stable tag
+)
+FetchContent_MakeAvailable(imgui)
+
+set(IMGUI_INCLUDE_DIR ${imgui_SOURCE_DIR})

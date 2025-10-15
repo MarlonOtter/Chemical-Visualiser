@@ -3,7 +3,6 @@
 #include <string>
 #include <vector>
 
-#include "raylib.h"
 #include "Core/Json.h"
 
 namespace ChemVis {
