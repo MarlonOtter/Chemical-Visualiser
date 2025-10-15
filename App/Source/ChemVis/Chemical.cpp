@@ -1,4 +1,5 @@
 #include "Chemical.h"
+#include <iostream>
 
 namespace ChemVis 
 {
@@ -38,6 +39,7 @@ namespace ChemVis
 		size_t AtomCount = AtomPosJson["aid"].size();
 		atoms.Positions2D.z = std::vector<float>(AtomCount, 0.0f); //2D structure has no z
 
+		//std::cout << "Conformers: \n" << AtomPosJson["conformers"].dump() << "\n";
 		if (AtomPosJson["conformers"].size() > 1) {
 			atoms.Positions3D.x = AtomPosJson["conformers"][1]["x"].get<std::vector<float>>();
 			atoms.Positions3D.y = AtomPosJson["conformers"][1]["y"].get<std::vector<float>>();
@@ -79,6 +81,21 @@ namespace ChemVis
 		return ChemicalInfo{ data["PC_Compounds"][0]["title"].get<std::string>(),
 							 data["PC_Compounds"][0]["molecular_formula"].get<std::string>(),
 							 data["PC_Compounds"][0]["molecular_weight"].get<float>() };
+	}
+
+
+	std::string Merge2Dand3D(std::string data2D, std::string data3D)
+	{
+		const std::string AtomPosAddr = "/PC_Compounds/0/coords/0/conformers";
+
+		Core::json base = Core::json::parse(data2D);
+		Core::json src = Core::json::parse(data3D);
+
+		base.at(Core::json::json_pointer(AtomPosAddr))[1] = src.at(Core::json::json_pointer(AtomPosAddr))[0];
+
+
+		//std::cout << base.dump();
+		return base.dump();
 	}
 
 

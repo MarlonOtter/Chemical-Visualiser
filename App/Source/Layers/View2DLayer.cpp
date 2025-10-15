@@ -27,15 +27,22 @@ void View2DLayer::Update(float ts)
 	Core::Application& app = Core::Application::Get();
 	Vector2 windowSize = app.GetWindowSize();
 
-	if (viewportSize != prevSize)
+	//std::cout << "width: " << windowData.width << ", height: " << windowData.height;
+
+	if (IsMouseButtonDown(MOUSE_BUTTON_LEFT) && ((windowData.width != static_cast<int>(prevSize.x)) || (windowData.height != static_cast<int>(prevSize.y))))
 	{
-		prevSize = viewportSize;
+		resizing = true;
+	} 
+	else if (resizing && IsMouseButtonReleased(MOUSE_BUTTON_LEFT))
+	{
+		resizing = false;
+		prevSize = { static_cast<float>(windowData.width), static_cast<float>(windowData.height) };
 		// resize render texture
 		UnloadRenderTexture(target);
-		target = LoadRenderTexture(static_cast<int>(viewportSize.x), static_cast<int>(viewportSize.y));
+		SetupRenderTexture();
 	}
-
-	if (IsKeyPressed(KEY_P))
+		
+	if (windowData.focused && windowData.hovered)
 	{
 		HandleCameraMovement(ts, windowSize);
 	}
@@ -47,9 +54,11 @@ void View2DLayer::OnRender()
 	ClearBackground(clearColor);
 	BeginMode2D(camera);
 
+	//Core::Shape::Circle::Draw(0, 0, 100, GREEN); // origin
+
 	std::string chemName = "N/a";
 	if (chemical) {
-		chemName = chemical->GetInfo().name; // ERROR
+		chemName = chemical->GetInfo().name;
 
 		ChemVis::AtomsInfo atoms = chemical->GetAtoms();
 
@@ -60,7 +69,7 @@ void View2DLayer::OnRender()
 	}
 
 	Core::Text::Draw(chemName.c_str(), 0, 50, 20, Core::Color{255,255,255});
-	Core::Shape::Circle::Draw(0, 0, 5, RED); 
+	//Core::Shape::Circle::Draw(0, 0, 5, RED); 
 
 	EndMode2D();
 	EndTextureMode();
@@ -68,14 +77,12 @@ void View2DLayer::OnRender()
 
 void View2DLayer::OnComposite()
 {
-	// this will be in a imgui window later
-	DrawTextureRec(target.texture, { 0, 0, static_cast<float>(target.texture.width), -static_cast<float>(target.texture.height) }, { 0, 0 }, WHITE);
 }
 
 
 void View2DLayer::HandleCameraMovement(float ts, Vector2 windowSize)
 {
-	camera.offset = { windowSize.x / 2, windowSize.y / 2 };
+	camera.offset = { static_cast<float>(windowData.width) / 2, static_cast<float>(windowData.height) / 2 };
 
 	if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
 	{
@@ -89,10 +96,7 @@ void View2DLayer::HandleCameraMovement(float ts, Vector2 windowSize)
 
 void View2DLayer::SetupRenderTexture()
 {
-	Core::Application& app = Core::Application::Get();
-	Vector2 windowSize = app.GetWindowSize();
-	target = LoadRenderTexture(static_cast<int>(viewportSize.x), static_cast<int>(viewportSize.y));
-
+	target = LoadRenderTexture(windowData.width, windowData.height);
 }
 
 void View2DLayer::ResetCamera()

@@ -6,6 +6,8 @@
 #include <functional>  
 
 #include "raylib.h"	
+#include "WindowData.h"
+
 
 class InterfaceLayer : public Core::Layer
 {
@@ -25,4 +27,9 @@ public:
 private:
 	std::optional<std::reference_wrapper<RenderTexture2D>> renderTexture2D;
 	std::optional<std::reference_wrapper<RenderTexture2D>> renderTexture3D;
+
+	WindowData getWindowData();
+
+	WindowData window2D;
+	WindowData window3D;
 };

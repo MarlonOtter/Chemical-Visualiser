@@ -1,7 +1,12 @@
 #include "InterfaceLayer.h"
 
+#include "Core/Application.h"
+#include "View2DLayer.h"
+#include "View3DLayer.h"
+
 #include "rlImGui.h"
 #include "imgui.h"
+#include "windowData.h"
 
 InterfaceLayer::InterfaceLayer()
 {
@@ -53,8 +58,11 @@ void InterfaceLayer::OnComposite()
 
 	if (renderTexture2D.has_value())
 	{
-		ImGui::Image((void*)(intptr_t)renderTexture2D->get().texture.id, ImVec2{ (float)renderTexture2D->get().texture.width, (float)renderTexture2D->get().texture.height }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+		ImGui::Image((void*)(intptr_t)renderTexture2D->get().texture.id, ImGui::GetContentRegionAvail(), ImVec2{0, 1}, ImVec2{1, 0});
 	}
+	
+	window2D = getWindowData();
+	//std::cout << "width: " << window2D.width << ", height: " << window2D.height << "\n";
 
 	ImGui::End();
 
@@ -64,8 +72,10 @@ void InterfaceLayer::OnComposite()
 	
 	if (renderTexture3D.has_value())
 	{
-		ImGui::Image((void*)(intptr_t)renderTexture3D->get().texture.id, ImVec2{ (float)renderTexture3D->get().texture.width, (float)renderTexture3D->get().texture.height }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+		ImGui::Image((void*)(intptr_t)renderTexture3D->get().texture.id, ImGui::GetContentRegionAvail(), ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 	}
+
+	window3D = getWindowData();
 
 	ImGui::End();
 
@@ -76,9 +86,23 @@ void InterfaceLayer::OnComposite()
 	ImGui::End();
 
 	rlImGuiEnd();
+
+	Core::Application& app = Core::Application::Get();
+	app.GetLayer<View2DLayer>()->setWindowData(window2D);
+	app.GetLayer<View3DLayer>()->setWindowData(window3D);
 }
 
 void InterfaceLayer::OnEvent(Core::Event& event)
 {
 
+}
+
+WindowData InterfaceLayer::getWindowData()
+{
+	return WindowData{
+		(int)ImGui::GetWindowWidth(),
+		(int)ImGui::GetWindowHeight(),
+		ImGui::IsWindowHovered(),
+		ImGui::IsWindowFocused(),
+	};
 }

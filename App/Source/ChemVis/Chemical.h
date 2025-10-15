@@ -56,4 +56,6 @@ namespace ChemVis {
 		static ChemicalInfo ParseInfo(Core::json data);
 	};
 
+
+	std::string Merge2Dand3D(std::string data2D, std::string data3D);
 }

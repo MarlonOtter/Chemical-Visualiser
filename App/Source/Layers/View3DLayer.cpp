@@ -25,12 +25,17 @@ void View3DLayer::Update(float ts)
 	Core::Application& app = Core::Application::Get();
 	Vector2 windowSize = app.GetWindowSize();
 
-	if (IsWindowResized())
+	if (IsMouseButtonDown(MOUSE_BUTTON_LEFT) && ((windowData.width != static_cast<int>(prevSize.x)) || (windowData.height != static_cast<int>(prevSize.y))))
 	{
-		std::cout << "resized\n";
+		resizing = true;
+	}
+	else if (resizing && IsMouseButtonReleased(MOUSE_BUTTON_LEFT))
+	{
+		resizing = false;
+		prevSize = { static_cast<float>(windowData.width), static_cast<float>(windowData.height) };
 		// resize render texture
 		UnloadRenderTexture(target);
-		target = LoadRenderTexture(static_cast<int>(windowSize.x), static_cast<int>(windowSize.y));
+		SetupRenderTexture();
 	}
 
 	// move to dubug UI
@@ -38,7 +43,10 @@ void View3DLayer::Update(float ts)
 		DebugCamera = !DebugCamera;
 	}
 
-	HandleCameraMovement(ts, windowSize);
+	if (windowData.focused && windowData.hovered && IsMouseButtonDown(MOUSE_BUTTON_LEFT))
+	{
+		HandleCameraMovement(ts, windowSize);
+	}
 }
 
 void View3DLayer::OnRender()
@@ -46,6 +54,8 @@ void View3DLayer::OnRender()
 	BeginTextureMode(target);
 	ClearBackground(clearColor);
 	BeginMode3D(camera);
+	
+	//DrawSphere({ 0,0,0 }, 1, Core::BLUE);
 
 	if (chemical) {
 		ChemVis::AtomsInfo atoms = chemical->GetAtoms();
@@ -64,8 +74,6 @@ void View3DLayer::OnRender()
 
 void View3DLayer::OnComposite()
 {
-	// this will be in a imgui window later
-	DrawTextureRec(target.texture, { 0, 0, static_cast<float>(target.texture.width), -static_cast<float>(target.texture.height) }, { 0, 0 }, WHITE);
 }
 
 
@@ -81,10 +89,7 @@ void View3DLayer::HandleCameraMovement(float ts, Vector2 windowSize)
 
 void View3DLayer::SetupRenderTexture()
 {
-	Core::Application& app = Core::Application::Get();
-	Vector2 windowSize = app.GetWindowSize();
-	target = LoadRenderTexture(static_cast<int>(windowSize.x), static_cast<int>(windowSize.y));
-
+	target = LoadRenderTexture(windowData.width, windowData.height);
 }
 
 void View3DLayer::ResetCamera()

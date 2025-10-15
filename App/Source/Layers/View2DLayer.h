@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core/Layer.h"
+#include "WindowData.h"
 
 #include "Core/Application.h"
 #include "ChemVis/Chemical.h"
@@ -18,13 +19,21 @@ public:
 
 	RenderTexture2D& getRenderTexture() { return target; }
 
+	void setWindowData(WindowData data) { windowData = data; }
+
 private:
+	
 	Camera2D camera;
 	RenderTexture2D target;
 	Color clearColor = BLACK;
 	Vector2 viewportSize = { 800, 800 };
 	Vector2 prevSize = { 800, 800 };
+	
+	WindowData windowData;
 	bool hovered = false;
+
+	bool resizing = false;
+
 
 	std::shared_ptr<ChemVis::Chemical> chemical;
 

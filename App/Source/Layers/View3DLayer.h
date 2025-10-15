@@ -2,6 +2,7 @@
 
 #include "Core/Layer.h"
 #include "raylib.h"
+#include "WindowData.h"
 
 #include "ChemVis/Chemical.h"
 
@@ -17,12 +18,20 @@ public:
 	virtual void OnComposite() override;
 
 	RenderTexture2D& getRenderTexture() { return target; }
+
+	void setWindowData(WindowData data) { windowData = data; }
+	
 private:
 	Camera3D camera;
 	bool DebugCamera = false;
 
 	RenderTexture2D target;
 	Color clearColor = BLACK;
+
+	Vector2 prevSize;
+	bool resizing = false;
+
+	WindowData windowData;
 
 	std::shared_ptr<ChemVis::Chemical> chemical;
 
