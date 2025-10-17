@@ -3,6 +3,7 @@
 #include "Core/Layer.h"
 #include "raylib.h"
 #include "WindowData.h"
+#include "Core/Cameras/ArcBall.h"
 
 #include "ChemVis/Chemical.h"
 
@@ -22,7 +23,7 @@ public:
 	void setWindowData(WindowData data) { windowData = data; }
 	
 private:
-	Camera3D camera;
+	Core::Camera::ArcBall camera;
 	bool DebugCamera = false;
 
 	RenderTexture2D target;

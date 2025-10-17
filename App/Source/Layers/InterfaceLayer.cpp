@@ -42,10 +42,24 @@ void InterfaceLayer::Update(float ts)
 
 void InterfaceLayer::OnComposite()
 {
-	Core::Application& app = Core::Application::Get();
-
 	rlImGuiBegin();
 
+	DrawDockSpace();
+	window2D = DrawView2D();
+	window3D = DrawView3D();
+	DrawMainInterface();
+
+	ImGui::ShowDemoWindow();
+
+	rlImGuiEnd();
+
+	Core::Application& app = Core::Application::Get();
+	app.GetLayer<View2DLayer>()->setWindowData(window2D);
+	app.GetLayer<View3DLayer>()->setWindowData(window3D);
+}
+
+void InterfaceLayer::DrawDockSpace()
+{
 	ImGuiViewport* viewport = ImGui::GetMainViewport();
 	ImGui::SetNextWindowPos(viewport->WorkPos);
 	ImGui::SetNextWindowSize(viewport->WorkSize);
@@ -61,69 +75,71 @@ void InterfaceLayer::OnComposite()
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 
-	ImGui::Begin("DockSpaceHost", nullptr, window_flags);
-	ImGui::PopStyleVar(3);
-
-	ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
-	ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_PassthruCentralNode);
-
-	ImGui::End();
-
-	/*-------------------------------*/
-
-	ImGui::Begin("View 2D");
-
-	if (renderTexture2D.has_value())
+	if (ImGui::Begin("DockSpaceHost", nullptr, window_flags))
 	{
-		ImGui::Image((void*)(intptr_t)renderTexture2D->get().texture.id, ImGui::GetContentRegionAvail(), ImVec2{0, 1}, ImVec2{1, 0});
-	}
-	
-	window2D = getWindowData();
-	//std::cout << "width: " << window2D.width << ", height: " << window2D.height << "\n";
-
-	ImGui::End();
-
-	/*-------------------------------*/
-
-	ImGui::Begin("View 3D");
-	
-	if (renderTexture3D.has_value())
-	{
-		ImGui::Image((void*)(intptr_t)renderTexture3D->get().texture.id, ImGui::GetContentRegionAvail(), ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+		ImGui::PopStyleVar(3);
+		ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
+		ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_PassthruCentralNode);
 	}
 
-	window3D = getWindowData();
-
 	ImGui::End();
+}
 
-	/*-------------------------------*/
-
-	ImGui::Begin("Interface");
-	
-	static std::string chemicalInp;
-	ImGui::InputText("##Chemical Input", chemicalInp.data(), chemicalInp.capacity() + 1,
-		ImGuiInputTextFlags_CallbackResize,
-		InputTextCallback, &chemicalInp);
-
-	static bool entered = false;
-	if (ImGui::Button("Search") || entered)
+WindowData InterfaceLayer::DrawView2D()
+{
+	static WindowData window;
+	if (ImGui::Begin("View 2D"))
 	{
-		entered = false;
-		// send to app layer to fetch
-		app.GetLayer<AppLayer>()->SetChemical(chemicalInp);
+		if (renderTexture2D.has_value())
+		{
+			ImGui::Image((void*)(intptr_t)renderTexture2D->get().texture.id, ImGui::GetContentRegionAvail(), ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+		}
+
+		window = getWindowData();
 	}
-
-	ImGui::Text("Here will also be the information about the chemical");
-
 	ImGui::End();
+	return window;
+}
 
-	ImGui::ShowDemoWindow();
-
-	rlImGuiEnd();
-
+WindowData InterfaceLayer::DrawView3D()
+{
+	static WindowData window;
+	if (ImGui::Begin("View 3D"))
+	{
+		if (renderTexture3D.has_value())
+		{
+			ImGui::Image((void*)(intptr_t)renderTexture3D->get().texture.id, ImGui::GetContentRegionAvail(), ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+		}
+		window = getWindowData();
+	}
+	ImGui::End();
 	
-	app.GetLayer<View2DLayer>()->setWindowData(window2D);
-	app.GetLayer<View3DLayer>()->setWindowData(window3D);
+	return window;
+}
+
+WindowData InterfaceLayer::DrawMainInterface()
+{
+	static WindowData window;
+	if (ImGui::Begin("Interface"))
+	{
+		static std::string chemicalInp;
+		ImGui::InputText("##Chemical Input", chemicalInp.data(), chemicalInp.capacity() + 1,
+			ImGuiInputTextFlags_CallbackResize,
+			InputTextCallback, &chemicalInp);
+
+		static bool entered = false;
+		if (ImGui::Button("Search") || entered)
+		{
+			entered = false;
+			// send to app layer to fetch
+			Core::Application::Get().GetLayer<AppLayer>()->SetChemical(chemicalInp);
+		}
+
+		ImGui::Text("Here will also be the information about the chemical");
+		window = getWindowData();
+	}
+	ImGui::End();
+	return window;
 }
 
 void InterfaceLayer::OnEvent(Core::Event& event)
@@ -138,6 +154,7 @@ WindowData InterfaceLayer::getWindowData()
 		(int)ImGui::GetWindowHeight(),
 		ImGui::IsWindowHovered(),
 		ImGui::IsWindowFocused(),
+		true,
 	};
 }
 

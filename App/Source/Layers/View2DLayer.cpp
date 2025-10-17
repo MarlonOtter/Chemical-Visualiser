@@ -62,6 +62,7 @@ void View2DLayer::OnRender()
 	if (chemical) {
 		ChemVis::AtomsInfo atoms = chemical->GetAtoms();
 		ChemVis::BondsInfo bonds = chemical->GetBonds();
+		// BONDS
 		for (size_t i = 0; i < bonds.BeginAtomIndices.size(); i++)
 		{
 			int startIndex = bonds.BeginAtomIndices[i] - 1;
@@ -75,9 +76,10 @@ void View2DLayer::OnRender()
 				);
 		}
 
+		// ATOMS
 		for (size_t i = 0; i < atoms.Types.size(); i++)
 		{
-			Core::Shape::Circle::Draw(atoms.Positions2D.x[i] * 1000.0f, atoms.Positions2D.y[i] * 1000.0f, 100, BLUE);
+			Core::Shape::Circle::Draw(atoms.Positions2D.x[i] * 1000.0f, atoms.Positions2D.y[i] * 1000.0f, 100, ChemVis::Chemical::GetColor(atoms.Types[i]));
 		}
 
 	}
@@ -108,6 +110,7 @@ void View2DLayer::HandleCameraMovement(float ts, Vector2 windowSize)
 void View2DLayer::SetupRenderTexture()
 {
 	target = LoadRenderTexture(windowData.width, windowData.height);
+	SetTextureFilter(target.texture, TEXTURE_FILTER_BILINEAR);
 }
 
 void View2DLayer::ResetCamera()

@@ -29,7 +29,7 @@ void View3DLayer::Update(float ts)
 	{
 		resizing = true;
 	}
-	if ((resizing && IsMouseButtonUp(MOUSE_BUTTON_LEFT)) || IsWindowResized())
+	if ((resizing && !IsMouseButtonDown(MOUSE_BUTTON_LEFT)) || IsWindowResized())
 	{
 		resizing = false;
 		prevSize = { static_cast<float>(windowData.width), static_cast<float>(windowData.height) };
@@ -38,12 +38,13 @@ void View3DLayer::Update(float ts)
 		SetupRenderTexture();
 	}
 
-	// move to dubug UI
+	// Toggle Debug Camera
+	//? move to debug UI later
 	if (IsKeyPressed(KEY_L)) {
 		DebugCamera = !DebugCamera;
 	}
 
-	if (windowData.focused && windowData.hovered && IsMouseButtonDown(MOUSE_BUTTON_LEFT))
+	if (windowData.focused && windowData.hovered)
 	{
 		HandleCameraMovement(ts, windowSize);
 	}
@@ -53,19 +54,20 @@ void View3DLayer::OnRender()
 {
 	BeginTextureMode(target);
 	ClearBackground(clearColor);
-	BeginMode3D(camera);
-	
-	//DrawSphere({ 0,0,0 }, 1, Core::BLUE);
+	BeginMode3D(camera.GetHandler());
 
 	if (chemical) {
 		ChemVis::AtomsInfo atoms = chemical->GetAtoms();
 		
 		if (!atoms.Positions3D.x.empty())
 		{
+			// ATOMS
 			for (size_t i = 0; i < atoms.Types.size(); i++)
 			{
-				Core::Model::Sphere::Draw(atoms.Positions3D.x[i], atoms.Positions3D.y[i], atoms.Positions3D.z[i], 0.25f, BLUE);
+				Core::Model::Sphere::Draw(atoms.Positions3D.x[i], atoms.Positions3D.y[i], atoms.Positions3D.z[i], 0.25f, ChemVis::Chemical::GetColor(atoms.Types[i]));
 			}
+
+			// BONDS
 			ChemVis::BondsInfo bonds = chemical->GetBonds();
 			for (size_t i = 0; i < bonds.BeginAtomIndices.size(); i++)
 			{
@@ -101,11 +103,12 @@ void View3DLayer::OnComposite()
 void View3DLayer::HandleCameraMovement(float ts, Vector2 windowSize)
 {
 	if (DebugCamera) {
-		UpdateCamera(&camera, CAMERA_FREE);
+		UpdateCamera(&camera.GetHandler(), CAMERA_FREE);
 		return;
 	}
 	
 	// custom-orbit style camera
+	camera.Update(ts);
 }
 
 void View3DLayer::SetupRenderTexture()
@@ -115,11 +118,5 @@ void View3DLayer::SetupRenderTexture()
 
 void View3DLayer::ResetCamera()
 {
-	camera = {};
-
-	camera.target = { 0,0,0 };
-	camera.position = { 5, 0, 0 };
-	camera.fovy = 60.0f;
-	camera.up = { 0,1,0 };
-	camera.projection = CAMERA_PERSPECTIVE;
+	camera.Update(0.0f);
 }

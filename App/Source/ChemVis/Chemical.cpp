@@ -75,12 +75,7 @@ namespace ChemVis
 
 	ChemicalInfo Chemical::ParseInfo(Core::json data)
 	{
-		
-		
-
 		const std::string NameAddr = "/PC_Compounds/0/props/6/value/sval";
-
-
 
 		return ChemicalInfo{
 			data.at(Core::json::json_pointer(NameAddr)).get<std::string>()
@@ -90,6 +85,28 @@ namespace ChemVis
 		return ChemicalInfo{ data["PC_Compounds"][0]["title"].get<std::string>(),
 							 data["PC_Compounds"][0]["molecular_formula"].get<std::string>(),
 							 data["PC_Compounds"][0]["molecular_weight"].get<float>() };
+	}
+
+	Core::Color Chemical::GetColor(int type)
+	{
+		switch (type)
+		{
+			case 1: {
+				return Core::WHITE;
+			}
+			case 6: {
+				return Core::GRAY;
+			}
+			case 7: {
+				return Core::BLUE;
+			}
+			case 8: {
+				return Core::RED;
+			}
+			default: {
+				return Core::PINK;
+			}
+		}
 	}
 
 	std::string Merge2Dand3D(std::string data2D, std::string data3D)

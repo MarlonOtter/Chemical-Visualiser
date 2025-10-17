@@ -15,6 +15,7 @@ int main()
 	appSpec.WindowSpec.IsResizeable = true;
 	appSpec.WindowSpec.VSync = true;
 
+	SetConfigFlags(FLAG_MSAA_4X_HINT);
 	Core::Application app(appSpec);
 
 	app.PushLayer<AppLayer>();

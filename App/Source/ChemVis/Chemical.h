@@ -5,6 +5,7 @@
 #include <optional>
 
 #include "raylib.h"
+#include "Core/Renderer/Color.h"
 
 #include "Core/Json.h"
 
@@ -45,11 +46,12 @@ namespace ChemVis {
 		~Chemical();
 
 		static std::optional<Chemical> Parse(std::string);
-
+		
 		const ChemicalInfo& GetInfo() const { return m_Info; }
 		const AtomsInfo& GetAtoms() const { return m_Atoms; }
 		const BondsInfo& GetBonds() const { return m_Bonds; }
 
+		static Core::Color GetColor(int type);
 	private:
 		const ChemicalInfo m_Info;
 		const AtomsInfo m_Atoms;

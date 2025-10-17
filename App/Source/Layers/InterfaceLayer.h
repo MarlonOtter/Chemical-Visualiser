@@ -31,8 +31,14 @@ private:
 	std::optional<std::reference_wrapper<RenderTexture2D>> renderTexture2D;
 	std::optional<std::reference_wrapper<RenderTexture2D>> renderTexture3D;
 
-	WindowData getWindowData();
-
 	WindowData window2D;
 	WindowData window3D;
+
+
+	WindowData getWindowData();
+	
+	void DrawDockSpace();
+	WindowData DrawView2D();
+	WindowData DrawView3D();
+	WindowData DrawMainInterface();
 };
