@@ -2,7 +2,7 @@
 file(GLOB_RECURSE CORE_SOURCES "Source/Core/*.cpp" "Source/*.c")
 file(GLOB_RECURSE CORE_HEADERS "Source/Core/*.h" "Source/*.hpp")
 
-add_library(Core STATIC ${CORE_SOURCES} ${CORE_HEADERS} "Source/Core/Layer.h" "Source/Core/Event.h" "Source/Core/Window.h" "Source/Core/Window.cpp" "Source/Core/Layer.cpp" "Source/Core/Json.h"   "Source/Core/Http/HttpClient.h"  "Source/Core/Renderer/Text.h" "Source/Core/Renderer/Text.cpp" "Source/Core/Renderer/Color.h"  "Source/Core/Renderer/Shape.h" "Source/Core/Renderer/Shape.cpp" "Source/Core/Renderer/Model.h" "Source/Core/Renderer/Model.cpp")
+add_library(Core STATIC ${CORE_SOURCES} ${CORE_HEADERS} "Source/Core/Layer.h" "Source/Core/Event.h" "Source/Core/Window.h" "Source/Core/Window.cpp" "Source/Core/Layer.cpp" "Source/Core/Json.h"   "Source/Core/Http/HttpClient.h"  "Source/Core/Renderer/Text.h" "Source/Core/Renderer/Text.cpp" "Source/Core/Renderer/Color.h"  "Source/Core/Renderer/Shape.h" "Source/Core/Renderer/Shape.cpp" "Source/Core/Renderer/Model.h" "Source/Core/Renderer/Model.cpp" "Source/Core/Utils/String.h" "Source/Core/Utils/String.cpp")
 
 target_sources(Core PRIVATE ${SOURCES})
 

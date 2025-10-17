@@ -18,6 +18,7 @@ set(IMGUI_SOURCES
   ${imgui_SOURCE_DIR}/imgui_draw.cpp
   ${imgui_SOURCE_DIR}/imgui_tables.cpp
   ${imgui_SOURCE_DIR}/imgui_widgets.cpp
+  ${imgui_SOURCE_DIR}/imgui_demo.cpp
 )
 
 add_library(imgui STATIC ${IMGUI_SOURCES})

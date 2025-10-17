@@ -29,7 +29,7 @@ private:
 	Color clearColor = BLACK;
 
 	Vector2 prevSize;
-	bool resizing = false;
+	bool resizing = true;
 
 	WindowData windowData;
 

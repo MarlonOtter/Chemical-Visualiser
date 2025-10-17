@@ -32,7 +32,7 @@ private:
 	WindowData windowData;
 	bool hovered = false;
 
-	bool resizing = false;
+	bool resizing = true;
 
 
 	std::shared_ptr<ChemVis::Chemical> chemical;

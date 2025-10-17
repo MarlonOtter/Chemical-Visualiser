@@ -3,6 +3,9 @@
 #include "View3DLayer.h"
 #include "Core/Renderer/Text.h"
 #include "Core/Renderer/Shape.h"
+#include "Core/Renderer/Model.h"
+
+#include "raylib.h"
 
 View2DLayer::View2DLayer()
 {
@@ -33,7 +36,9 @@ void View2DLayer::Update(float ts)
 	{
 		resizing = true;
 	} 
-	else if (resizing && IsMouseButtonReleased(MOUSE_BUTTON_LEFT))
+	//! Window data is not updated when this is ran for the first frame
+	//! so until the user interacts with the program it is pixelated. 
+	if ((resizing && IsMouseButtonUp(MOUSE_BUTTON_LEFT)) || IsWindowResized())
 	{
 		resizing = false;
 		prevSize = { static_cast<float>(windowData.width), static_cast<float>(windowData.height) };
@@ -54,22 +59,28 @@ void View2DLayer::OnRender()
 	ClearBackground(clearColor);
 	BeginMode2D(camera);
 
-	//Core::Shape::Circle::Draw(0, 0, 100, GREEN); // origin
-
-	std::string chemName = "N/a";
 	if (chemical) {
-		chemName = chemical->GetInfo().name;
-
 		ChemVis::AtomsInfo atoms = chemical->GetAtoms();
+		ChemVis::BondsInfo bonds = chemical->GetBonds();
+		for (size_t i = 0; i < bonds.BeginAtomIndices.size(); i++)
+		{
+			int startIndex = bonds.BeginAtomIndices[i] - 1;
+			int endIndex = bonds.EndAtomIndices[i] - 1;
+
+			Core::Shape::Line::DrawEx(
+				{ atoms.Positions2D.x[startIndex] * 1000.0f , atoms.Positions2D.y[startIndex] * 1000.0f},
+				{ atoms.Positions2D.x[endIndex] * 1000.0f, atoms.Positions2D.y[endIndex] * 1000.0f },
+				50, 
+				Core::RAYWHITE
+				);
+		}
 
 		for (size_t i = 0; i < atoms.Types.size(); i++)
 		{
-			Core::Shape::Circle::Draw(atoms.Positions2D.x[i] * 20.0f, atoms.Positions2D.y[i] * 20.0f, 2, BLUE);
+			Core::Shape::Circle::Draw(atoms.Positions2D.x[i] * 1000.0f, atoms.Positions2D.y[i] * 1000.0f, 100, BLUE);
 		}
-	}
 
-	Core::Text::Draw(chemName.c_str(), 0, 50, 20, Core::Color{255,255,255});
-	//Core::Shape::Circle::Draw(0, 0, 5, RED); 
+	}
 
 	EndMode2D();
 	EndTextureMode();
@@ -102,7 +113,7 @@ void View2DLayer::SetupRenderTexture()
 void View2DLayer::ResetCamera()
 {
 	camera = {};
-	camera.zoom = 10.0f;
+	camera.zoom = 0.1f;
 	camera.rotation = 0.0f;
 	camera.target = { 0,0 };
 }

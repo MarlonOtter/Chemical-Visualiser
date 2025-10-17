@@ -3,16 +3,31 @@
 #include "Core/Application.h"
 #include "View2DLayer.h"
 #include "View3DLayer.h"
+#include "AppLayer.h"
 
 #include "rlImGui.h"
 #include "imgui.h"
 #include "windowData.h"
+
+
+static int InputTextCallback(ImGuiInputTextCallbackData* data) {
+	if (data->UserData) {
+		std::string* str = static_cast<std::string*>(data->UserData);
+		if (data->EventFlag == ImGuiInputTextFlags_CallbackResize) {
+			str->resize(data->BufTextLen);
+			data->Buf = str->data();
+		}
+	}
+	return 0;
+}
+
 
 InterfaceLayer::InterfaceLayer()
 {
 	rlImGuiSetup(true);
 	ImGuiIO& io = ImGui::GetIO();
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+	io.ConfigWindowsMoveFromTitleBarOnly = true;
 }
 
 InterfaceLayer::~InterfaceLayer()
@@ -27,6 +42,8 @@ void InterfaceLayer::Update(float ts)
 
 void InterfaceLayer::OnComposite()
 {
+	Core::Application& app = Core::Application::Get();
+
 	rlImGuiBegin();
 
 	ImGuiViewport* viewport = ImGui::GetMainViewport();
@@ -82,12 +99,29 @@ void InterfaceLayer::OnComposite()
 	/*-------------------------------*/
 
 	ImGui::Begin("Interface");
-	ImGui::Text("This is the main interface");
+	
+	static std::string chemicalInp;
+	ImGui::InputText("##Chemical Input", chemicalInp.data(), chemicalInp.capacity() + 1,
+		ImGuiInputTextFlags_CallbackResize,
+		InputTextCallback, &chemicalInp);
+
+	static bool entered = false;
+	if (ImGui::Button("Search") || entered)
+	{
+		entered = false;
+		// send to app layer to fetch
+		app.GetLayer<AppLayer>()->SetChemical(chemicalInp);
+	}
+
+	ImGui::Text("Here will also be the information about the chemical");
+
 	ImGui::End();
+
+	ImGui::ShowDemoWindow();
 
 	rlImGuiEnd();
 
-	Core::Application& app = Core::Application::Get();
+	
 	app.GetLayer<View2DLayer>()->setWindowData(window2D);
 	app.GetLayer<View3DLayer>()->setWindowData(window3D);
 }
@@ -106,3 +140,10 @@ WindowData InterfaceLayer::getWindowData()
 		ImGui::IsWindowFocused(),
 	};
 }
+
+void InterfaceLayer::PushError(std::string error)
+{
+	return;
+}
+
+

@@ -10,7 +10,7 @@ int main()
 {   
 	Core::ApplicationSpecification appSpec;
 	appSpec.Name = "My Core Application";
-	appSpec.WindowSpec.Width = 800;
+	appSpec.WindowSpec.Width = 1200;
 	appSpec.WindowSpec.Height = 800;
 	appSpec.WindowSpec.IsResizeable = true;
 	appSpec.WindowSpec.VSync = true;

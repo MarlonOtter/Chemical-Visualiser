@@ -10,6 +10,7 @@
 
 #include "Core/Http/HttpClient.h"
 #include "Core/Renderer/Text.h"
+#include "Core/Utils/String.h"
 
 AppLayer::AppLayer()
 {
@@ -21,12 +22,10 @@ AppLayer::~AppLayer()
 
 void AppLayer::Update(float ts)
 {
-	textX += 100.0f * ts;
-	if (textX > 800.0f)
-		textX = -200.0f;
 
-	if (IsKeyPressed(KEY_M)) {
-		DisplayChemicalStructure();
+	if (chemicalRecieved) {
+		DisplayChemicalStructure(chemical);
+		chemicalRecieved = false;
 	}
 }
 
@@ -44,17 +43,30 @@ void AppLayer::OnEvent(Core::Event& event)
 	
 }
 
-void AppLayer::DisplayChemicalStructure()
+void AppLayer::SetChemical(std::string _chemical)
 {
-	// if the user inputs chemical name
+	chemical = _chemical;
+	chemicalRecieved = true;
+}
 
-	//TODO also include the 3D structure
-	auto r2D = Core::Http::Client::Get("https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/water/JSON?record_type=2d");
-	auto r3D = Core::Http::Client::Get("https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/water/JSON?record_type=3d");
+void AppLayer::DisplayChemicalStructure(std::string name)
+{
+	name = Core::String::Replace(name, ' ', "%20");
 
+	Core::Http::HttpResponse r2D = Core::Http::Client::Get("https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/"+name+"/JSON?record_type=2d");
+	Core::Http::HttpResponse r3D = Core::Http::Client::Get("https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/"+name+"/JSON?record_type=3d");
 
-	auto chem = std::make_shared<ChemVis::Chemical>(ChemVis::Chemical::Parse(ChemVis::Merge2Dand3D(r2D.body, r3D.body)));
+	auto chemObj = ChemVis::Chemical::Parse(ChemVis::Merge2Dand3D(r2D.body, r3D.body));
+	if (!chemObj.has_value())
+	{
+		// send error to interface layer
+		Core::Application::Get().GetLayer<InterfaceLayer>()->PushError("PubChem Request Failed");
+		return;
+	}
 
+	auto chem = std::make_shared<ChemVis::Chemical>(chemObj.value());
+
+	// regenerate the Layers with the new chemical
 	Core::Application::Get().GetLayer<View2DLayer>()->TransitionTo<View2DLayer>(chem);
 	Core::Application::Get().GetLayer<View3DLayer>()->TransitionTo<View3DLayer>(chem);
 }

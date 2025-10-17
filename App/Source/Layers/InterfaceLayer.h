@@ -4,6 +4,7 @@
 
 #include <optional>         
 #include <functional>  
+#include <string>
 
 #include "raylib.h"	
 #include "WindowData.h"
@@ -23,6 +24,8 @@ public:
 		renderTexture2D = rt2D;
 		renderTexture3D = rt3D;
 	}
+
+	void PushError(std::string error);
 
 private:
 	std::optional<std::reference_wrapper<RenderTexture2D>> renderTexture2D;

@@ -29,7 +29,7 @@ void View3DLayer::Update(float ts)
 	{
 		resizing = true;
 	}
-	else if (resizing && IsMouseButtonReleased(MOUSE_BUTTON_LEFT))
+	if ((resizing && IsMouseButtonUp(MOUSE_BUTTON_LEFT)) || IsWindowResized())
 	{
 		resizing = false;
 		prevSize = { static_cast<float>(windowData.width), static_cast<float>(windowData.height) };
@@ -59,11 +59,32 @@ void View3DLayer::OnRender()
 
 	if (chemical) {
 		ChemVis::AtomsInfo atoms = chemical->GetAtoms();
+		
 		if (!atoms.Positions3D.x.empty())
 		{
 			for (size_t i = 0; i < atoms.Types.size(); i++)
 			{
-				Core::Model::Sphere::Draw(atoms.Positions3D.x[i], atoms.Positions3D.y[i], atoms.Positions3D.z[i], 0.2f, BLUE);
+				Core::Model::Sphere::Draw(atoms.Positions3D.x[i], atoms.Positions3D.y[i], atoms.Positions3D.z[i], 0.25f, BLUE);
+			}
+			ChemVis::BondsInfo bonds = chemical->GetBonds();
+			for (size_t i = 0; i < bonds.BeginAtomIndices.size(); i++)
+			{
+				int startIndex = bonds.BeginAtomIndices[i] - 1;
+				int endIndex = bonds.EndAtomIndices[i] - 1;
+
+				//? regenerates the mesh every frame would be better to generate the mesh and reuse it instead
+				Core::Model::Cylinder::DrawEx(
+					{ atoms.Positions3D.x[startIndex], atoms.Positions3D.y[startIndex], atoms.Positions3D.z[startIndex] },
+					{ atoms.Positions3D.x[endIndex], atoms.Positions3D.y[endIndex], atoms.Positions3D.z[endIndex] },
+					0.1, 0.1, 10, Core::GREEN
+				);
+
+
+				// implement this later
+				for (size_t j = 0; j < bonds.BondOrders[i]; j++)
+				{
+					break;
+				}
 			}
 		}
 	}

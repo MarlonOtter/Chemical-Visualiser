@@ -1,5 +1,7 @@
 #include "Chemical.h"
 #include <iostream>
+#include "raymath.h"
+
 
 namespace ChemVis 
 {
@@ -16,11 +18,18 @@ namespace ChemVis
 	{
 	}
 
-	Chemical Chemical::Parse(std::string data)
+	std::optional<Chemical> Chemical::Parse(std::string data)
 	{
-		Core::json DataJson = Core::json::parse(data);
-
-		return Chemical(ParseAtoms(DataJson), ParseBonds(DataJson), ParseInfo(DataJson));
+		try
+		{
+			// Try and parse the JSON data
+			Core::json DataJson = Core::json::parse(data);
+			return Chemical(ParseAtoms(DataJson), ParseBonds(DataJson), ParseInfo(DataJson));
+		}
+		catch (Core::json::parse_error) {
+			// If not valid JSON data
+			return std::optional<Chemical>();
+		}
 	}
 
 	AtomsInfo Chemical::ParseAtoms(Core::json data)
@@ -83,19 +92,40 @@ namespace ChemVis
 							 data["PC_Compounds"][0]["molecular_weight"].get<float>() };
 	}
 
-
 	std::string Merge2Dand3D(std::string data2D, std::string data3D)
 	{
 		const std::string AtomPosAddr = "/PC_Compounds/0/coords/0/conformers";
 
-		Core::json base = Core::json::parse(data2D);
-		Core::json src = Core::json::parse(data3D);
+		try
+		{
+			Core::json base = Core::json::parse(data2D);
+			Core::json src = Core::json::parse(data3D);
 
-		base.at(Core::json::json_pointer(AtomPosAddr))[1] = src.at(Core::json::json_pointer(AtomPosAddr))[0];
+			// VALIDATE
+			if (base.contains("Fault")) {
+				std::cout << "ERROR: Fault in PubChem request: " << base["Fault"]["Message"] << "\n";
+				return "";
+			}
+			else if (src.contains("Fault"))
+			{
+				return base.dump();
+			}
 
+			if (!base.contains("PC_Compounds"))
+			{
+				std::cout << "ERROR: PubChem Response is missing data or in incorrect format\n";
+				return "";
+			}
 
-		//std::cout << base.dump();
-		return base.dump();
+			base.at(Core::json::json_pointer(AtomPosAddr))[1] = src.at(Core::json::json_pointer(AtomPosAddr))[0];
+
+			return base.dump();
+		}
+		catch (Core::json::parse_error)
+		{
+			std::cout << "ERROR: Could not Parse data returned from PubChem";
+			return "";
+		}
 	}
 
 
