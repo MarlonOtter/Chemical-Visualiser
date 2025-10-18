@@ -16,11 +16,13 @@ If you have python setup, it can be installed by running:
 pip install meson
 ```
 
-### Libaries
+### Libraries
 
 -   RayLib - Rendering, input handling, etc.
 -   cpr - HTTP Requests
 -   nlohmann::json - parsing json data
+-   imgui - UI
+-   rlImgui - allow imgui to work with raylib
 
 ## Build
 
