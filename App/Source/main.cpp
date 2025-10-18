@@ -20,7 +20,6 @@ int main()
 
 	app.PushLayer<View2DLayer>();
 	app.PushLayer<View3DLayer>();
-
 	app.PushLayer<InterfaceLayer>();
 
 

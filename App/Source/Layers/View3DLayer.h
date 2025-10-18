@@ -24,19 +24,29 @@ public:
 	
 	Core::Camera::ArcBall& Camera() { return camera; }
 
+	float& AtomSize() { return m_AtomSize; }
+	float& HydrogenScale() { return m_HydrogenScale; }
+	float& BondRadius() { return m_BondRadius; }
+	float& BondSeperation() { return m_BondSeperation; }
+	int& BondDetail() { return m_BondDetail; }
+
 private:
 	Core::Camera::ArcBall camera;
 	bool DebugCamera = false;
-
 	RenderTexture2D target;
 	Color clearColor = BLACK;
-
 	Vector2 prevSize;
 	bool resizing = true;
-
 	WindowData windowData;
 
 	std::shared_ptr<ChemVis::Chemical> chemical;
+
+	float m_AtomSize = 0.25f;
+	float m_HydrogenScale = 0.66f;
+	float m_BondRadius = 0.1f;
+	float m_BondSeperation = 0.1f;
+	int m_BondDetail = 10;
+
 
 	void SetupRenderTexture();
 	void ResetCamera();

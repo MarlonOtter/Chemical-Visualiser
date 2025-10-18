@@ -67,14 +67,24 @@ void View2DLayer::OnRender()
 		{
 			int startIndex = bonds.BeginAtomIndices[i] - 1;
 			int endIndex = bonds.EndAtomIndices[i] - 1;
+			int bondOrder = bonds.BondOrders[i];
 
-			//TODO Draw multi-order bonds
-			Core::Shape::Line::DrawEx(
-				{ atoms.Positions2D.x[startIndex] * m_WorldScale , atoms.Positions2D.y[startIndex] * m_WorldScale },
-				{ atoms.Positions2D.x[endIndex] * m_WorldScale, atoms.Positions2D.y[endIndex] * m_WorldScale },
-				m_BondWidth * static_cast<float>(m_WorldScale),
-				Core::RAYWHITE
+			Vector2 StartPos = { atoms.Positions2D.x[startIndex], atoms.Positions2D.y[startIndex] };
+			Vector2 EndPos = { atoms.Positions2D.x[endIndex], atoms.Positions2D.y[endIndex] };			
+			Vector2 Direction = EndPos - StartPos;
+			Vector2 Perpendicular = Vector2Normalize({ Direction.y, -Direction.x });
+			
+			for (int j = 0; j < bondOrder; j++)
+			{
+				Vector2 offset = Perpendicular * (m_BondSeperation * j - (m_BondSeperation * (bondOrder - 1) / 2));
+
+				Core::Shape::Line::DrawEx(
+					(StartPos + offset) * m_WorldScale,
+					(EndPos + offset) * m_WorldScale,
+					m_BondWidth * static_cast<float>(m_WorldScale),
+					Core::RAYWHITE
 				);
+			}
 		}
 
 		// ATOMS

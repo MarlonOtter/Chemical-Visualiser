@@ -64,7 +64,10 @@ void View3DLayer::OnRender()
 			// ATOMS
 			for (size_t i = 0; i < atoms.Types.size(); i++)
 			{
-				Core::Model::Sphere::Draw(atoms.Positions3D.x[i], atoms.Positions3D.y[i], atoms.Positions3D.z[i], 0.25f, ChemVis::Chemical::GetColor(atoms.Types[i]));
+				Core::Model::Sphere::Draw(
+					atoms.Positions3D.x[i], atoms.Positions3D.y[i], atoms.Positions3D.z[i],
+					m_AtomSize * (atoms.Types[i] == 1 ? m_HydrogenScale : 1),
+					ChemVis::Chemical::GetColor(atoms.Types[i]));
 			}
 
 			// BONDS
@@ -73,19 +76,22 @@ void View3DLayer::OnRender()
 			{
 				int startIndex = bonds.BeginAtomIndices[i] - 1;
 				int endIndex = bonds.EndAtomIndices[i] - 1;
+				int bondOrder = bonds.BondOrders[i];
 
-				//? regenerates the mesh every frame would be better to generate the mesh and reuse it instead
-				Core::Model::Cylinder::DrawEx(
-					{ atoms.Positions3D.x[startIndex], atoms.Positions3D.y[startIndex], atoms.Positions3D.z[startIndex] },
-					{ atoms.Positions3D.x[endIndex], atoms.Positions3D.y[endIndex], atoms.Positions3D.z[endIndex] },
-					0.1, 0.1, 10, Core::GREEN
-				);
+				Vector3 StartPos = { atoms.Positions3D.x[startIndex], atoms.Positions3D.y[startIndex], atoms.Positions3D.z[startIndex] };
+				Vector3 EndPos = { atoms.Positions3D.x[endIndex], atoms.Positions3D.y[endIndex], atoms.Positions3D.z[endIndex] };
+				Vector3 Direction = EndPos - StartPos;
+				Vector3 Perpendicular = Vector3Normalize(Vector3CrossProduct(Direction, { 0,0,1 }));
 
-
-				// implement this later
-				for (size_t j = 0; j < bonds.BondOrders[i]; j++)
+				for (size_t j = 0; j < bondOrder; j++)
 				{
-					break;
+					Vector3 offset = Perpendicular * (m_BondSeperation * j - (m_BondSeperation * (bondOrder - 1) / 2));
+
+					Core::Model::Cylinder::DrawEx(
+						StartPos + offset,
+						EndPos + offset,
+						m_BondRadius, m_BondRadius, m_BondDetail, Core::GREEN
+					);
 				}
 			}
 		}

@@ -152,10 +152,16 @@ WindowData InterfaceLayer::DrawSettings()
 		ImGui::DragFloat("Atom Size", &(layer2D->AtomSize()), 0.001f);
 		ImGui::DragFloat("Hydrogen Scale", &(layer2D->HydrogenScale()), 0.001, 0.0, 1.0);
 		ImGui::DragFloat("Bond Width", &(layer2D->BondWidth()), 0.001f);
+		ImGui::DragFloat("Bond Seperation 2D", &(layer2D->BondSeperation()), 0.001f);
 		ImGui::DragInt("World Scale", &(layer2D->WorldScale()));
 
 		View3DLayer* layer3D = Core::Application::Get().GetLayer<View3DLayer>();
 		ImGui::DragFloat("3D Pan Sensitivity", &(layer3D->Camera().PanSensitivity()), 0.001f);
+		ImGui::DragFloat("Atom Size 3D", &(layer3D->AtomSize()), 0.001f);
+		ImGui::DragFloat("Hydrogen Scale 3D", &(layer3D->HydrogenScale()), 0.001f);
+		ImGui::DragFloat("Bond Radius 3D", &(layer3D->BondRadius()), 0.001f);
+		ImGui::DragInt("Bond Detail 3D", &(layer3D->BondDetail()));
+		ImGui::DragFloat("Bond Seperation 3D", &(layer3D->BondSeperation()), 0.001f);
 	}
 	WindowData window = getWindowData();
 	ImGui::End();
