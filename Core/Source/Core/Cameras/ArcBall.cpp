@@ -56,7 +56,7 @@ namespace Core::Camera
         if (IsMouseButtonDown(MOUSE_BUTTON_MIDDLE) && !IsMouseButtonDown(MOUSE_BUTTON_LEFT))
         {
             Vector3 right = Vector3Transform(Vector3{ 1, 0, 0 }, quatMat);
-            m_Handler.target += (right * -delta.x * m_PanSensitivity) + (up * delta.y * m_PanSensitivity);
+            m_Handler.target += (right * -delta.x * m_PanSensitivity * m_Distance) + (up * delta.y * m_PanSensitivity * m_Distance);
         }
 
         // Update camera

@@ -41,4 +41,5 @@ private:
 	WindowData DrawView2D();
 	WindowData DrawView3D();
 	WindowData DrawMainInterface();
+	WindowData DrawSettings();
 };

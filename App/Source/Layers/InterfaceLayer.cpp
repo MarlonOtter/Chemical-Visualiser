@@ -9,6 +9,7 @@
 #include "imgui.h"
 #include "windowData.h"
 
+#include "extras/IconsFontAwesome6.h"
 
 static int InputTextCallback(ImGuiInputTextCallbackData* data) {
 	if (data->UserData) {
@@ -48,6 +49,7 @@ void InterfaceLayer::OnComposite()
 	window2D = DrawView2D();
 	window3D = DrawView3D();
 	DrawMainInterface();
+	DrawSettings();
 
 	ImGui::ShowDemoWindow();
 
@@ -88,7 +90,7 @@ void InterfaceLayer::DrawDockSpace()
 WindowData InterfaceLayer::DrawView2D()
 {
 	static WindowData window;
-	if (ImGui::Begin("View 2D"))
+	if (ImGui::Begin("\xEF\x83\x88 View 2D")) // Square
 	{
 		if (renderTexture2D.has_value())
 		{
@@ -104,7 +106,7 @@ WindowData InterfaceLayer::DrawView2D()
 WindowData InterfaceLayer::DrawView3D()
 {
 	static WindowData window;
-	if (ImGui::Begin("View 3D"))
+	if (ImGui::Begin("\xef\x86\xb2 View 3D")) // Cube
 	{
 		if (renderTexture3D.has_value())
 		{
@@ -120,15 +122,15 @@ WindowData InterfaceLayer::DrawView3D()
 WindowData InterfaceLayer::DrawMainInterface()
 {
 	static WindowData window;
-	if (ImGui::Begin("Interface"))
+	if (ImGui::Begin("\xef\x84\xa9 Interface")) // Info 
 	{
 		static std::string chemicalInp;
-		ImGui::InputText("##Chemical Input", chemicalInp.data(), chemicalInp.capacity() + 1,
-			ImGuiInputTextFlags_CallbackResize,
+		bool entered = ImGui::InputText("##Chemical Input", chemicalInp.data(), chemicalInp.capacity() + 1,
+			ImGuiInputTextFlags_CallbackResize | ImGuiInputTextFlags_EnterReturnsTrue,
 			InputTextCallback, &chemicalInp);
 
-		static bool entered = false;
-		if (ImGui::Button("Search") || entered)
+		ImGui::SameLine();
+		if (ImGui::Button(ICON_FA_MAGNIFYING_GLASS) || entered)
 		{
 			entered = false;
 			// send to app layer to fetch
@@ -142,9 +144,26 @@ WindowData InterfaceLayer::DrawMainInterface()
 	return window;
 }
 
+WindowData InterfaceLayer::DrawSettings()
+{
+	if (ImGui::Begin("\xef\x80\x93 Settings")) // Gear
+	{
+		View2DLayer* layer2D = Core::Application::Get().GetLayer<View2DLayer>();
+		ImGui::DragFloat("Atom Size", &(layer2D->AtomSize()), 0.001f);
+		ImGui::DragFloat("Hydrogen Scale", &(layer2D->HydrogenScale()), 0.001, 0.0, 1.0);
+		ImGui::DragFloat("Bond Width", &(layer2D->BondWidth()), 0.001f);
+		ImGui::DragInt("World Scale", &(layer2D->WorldScale()));
+
+		View3DLayer* layer3D = Core::Application::Get().GetLayer<View3DLayer>();
+		ImGui::DragFloat("3D Pan Sensitivity", &(layer3D->Camera().PanSensitivity()), 0.001f);
+	}
+	WindowData window = getWindowData();
+	ImGui::End();
+	return window;
+}
+
 void InterfaceLayer::OnEvent(Core::Event& event)
 {
-
 }
 
 WindowData InterfaceLayer::getWindowData()

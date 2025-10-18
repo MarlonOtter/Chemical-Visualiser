@@ -18,6 +18,11 @@ public:
 	virtual void OnComposite() override;
 
 	RenderTexture2D& getRenderTexture() { return target; }
+	float& AtomSize() { return m_AtomSize; }
+	float& HydrogenScale() { return m_HydrogenScale; }
+	float& BondWidth() { return m_BondWidth; }
+	float& BondSeperation() { return m_BondSeperation; }
+	int& WorldScale() { return m_WorldScale; }
 
 	void setWindowData(WindowData data) { windowData = data; }
 
@@ -33,6 +38,12 @@ private:
 	bool hovered = false;
 
 	bool resizing = true;
+
+	int m_WorldScale = 1000;
+	float m_AtomSize = 0.1f;
+	float m_HydrogenScale = 0.75f;
+	float m_BondWidth = 0.05f;
+	float m_BondSeperation = 0.01f;
 
 
 	std::shared_ptr<ChemVis::Chemical> chemical;

@@ -22,6 +22,8 @@ public:
 
 	void setWindowData(WindowData data) { windowData = data; }
 	
+	Core::Camera::ArcBall& Camera() { return camera; }
+
 private:
 	Core::Camera::ArcBall camera;
 	bool DebugCamera = false;

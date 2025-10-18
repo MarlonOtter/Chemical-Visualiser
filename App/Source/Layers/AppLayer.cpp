@@ -12,8 +12,11 @@
 #include "Core/Renderer/Text.h"
 #include "Core/Utils/String.h"
 
+#include "Core/Utils/Inputs.h"
+
 AppLayer::AppLayer()
 {
+	chemical = "caffeine";
 }
 
 AppLayer::~AppLayer()
@@ -22,10 +25,36 @@ AppLayer::~AppLayer()
 
 void AppLayer::Update(float ts)
 {
-
-	if (chemicalRecieved) {
+	static bool startup = true;
+	if (chemicalRecieved || startup) {
 		DisplayChemicalStructure(chemical);
 		chemicalRecieved = false;
+	}
+	startup = false;
+
+
+	static int target = 60;
+	static int maxFrameDelay = 10;
+	static int frameDelay = maxFrameDelay;
+	
+	if (Core::anyInputs()) 
+	{
+		// reduce framerate after a short delay
+		if (target != 10 && frameDelay <= 0) {
+			frameDelay = maxFrameDelay;
+			target = 10;
+			SetTargetFPS(target);
+		}
+		frameDelay--;
+	}
+	else
+	{
+		// if any input go back up to 60FPS 
+		frameDelay = maxFrameDelay;
+		if (target != 60) {
+			target = 60;
+			SetTargetFPS(target);
+		}
 	}
 }
 

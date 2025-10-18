@@ -68,10 +68,11 @@ void View2DLayer::OnRender()
 			int startIndex = bonds.BeginAtomIndices[i] - 1;
 			int endIndex = bonds.EndAtomIndices[i] - 1;
 
+			//TODO Draw multi-order bonds
 			Core::Shape::Line::DrawEx(
-				{ atoms.Positions2D.x[startIndex] * 1000.0f , atoms.Positions2D.y[startIndex] * 1000.0f},
-				{ atoms.Positions2D.x[endIndex] * 1000.0f, atoms.Positions2D.y[endIndex] * 1000.0f },
-				50, 
+				{ atoms.Positions2D.x[startIndex] * m_WorldScale , atoms.Positions2D.y[startIndex] * m_WorldScale },
+				{ atoms.Positions2D.x[endIndex] * m_WorldScale, atoms.Positions2D.y[endIndex] * m_WorldScale },
+				m_BondWidth * static_cast<float>(m_WorldScale),
 				Core::RAYWHITE
 				);
 		}
@@ -79,9 +80,11 @@ void View2DLayer::OnRender()
 		// ATOMS
 		for (size_t i = 0; i < atoms.Types.size(); i++)
 		{
-			Core::Shape::Circle::Draw(atoms.Positions2D.x[i] * 1000.0f, atoms.Positions2D.y[i] * 1000.0f, 100, ChemVis::Chemical::GetColor(atoms.Types[i]));
+			Core::Shape::Circle::Draw(
+				atoms.Positions2D.x[i] * m_WorldScale, atoms.Positions2D.y[i] * m_WorldScale,
+				m_AtomSize * static_cast<float>(m_WorldScale) * (atoms.Types[i] == 1 ? m_HydrogenScale : 1),
+				ChemVis::Chemical::GetColor(atoms.Types[i]));
 		}
-
 	}
 
 	EndMode2D();
@@ -116,7 +119,7 @@ void View2DLayer::SetupRenderTexture()
 void View2DLayer::ResetCamera()
 {
 	camera = {};
-	camera.zoom = 0.1f;
+	camera.zoom = 100 / static_cast<float>(m_WorldScale);
 	camera.rotation = 0.0f;
 	camera.target = { 0,0 };
 }
