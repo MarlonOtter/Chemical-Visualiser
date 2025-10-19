@@ -19,9 +19,13 @@ namespace ChemVis {
 
 	struct ChemicalInfo
 	{
-		std::string name = "";
-		std::string formula = "";
-		float molecularWeight = 0.0f;
+		std::string IupacName = "";
+		std::string CommonName = "";
+		std::string MolecularFormula = "";
+		std::string MolecularWeight = "";
+		std::string Smiles = "";
+		std::string InChI = "";
+		std::string Cid = "";
 	};
 
 	struct BondsInfo

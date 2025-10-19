@@ -66,7 +66,10 @@ void View2DLayer::OnRender()
 	if (chemical) {
 		ChemVis::AtomsInfo atoms = chemical->GetAtoms();
 		ChemVis::BondsInfo bonds = chemical->GetBonds();
+		
 		// BONDS
+		const float DefaultBondWidth = 0.1f;
+		const float DefaultBondSeperation = 0.2f;
 		for (size_t i = 0; i < bonds.BeginAtomIndices.size(); i++)
 		{
 			int startIndex = bonds.BeginAtomIndices[i] - 1;
@@ -80,23 +83,24 @@ void View2DLayer::OnRender()
 			
 			for (int j = 0; j < bondOrder; j++)
 			{
-				Vector2 offset = Perpendicular * (m_BondSeperation * j - (m_BondSeperation * (bondOrder - 1) / 2));
+				Vector2 offset = Perpendicular * ((m_BondSeperation * DefaultBondSeperation) * j - ((m_BondSeperation * DefaultBondSeperation) * (bondOrder - 1) / 2));
 
 				Core::Shape::Line::DrawEx(
 					(StartPos + offset) * m_WorldScale,
 					(EndPos + offset) * m_WorldScale,
-					m_BondWidth * static_cast<float>(m_WorldScale),
+					m_BondWidth * DefaultBondWidth * static_cast<float>(m_WorldScale),
 					Core::RAYWHITE
 				);
 			}
 		}
 
 		// ATOMS
+		const float DefaultAtomSize = 0.25f;
 		for (size_t i = 0; i < atoms.Types.size(); i++)
 		{
 			Core::Shape::Circle::Draw(
 				atoms.Positions2D.x[i] * m_WorldScale, atoms.Positions2D.y[i] * m_WorldScale,
-				m_AtomSize * static_cast<float>(m_WorldScale) * (atoms.Types[i] == 1 ? m_HydrogenScale : 1),
+				m_AtomSize * DefaultAtomSize * static_cast<float>(m_WorldScale) * (atoms.Types[i] == 1 ? m_HydrogenScale : 1),
 				ChemVis::Chemical::GetColor(atoms.Types[i]));
 		}
 	}

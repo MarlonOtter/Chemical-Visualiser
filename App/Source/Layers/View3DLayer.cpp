@@ -67,15 +67,19 @@ void View3DLayer::OnRender()
 		if (!atoms.Positions3D.x.empty())
 		{
 			// ATOMS
+			const float DefaultAtomSize = 0.35f;
 			for (size_t i = 0; i < atoms.Types.size(); i++)
 			{
 				Core::Model::Sphere::Draw(
 					atoms.Positions3D.x[i], atoms.Positions3D.y[i], atoms.Positions3D.z[i],
-					m_AtomSize * (atoms.Types[i] == 1 ? m_HydrogenScale : 1),
+					m_AtomSize * DefaultAtomSize * (atoms.Types[i] == 1 ? m_HydrogenScale : 1),
 					ChemVis::Chemical::GetColor(atoms.Types[i]));
 			}
 
 			// BONDS
+			const float DefaultBondRadius = 0.08f;
+			const float DefaultBondSeperation = 0.25;
+			const int DefaultBondDetail = 20;
 			ChemVis::BondsInfo bonds = m_Chemical->GetBonds();
 			for (size_t i = 0; i < bonds.BeginAtomIndices.size(); i++)
 			{
@@ -90,12 +94,15 @@ void View3DLayer::OnRender()
 
 				for (size_t j = 0; j < bondOrder; j++)
 				{
-					Vector3 offset = Perpendicular * (m_BondSeperation * j - (m_BondSeperation * (bondOrder - 1) / 2));
+					Vector3 offset = Perpendicular * ((m_BondSeperation * DefaultBondSeperation) * j - ((m_BondSeperation * DefaultBondSeperation) * (bondOrder - 1) / 2));
 
 					Core::Model::Cylinder::DrawEx(
 						StartPos + offset,
 						EndPos + offset,
-						m_BondRadius, m_BondRadius, m_BondDetail, Core::RAYWHITE
+						m_BondRadius * DefaultBondRadius,
+						m_BondRadius * DefaultBondRadius,
+						static_cast<int>(m_BondDetail * DefaultBondDetail),
+						Core::RAYWHITE
 					);
 				}
 			}
@@ -127,7 +134,7 @@ void View3DLayer::HandleCameraMovement(float ts, Vector2 windowSize)
 	}
 	
 	// custom-orbit style m_Camera
-	m_Camera.Update(ts);
+	m_Camera.Update(ts, m_WindowData.width, m_WindowData.height);
 }
 
 void View3DLayer::SetupRenderTexture()
@@ -137,5 +144,5 @@ void View3DLayer::SetupRenderTexture()
 
 void View3DLayer::ResetCamera()
 {
-	m_Camera.Update(0.0f);
+	m_Camera.Update(0.0f, m_WindowData.width, m_WindowData.height);
 }

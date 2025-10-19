@@ -29,7 +29,7 @@ public:
 	float& HydrogenScale() { return m_HydrogenScale; }
 	float& BondRadius() { return m_BondRadius; }
 	float& BondSeperation() { return m_BondSeperation; }
-	int& BondDetail() { return m_BondDetail; }
+	float& BondDetail() { return m_BondDetail; }
 
 private:
 	Core::Camera::ArcBall m_Camera;
@@ -42,11 +42,11 @@ private:
 
 	std::shared_ptr<ChemVis::Chemical> m_Chemical;
 
-	float m_AtomSize = 0.35f;
+	float m_AtomSize = 1.0f;
 	float m_HydrogenScale = 0.5f;
-	float m_BondRadius = 0.080f;
-	float m_BondSeperation = 0.25f;
-	int m_BondDetail = 20;
+	float m_BondRadius = 1.0f;
+	float m_BondSeperation = 1.0f;
+	float m_BondDetail = 1.0f;
 
 
 	void SetupRenderTexture();

@@ -40,10 +40,10 @@ private:
 	bool resizing = true;
 
 	int m_WorldScale = 1000;
-	float m_AtomSize = 0.25f;
+	float m_AtomSize = 1.0f;
 	float m_HydrogenScale = 0.5f;
-	float m_BondWidth = 0.1f;
-	float m_BondSeperation = 0.2f;
+	float m_BondWidth = 1.0f;
+	float m_BondSeperation = 1.0f;
 
 
 	std::shared_ptr<ChemVis::Chemical> chemical;

@@ -30,8 +30,7 @@ InterfaceLayer::InterfaceLayer()
 	ImGuiIO& io = ImGui::GetIO();
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 	io.ConfigWindowsMoveFromTitleBarOnly = true;
-	
-	ImGui::GetStyle().FontScaleDpi = std::min(GetWindowScaleDPI().x, GetWindowScaleDPI().y);
+	SetStyle();
 }
 
 InterfaceLayer::~InterfaceLayer()
@@ -54,7 +53,10 @@ void InterfaceLayer::OnComposite()
 	DrawMainInterface();
 	DrawSettings();
 
-	ImGui::ShowDemoWindow();
+	if (m_ShowDemo)
+	{
+		ImGui::ShowDemoWindow();
+	}
 
 	rlImGuiEnd();
 
@@ -170,7 +172,19 @@ WindowData InterfaceLayer::DrawMainInterface()
 				chemicalInp = m_AutoCompleteOptions[selected];
 			}
 		}
-
+		
+		if (!m_ChemicalInfo.IupacName.empty())
+		{
+			ImGui::NewLine();
+			ImGui::SeparatorText("Chemical Information");
+			ImGui::Text((std::string("Common Name: ") + m_ChemicalInfo.CommonName).c_str());
+			ImGui::Text((std::string("IUPAC Name: ") + m_ChemicalInfo.IupacName).c_str());
+			ImGui::Text((std::string("Molecular Formula: ") + m_ChemicalInfo.MolecularFormula).c_str());
+			ImGui::Text((std::string("Molecular Mass: ") + m_ChemicalInfo.MolecularWeight).c_str());
+			ImGui::Text((std::string("CID: ") + m_ChemicalInfo.Cid).c_str());
+			ImGui::Text((std::string("SMILES: ") + m_ChemicalInfo.Smiles).c_str());
+			ImGui::Text((std::string("InChI: ") + m_ChemicalInfo.InChI).c_str());
+		}
 	}
 	window = getWindowData(!open);
 	ImGui::End();
@@ -187,7 +201,7 @@ WindowData InterfaceLayer::DrawSettings()
 		ImGui::SeparatorText("\xef\x83\x89 General"); // Bars
 
 		ImGuiIO& io = ImGui::GetIO();
-		ImGui::SliderFloat("Font Size ##Global", &io.FontGlobalScale, 0.25f, 4.0f);
+		ImGui::SliderFloat("Font Size ##Global", &io.FontGlobalScale, 0.25f, 2.0f);
 		//ImGui::SliderFloat("Window Rounding"); 
 		//ImGui::SliderFloat("Widget Rounding");
 		
@@ -197,6 +211,7 @@ WindowData InterfaceLayer::DrawSettings()
 			if (StyleDark)
 			{
 				ImGui::StyleColorsDark();
+				SetStyle();
 			}
 			else {
 				ImGui::StyleColorsLight();
@@ -207,21 +222,26 @@ WindowData InterfaceLayer::DrawSettings()
 		ImGui::SeparatorText("\xEF\x83\x88 2D Visualiser"); // Square
 
 		View2DLayer* layer2D = Core::Application::Get().GetLayer<View2DLayer>();
-		ImGui::SliderFloat("Atom Size ##2D", &(layer2D->AtomSize()), 0.01f, 0.75f);
+		ImGui::SliderFloat("Atom Size ##2D", &(layer2D->AtomSize()), 0.01f, 2.0f);
 		ImGui::SliderFloat("Hydrogen Scale ##2D", &(layer2D->HydrogenScale()), 0.01f, 1.0f);
-		ImGui::SliderFloat("Bond Width ##2D", &(layer2D->BondWidth()), 0.01f, 0.5f);
-		ImGui::SliderFloat("Bond Seperation ##2D", &(layer2D->BondSeperation()), 0.01f, 0.75f);
+		ImGui::SliderFloat("Bond Width ##2D", &(layer2D->BondWidth()), 0.01f, 2.0f);
+		ImGui::SliderFloat("Bond Seperation ##2D", &(layer2D->BondSeperation()), 0.01f, 2.0f);
 		ImGui::DragInt("World Scale ##2D", &(layer2D->WorldScale()));
 
 		ImGui::SeparatorText("\xef\x86\xb2 3D Visualiser"); // Cube
 
 		View3DLayer* layer3D = Core::Application::Get().GetLayer<View3DLayer>();
-		ImGui::DragFloat("Pan Sensitivity ##3D", &(layer3D->Camera().PanSensitivity()), 0.001f);
-		ImGui::SliderFloat("Atom Size ##3D", &(layer3D->AtomSize()), 0.01f, 0.75f);
+		ImGui::SliderFloat("Look Sensitivity ##3D", &(layer3D->Camera().LookSensitivity()), 0.0f, 3.0f);
+		ImGui::SliderFloat("Pan Sensitivity ##3D", &(layer3D->Camera().PanSensitivity()), 0.01f, 2.0f);
+		ImGui::SliderFloat("Atom Size ##3D", &(layer3D->AtomSize()), 0.01f, 2.0f);
 		ImGui::SliderFloat("Hydrogen Scale ##3D", &(layer3D->HydrogenScale()), 0.01, 1.0);
-		ImGui::SliderFloat("Bond Radius ##3D", &(layer3D->BondRadius()), 0.001f, 0.25f);
-		ImGui::SliderInt("Bond Detail ##3D", &(layer3D->BondDetail()), 10, 50);
-		ImGui::SliderFloat("Bond Seperation ##3D", &(layer3D->BondSeperation()), 0.01f, 0.75f);
+		ImGui::SliderFloat("Bond Radius ##3D", &(layer3D->BondRadius()), 0.01f, 2.0f);
+		ImGui::SliderFloat("Bond Detail ##3D", &(layer3D->BondDetail()), 0.0f, 2.0f);
+		ImGui::SliderFloat("Bond Seperation ##3D", &(layer3D->BondSeperation()), 0.01f, 2.0f);
+
+		ImGui::SeparatorText("\xef\x80\x93 Other"); // Gear
+
+		ImGui::Checkbox("Show Demo", &m_ShowDemo);
 	}
 	WindowData window = getWindowData(!open);
 	ImGui::End();
@@ -249,4 +269,43 @@ void InterfaceLayer::PushError(std::string error)
 	return;
 }
 
+void InterfaceLayer::SetStyle()
+{
+	// Set style values (font DPI scaling and rounding)
+	ImGuiStyle& style = ImGui::GetStyle();
+	style.FontScaleDpi = std::min(GetWindowScaleDPI().x, GetWindowScaleDPI().y);
+	style.FrameRounding = 8;
+	style.WindowRounding = 8;
+	style.GrabRounding = 8;
+	style.TabRounding = 8;
+
+	// Set Style Colours
+	ImVec4* colors = style.Colors;
+	colors[ImGuiCol_FrameBg] = ImVec4(0.30f, 0.30f, 0.30f, 0.54f);
+	colors[ImGuiCol_FrameBgHovered] = ImVec4(0.70f, 0.70f, 0.70f, 0.40f);
+	colors[ImGuiCol_FrameBgActive] = ImVec4(0.40f, 0.40f, 0.40f, 0.67f);
+	colors[ImGuiCol_TitleBgActive] = ImVec4(0.21f, 0.21f, 0.21f, 1.00f);
+	colors[ImGuiCol_CheckMark] = ImVec4(0.69f, 0.69f, 0.69f, 1.00f);
+	colors[ImGuiCol_SliderGrab] = ImVec4(0.72f, 0.72f, 0.72f, 1.00f);
+	colors[ImGuiCol_SliderGrabActive] = ImVec4(0.65f, 0.65f, 0.65f, 1.00f);
+	colors[ImGuiCol_Button] = ImVec4(0.65f, 0.65f, 0.65f, 0.40f);
+	colors[ImGuiCol_ButtonHovered] = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
+	colors[ImGuiCol_ButtonActive] = ImVec4(0.55f, 0.55f, 0.55f, 1.00f);
+	colors[ImGuiCol_Header] = ImVec4(0.60f, 0.60f, 0.60f, 0.31f);
+	colors[ImGuiCol_HeaderHovered] = ImVec4(0.41f, 0.41f, 0.41f, 0.80f);
+	colors[ImGuiCol_HeaderActive] = ImVec4(0.71f, 0.71f, 0.72f, 1.00f);
+	colors[ImGuiCol_SeparatorHovered] = ImVec4(0.75f, 0.75f, 0.75f, 0.78f);
+	colors[ImGuiCol_SeparatorActive] = ImVec4(0.56f, 0.56f, 0.56f, 1.00f);
+	colors[ImGuiCol_ResizeGrip] = ImVec4(0.51f, 0.51f, 0.51f, 0.20f);
+	colors[ImGuiCol_ResizeGripHovered] = ImVec4(0.91f, 0.91f, 0.91f, 0.67f);
+	colors[ImGuiCol_ResizeGripActive] = ImVec4(0.48f, 0.48f, 0.48f, 0.95f);
+	colors[ImGuiCol_TabHovered] = ImVec4(0.75f, 0.75f, 0.75f, 0.80f);
+	colors[ImGuiCol_Tab] = ImVec4(0.22f, 0.22f, 0.22f, 0.86f);
+	colors[ImGuiCol_TabSelected] = ImVec4(0.43f, 0.43f, 0.43f, 1.00f);
+	colors[ImGuiCol_TabSelectedOverline] = ImVec4(0.63f, 0.63f, 0.63f, 1.00f);
+	colors[ImGuiCol_TabDimmed] = ImVec4(0.12f, 0.12f, 0.12f, 0.97f);
+	colors[ImGuiCol_TabDimmedSelected] = ImVec4(0.31f, 0.31f, 0.31f, 1.00f);
+	colors[ImGuiCol_DockingPreview] = ImVec4(0.87f, 0.87f, 0.87f, 0.70f);
+	colors[ImGuiCol_NavCursor] = ImVec4(0.60f, 0.60f, 0.60f, 1.00f);
+}
 

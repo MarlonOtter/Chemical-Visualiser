@@ -103,6 +103,7 @@ void AppLayer::DisplayChemicalStructure(std::string name)
 	// regenerate the Layers with the new chemical
 	Core::Application::Get().GetLayer<View2DLayer>()->TransitionTo<View2DLayer>(chem);
 	Core::Application::Get().GetLayer<View3DLayer>()->TransitionTo<View3DLayer>(chem);
+	Core::Application::Get().GetLayer<InterfaceLayer>()->SetChemicalInfo(chem.get()->GetInfo());
 }
  
 //TODO: Async

@@ -8,6 +8,7 @@
 
 #include "raylib.h"	
 #include "WindowData.h"
+#include "ChemVis/Chemical.h"
 
 
 class InterfaceLayer : public Core::Layer
@@ -25,6 +26,7 @@ public:
 		renderTexture3D = rt3D;
 	}
 
+	void SetChemicalInfo(ChemVis::ChemicalInfo info) { m_ChemicalInfo = info; }
 	void PushError(std::string error);
 
 	void SetAutoComplete(std::vector<std::string> options) { m_AutoCompleteOptions = options; }
@@ -36,13 +38,17 @@ private:
 	WindowData window2D;
 	WindowData window3D;
 
+	ChemVis::ChemicalInfo m_ChemicalInfo;
 	std::vector<std::string> m_AutoCompleteOptions;
-	
-	float m_TimeSinceLastInput;
-	bool m_MadeRequest;
+	float m_TimeSinceLastInput = 0.0f;
+	bool m_MadeRequest = false;
+
+	bool m_ShowDemo = false;
 
 
 	WindowData getWindowData(bool closed);
+
+	void SetStyle();
 	
 	void DrawDockSpace();
 	WindowData DrawView2D();

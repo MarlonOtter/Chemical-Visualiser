@@ -75,16 +75,60 @@ namespace ChemVis
 
 	ChemicalInfo Chemical::ParseInfo(Core::json data)
 	{
-		const std::string NameAddr = "/PC_Compounds/0/props/6/value/sval";
+		ChemicalInfo chemicalInfo = {};
 
-		return ChemicalInfo{
-			data.at(Core::json::json_pointer(NameAddr)).get<std::string>()
-		};
+		chemicalInfo.Cid = std::to_string(data.at(Core::json::json_pointer("/PC_Compounds/0/id/id")).value("cid", -1));
 
-		//! need to check this
-		return ChemicalInfo{ data["PC_Compounds"][0]["title"].get<std::string>(),
-							 data["PC_Compounds"][0]["molecular_formula"].get<std::string>(),
-							 data["PC_Compounds"][0]["molecular_weight"].get<float>() };
+		const std::string InfoAddr = "/PC_Compounds/0/props";
+		Core::json InfoList = data.at(Core::json::json_pointer(InfoAddr));
+		if (!InfoList.is_array()) return chemicalInfo; 
+
+		// Loop through all the chemical information
+		// storing any that is wanted
+		for (Core::json info : InfoList)
+		{
+			std::string label = info["urn"].value("label", "");
+			if (label.empty()) continue;
+			std::string value = info["value"].value("sval", "N/a");
+
+
+			if (label == "IUPAC Name")
+			{
+				std::string name = info["urn"]["name"];
+				if (name == "Systematic")
+				{
+					chemicalInfo.IupacName = value;
+				}
+				else if (name == "Traditional")
+				{
+					chemicalInfo.CommonName = value;
+				}
+			}
+			else if (label == "InChI")
+			{
+				chemicalInfo.InChI = value;
+			}
+			else if (label == "Molecular Formula")
+			{
+				chemicalInfo.MolecularFormula = value;
+			}
+			else if (label == "Molecular Weight")
+			{
+				chemicalInfo.MolecularWeight = value;
+			}
+			else if (label == "SMILES")
+			{
+				std::string name = info["urn"]["name"];
+				if (name == "Absolute")
+				{
+					chemicalInfo.Smiles = value;
+				}
+			}
+		}
+		
+
+
+		return chemicalInfo;
 	}
 
 	Core::Color Chemical::GetColor(int type)

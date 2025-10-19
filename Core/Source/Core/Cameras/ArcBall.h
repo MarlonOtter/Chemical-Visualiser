@@ -16,7 +16,7 @@ namespace Core::Camera
 		void SetTarget(Vector3 Target) { m_Handler.target = Target; }
 		Camera3D& GetHandler() { return m_Handler; }
 
-		void Update(float ts);
+		void Update(float ts, int width, int height);
 		
 		void SetLookSensitivity(float Sensitivity) { m_LookSensitivity = Sensitivity; }
 		float& LookSensitivity() { return m_LookSensitivity; }
@@ -25,8 +25,8 @@ namespace Core::Camera
 	private:
 		Camera3D m_Handler;
 
-		float m_PanSensitivity = 0.005f;
-		float m_LookSensitivity = 0.005f;
+		float m_PanSensitivity = 1.0f;
+		float m_LookSensitivity = 1.0f;
 		float m_Distance = 10.0f;
 		
 		void SetupCamera(Vector3 Position, Vector3 Target, float Fov);

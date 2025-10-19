@@ -20,26 +20,27 @@ namespace Core::Camera
 
 	}
 
-	void ArcBall::Update(float ts)
+	void ArcBall::Update(float ts, int width, int height)
 	{
         static Quaternion arcballRotation = QuaternionIdentity();
-
+        const float DefaultLookSensitivity = 5.0f;
         Vector2 delta = GetMouseDelta();
 
         // Mouse controls
         if (IsMouseButtonDown(MOUSE_LEFT_BUTTON))
         {
             // Yaw (around global up)
-            Quaternion yawRot = QuaternionFromAxisAngle(Vector3{ 0, 1, 0 }, -delta.x * m_LookSensitivity);
+            Quaternion yawRot = QuaternionFromAxisAngle(Vector3{ 0, 1, 0 }, -delta.x * DefaultLookSensitivity * m_LookSensitivity / static_cast<float>(width));
 
             // Pitch (around camera's local right)
             Vector3 right = Vector3Transform(Vector3{ 1, 0, 0 }, QuaternionToMatrix(arcballRotation));
-            Quaternion pitchRot = QuaternionFromAxisAngle(right, -delta.y * m_LookSensitivity);
+            Quaternion pitchRot = QuaternionFromAxisAngle(right, -delta.y * DefaultLookSensitivity * m_LookSensitivity / static_cast<float>(height));
 
             // Combine pitch * yaw * current rotation
             arcballRotation = QuaternionMultiply(pitchRot, arcballRotation);
             arcballRotation = QuaternionMultiply(arcballRotation, yawRot);
-            arcballRotation = QuaternionNormalize(arcballRotation); // keep it stable
+
+            arcballRotation = QuaternionNormalize(arcballRotation);
         }
 
         // Mouse wheel zoom
@@ -56,7 +57,7 @@ namespace Core::Camera
         if (IsMouseButtonDown(MOUSE_BUTTON_MIDDLE) && !IsMouseButtonDown(MOUSE_BUTTON_LEFT))
         {
             Vector3 right = Vector3Transform(Vector3{ 1, 0, 0 }, quatMat);
-            m_Handler.target += (right * -delta.x * m_PanSensitivity * m_Distance) + (up * delta.y * m_PanSensitivity * m_Distance);
+            m_Handler.target += (right * -delta.x * (m_PanSensitivity / static_cast<float>(width)) * m_Distance) + (up * delta.y * (m_PanSensitivity / static_cast<float>(height)) * m_Distance);
         }
 
         // Update camera
