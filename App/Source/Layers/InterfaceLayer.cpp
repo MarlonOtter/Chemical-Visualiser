@@ -11,12 +11,14 @@
 
 #include "extras/IconsFontAwesome6.h"
 
+
 static int InputTextCallback(ImGuiInputTextCallbackData* data) {
 	if (data->UserData) {
 		std::string* str = static_cast<std::string*>(data->UserData);
 		if (data->EventFlag == ImGuiInputTextFlags_CallbackResize) {
 			str->resize(data->BufTextLen);
 			data->Buf = str->data();
+
 		}
 	}
 	return 0;
@@ -38,7 +40,7 @@ InterfaceLayer::~InterfaceLayer()
 
 void InterfaceLayer::Update(float ts)
 {
-
+	m_TimeSinceLastInput += ts;
 }
 
 void InterfaceLayer::OnComposite()
@@ -70,7 +72,7 @@ void InterfaceLayer::DrawDockSpace()
 	ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking;
 	window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
 	window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
-	window_flags |= ImGuiWindowFlags_MenuBar;
+	//window_flags |= ImGuiWindowFlags_MenuBar;
 	window_flags |= ImGuiWindowFlags_NoBackground;
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
@@ -90,44 +92,59 @@ void InterfaceLayer::DrawDockSpace()
 WindowData InterfaceLayer::DrawView2D()
 {
 	static WindowData window;
-	if (ImGui::Begin("\xEF\x83\x88 View 2D")) // Square
+	bool open = (ImGui::Begin("\xEF\x83\x88 View 2D", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse)); // Square
+	if (open)
 	{
 		if (renderTexture2D.has_value())
 		{
-			ImGui::Image((void*)(intptr_t)renderTexture2D->get().texture.id, ImGui::GetContentRegionAvail(), ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+			ImGui::Image((void*)(intptr_t)renderTexture2D->get().texture.id, { static_cast<float>(renderTexture2D->get().texture.width), static_cast<float>(renderTexture2D->get().texture.height) }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 		}
-
-		window = getWindowData();
 	}
+	window = getWindowData(!open);
 	ImGui::End();
 	return window;
 }
 
 WindowData InterfaceLayer::DrawView3D()
 {
-	static WindowData window;
-	if (ImGui::Begin("\xef\x86\xb2 View 3D")) // Cube
+	bool open = ImGui::Begin("\xef\x86\xb2 View 3D", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse); // Cube;
+	if (open)
 	{
 		if (renderTexture3D.has_value())
 		{
-			ImGui::Image((void*)(intptr_t)renderTexture3D->get().texture.id, ImGui::GetContentRegionAvail(), ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+			ImGui::Image((void*)(intptr_t)renderTexture3D->get().texture.id, { static_cast<float>(renderTexture3D->get().texture.width), static_cast<float>(renderTexture3D->get().texture.height) }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 		}
-		window = getWindowData();
 	}
+	WindowData window = getWindowData(!open);
 	ImGui::End();
-	
 	return window;
 }
 
 WindowData InterfaceLayer::DrawMainInterface()
 {
 	static WindowData window;
-	if (ImGui::Begin("\xef\x84\xa9 Interface")) // Info 
+	bool open = ImGui::Begin("\xef\x84\xa9 Interface"); // Info i
+	if (open)
 	{
 		static std::string chemicalInp;
-		bool entered = ImGui::InputText("##Chemical Input", chemicalInp.data(), chemicalInp.capacity() + 1,
+		bool entered = ImGui::InputTextWithHint("##Chemical Input", "Caffeine", chemicalInp.data(), chemicalInp.capacity() + 1,
 			ImGuiInputTextFlags_CallbackResize | ImGuiInputTextFlags_EnterReturnsTrue,
 			InputTextCallback, &chemicalInp);
+
+		if (ImGui::IsItemEdited())
+		{
+			m_TimeSinceLastInput = 0.0f;
+			m_MadeRequest = false;
+		}
+
+		if (ImGui::IsItemActive()) {
+			// Wait for 0.25 seconds of no user input before making a request
+			if (m_TimeSinceLastInput >= 0.25f && !m_MadeRequest)
+			{
+				Core::Application::Get().GetLayer<AppLayer>()->RequestNewAutoComplete(chemicalInp);
+				m_MadeRequest = true;
+			}
+		}
 
 		ImGui::SameLine();
 		if (ImGui::Button(ICON_FA_MAGNIFYING_GLASS) || entered)
@@ -137,33 +154,54 @@ WindowData InterfaceLayer::DrawMainInterface()
 			Core::Application::Get().GetLayer<AppLayer>()->SetChemical(chemicalInp);
 		}
 
-		ImGui::Text("Here will also be the information about the chemical");
-		window = getWindowData();
+		if (m_AutoCompleteOptions.size() > 0)
+		{
+			static int selected = 0;
+
+			std::vector<const char*> items;
+			for (const auto& option : m_AutoCompleteOptions) {
+				items.push_back(option.c_str());
+			}
+
+			bool changedOption = ImGui::ListBox("##Chemical Autocomplete", &selected, items.data(), static_cast<int>(items.size()));
+			if (changedOption)
+			{
+				chemicalInp = m_AutoCompleteOptions[selected];
+			}
+		}
+
 	}
+	window = getWindowData(!open);
 	ImGui::End();
 	return window;
 }
 
 WindowData InterfaceLayer::DrawSettings()
 {
-	if (ImGui::Begin("\xef\x80\x93 Settings")) // Gear
+	
+	bool open = ImGui::Begin("\xef\x80\x93 Settings"); // Gear
+	if (open)
 	{
+		ImGui::SeparatorText("\xEF\x83\x88 2D Visualiser"); // Square
+
 		View2DLayer* layer2D = Core::Application::Get().GetLayer<View2DLayer>();
-		ImGui::DragFloat("Atom Size", &(layer2D->AtomSize()), 0.001f);
-		ImGui::DragFloat("Hydrogen Scale", &(layer2D->HydrogenScale()), 0.001, 0.0, 1.0);
-		ImGui::DragFloat("Bond Width", &(layer2D->BondWidth()), 0.001f);
-		ImGui::DragFloat("Bond Seperation 2D", &(layer2D->BondSeperation()), 0.001f);
-		ImGui::DragInt("World Scale", &(layer2D->WorldScale()));
+		ImGui::DragFloat("Atom Size ##2D", &(layer2D->AtomSize()), 0.001f);
+		ImGui::DragFloat("Hydrogen Scale ##2D", &(layer2D->HydrogenScale()), 0.001, 0.0, 1.0);
+		ImGui::DragFloat("Bond Width ##2D", &(layer2D->BondWidth()), 0.001f);
+		ImGui::DragFloat("Bond Seperation ##2D", &(layer2D->BondSeperation()), 0.001f);
+		ImGui::DragInt("World Scale ##2D", &(layer2D->WorldScale()));
+
+		ImGui::SeparatorText("\xef\x86\xb2 3D Visualiser"); // Cube
 
 		View3DLayer* layer3D = Core::Application::Get().GetLayer<View3DLayer>();
-		ImGui::DragFloat("3D Pan Sensitivity", &(layer3D->Camera().PanSensitivity()), 0.001f);
-		ImGui::DragFloat("Atom Size 3D", &(layer3D->AtomSize()), 0.001f);
-		ImGui::DragFloat("Hydrogen Scale 3D", &(layer3D->HydrogenScale()), 0.001f);
-		ImGui::DragFloat("Bond Radius 3D", &(layer3D->BondRadius()), 0.001f);
-		ImGui::DragInt("Bond Detail 3D", &(layer3D->BondDetail()));
-		ImGui::DragFloat("Bond Seperation 3D", &(layer3D->BondSeperation()), 0.001f);
+		ImGui::DragFloat("Pan Sensitivity ##3D", &(layer3D->Camera().PanSensitivity()), 0.001f);
+		ImGui::DragFloat("Atom Size ##3D", &(layer3D->AtomSize()), 0.001f);
+		ImGui::DragFloat("Hydrogen Scale ##3D", &(layer3D->HydrogenScale()), 0.001f);
+		ImGui::DragFloat("Bond Radius ##3D", &(layer3D->BondRadius()), 0.001f);
+		ImGui::DragInt("Bond Detail ##3D", &(layer3D->BondDetail()));
+		ImGui::DragFloat("Bond Seperation ##3D", &(layer3D->BondSeperation()), 0.001f);
 	}
-	WindowData window = getWindowData();
+	WindowData window = getWindowData(!open);
 	ImGui::End();
 	return window;
 }
@@ -172,14 +210,14 @@ void InterfaceLayer::OnEvent(Core::Event& event)
 {
 }
 
-WindowData InterfaceLayer::getWindowData()
+WindowData InterfaceLayer::getWindowData(bool closed)
 {
 	return WindowData{
-		(int)ImGui::GetWindowWidth(),
-		(int)ImGui::GetWindowHeight(),
+		(int)ImGui::GetContentRegionMax().x,
+		(int)ImGui::GetContentRegionMax().y,
 		ImGui::IsWindowHovered(),
 		ImGui::IsWindowFocused(),
-		true,
+		closed,
 	};
 }
 

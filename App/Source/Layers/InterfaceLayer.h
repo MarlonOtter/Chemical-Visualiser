@@ -27,6 +27,8 @@ public:
 
 	void PushError(std::string error);
 
+	void SetAutoComplete(std::vector<std::string> options) { m_AutoCompleteOptions = options; }
+
 private:
 	std::optional<std::reference_wrapper<RenderTexture2D>> renderTexture2D;
 	std::optional<std::reference_wrapper<RenderTexture2D>> renderTexture3D;
@@ -34,8 +36,13 @@ private:
 	WindowData window2D;
 	WindowData window3D;
 
+	std::vector<std::string> m_AutoCompleteOptions;
+	
+	float m_TimeSinceLastInput;
+	bool m_MadeRequest;
 
-	WindowData getWindowData();
+
+	WindowData getWindowData(bool closed);
 	
 	void DrawDockSpace();
 	WindowData DrawView2D();

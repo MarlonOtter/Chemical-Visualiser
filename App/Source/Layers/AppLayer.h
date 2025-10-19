@@ -15,11 +15,14 @@ public:
 
 
 	void SetChemical(std::string chemical);
+
+	void RequestNewAutoComplete(std::string input) { m_AutoCompleteInput = input; }
+
 private:
 	void DisplayChemicalStructure(std::string name);
+	void GetAutoCompleteOptions();
 
-	bool chemicalRecieved = false;
-	std::string chemical;
-
-	float textX = 0.0f;
+	bool m_ChemicalRecieved = false;
+	std::string m_Chemical;
+	std::string m_AutoCompleteInput;
 };

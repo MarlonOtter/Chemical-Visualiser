@@ -18,11 +18,12 @@ public:
 	virtual void OnRender() override;
 	virtual void OnComposite() override;
 
-	RenderTexture2D& getRenderTexture() { return target; }
+	RenderTexture2D& getRenderTexture() { return m_Target; }
 
-	void setWindowData(WindowData data) { windowData = data; }
+	WindowData GetWindowData() { return m_WindowData; }
+	void setWindowData(WindowData data) { m_WindowData = data; }
 	
-	Core::Camera::ArcBall& Camera() { return camera; }
+	Core::Camera::ArcBall& Camera() { return m_Camera; }
 
 	float& AtomSize() { return m_AtomSize; }
 	float& HydrogenScale() { return m_HydrogenScale; }
@@ -31,15 +32,15 @@ public:
 	int& BondDetail() { return m_BondDetail; }
 
 private:
-	Core::Camera::ArcBall camera;
-	bool DebugCamera = false;
-	RenderTexture2D target;
-	Color clearColor = BLACK;
-	Vector2 prevSize;
-	bool resizing = true;
-	WindowData windowData;
+	Core::Camera::ArcBall m_Camera;
+	bool m_DebugCamera = false;
+	RenderTexture2D m_Target;
+	Color m_ClearColor = BLACK;
+	Vector2 m_PrevSize;
+	bool m_Resizing = true;
+	WindowData m_WindowData;
 
-	std::shared_ptr<ChemVis::Chemical> chemical;
+	std::shared_ptr<ChemVis::Chemical> m_Chemical;
 
 	float m_AtomSize = 0.25f;
 	float m_HydrogenScale = 0.66f;

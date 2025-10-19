@@ -8,4 +8,9 @@ namespace Core::Text
 	{
 		::DrawText(text.c_str(), posX, posY, fontSize, color);
 	}
+
+	int Measure(std::string text, int fontSize)
+	{
+		return ::MeasureText(text.c_str(), fontSize);
+	}
 }

@@ -27,6 +27,8 @@ View2DLayer::~View2DLayer()
 
 void View2DLayer::Update(float ts)
 {
+	if (windowData.closed) return;
+
 	Core::Application& app = Core::Application::Get();
 	Vector2 windowSize = app.GetWindowSize();
 
@@ -55,6 +57,8 @@ void View2DLayer::Update(float ts)
 
 void View2DLayer::OnRender()
 {
+	if (windowData.closed) return;
+
 	BeginTextureMode(target);
 	ClearBackground(clearColor);
 	BeginMode2D(camera);

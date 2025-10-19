@@ -6,5 +6,5 @@ struct WindowData {
 	bool hovered = false;
 	bool focused = false;
 	bool resizing = false;
-	bool updated = false;
+	bool closed = false;
 };
