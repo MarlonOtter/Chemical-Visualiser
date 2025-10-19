@@ -42,7 +42,7 @@ void View3DLayer::Update(float ts)
 	}
 
 	// Toggle Debug Camera
-	//? move to debug UI later
+	//TODO move to debug UI
 	if (IsKeyPressed(KEY_L)) {
 		m_DebugCamera = !m_DebugCamera;
 	}
@@ -95,7 +95,7 @@ void View3DLayer::OnRender()
 					Core::Model::Cylinder::DrawEx(
 						StartPos + offset,
 						EndPos + offset,
-						m_BondRadius, m_BondRadius, m_BondDetail, Core::GREEN
+						m_BondRadius, m_BondRadius, m_BondDetail, Core::RAYWHITE
 					);
 				}
 			}

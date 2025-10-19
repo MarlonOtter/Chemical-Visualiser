@@ -18,7 +18,6 @@ static int InputTextCallback(ImGuiInputTextCallbackData* data) {
 		if (data->EventFlag == ImGuiInputTextFlags_CallbackResize) {
 			str->resize(data->BufTextLen);
 			data->Buf = str->data();
-
 		}
 	}
 	return 0;
@@ -31,6 +30,8 @@ InterfaceLayer::InterfaceLayer()
 	ImGuiIO& io = ImGui::GetIO();
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 	io.ConfigWindowsMoveFromTitleBarOnly = true;
+	
+	ImGui::GetStyle().FontScaleDpi = std::min(GetWindowScaleDPI().x, GetWindowScaleDPI().y);
 }
 
 InterfaceLayer::~InterfaceLayer()
@@ -92,7 +93,7 @@ void InterfaceLayer::DrawDockSpace()
 WindowData InterfaceLayer::DrawView2D()
 {
 	static WindowData window;
-	bool open = (ImGui::Begin("\xEF\x83\x88 View 2D", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse)); // Square
+	bool open = (ImGui::Begin("\xEF\x83\x88 View 2D ", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse)); // Square
 	if (open)
 	{
 		if (renderTexture2D.has_value())
@@ -107,7 +108,7 @@ WindowData InterfaceLayer::DrawView2D()
 
 WindowData InterfaceLayer::DrawView3D()
 {
-	bool open = ImGui::Begin("\xef\x86\xb2 View 3D", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse); // Cube;
+	bool open = ImGui::Begin("\xef\x86\xb2 View 3D ", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse); // Cube;
 	if (open)
 	{
 		if (renderTexture3D.has_value())
@@ -123,7 +124,7 @@ WindowData InterfaceLayer::DrawView3D()
 WindowData InterfaceLayer::DrawMainInterface()
 {
 	static WindowData window;
-	bool open = ImGui::Begin("\xef\x84\xa9 Interface"); // Info i
+	bool open = ImGui::Begin("\xef\x84\xa9 Interface "); // Info i
 	if (open)
 	{
 		static std::string chemicalInp;
@@ -179,27 +180,48 @@ WindowData InterfaceLayer::DrawMainInterface()
 WindowData InterfaceLayer::DrawSettings()
 {
 	
-	bool open = ImGui::Begin("\xef\x80\x93 Settings"); // Gear
+	bool open = ImGui::Begin("\xef\x80\x93 Settings "); // Gear
 	if (open)
 	{
+
+		ImGui::SeparatorText("\xef\x83\x89 General"); // Bars
+
+		ImGuiIO& io = ImGui::GetIO();
+		ImGui::SliderFloat("Font Size ##Global", &io.FontGlobalScale, 0.25f, 4.0f);
+		//ImGui::SliderFloat("Window Rounding"); 
+		//ImGui::SliderFloat("Widget Rounding");
+		
+		static bool StyleDark = true;
+		if (ImGui::Checkbox("Dark Mode ##GlobalUI", &StyleDark))
+		{
+			if (StyleDark)
+			{
+				ImGui::StyleColorsDark();
+			}
+			else {
+				ImGui::StyleColorsLight();
+			}
+		}
+
+
 		ImGui::SeparatorText("\xEF\x83\x88 2D Visualiser"); // Square
 
 		View2DLayer* layer2D = Core::Application::Get().GetLayer<View2DLayer>();
-		ImGui::DragFloat("Atom Size ##2D", &(layer2D->AtomSize()), 0.001f);
-		ImGui::DragFloat("Hydrogen Scale ##2D", &(layer2D->HydrogenScale()), 0.001, 0.0, 1.0);
-		ImGui::DragFloat("Bond Width ##2D", &(layer2D->BondWidth()), 0.001f);
-		ImGui::DragFloat("Bond Seperation ##2D", &(layer2D->BondSeperation()), 0.001f);
+		ImGui::SliderFloat("Atom Size ##2D", &(layer2D->AtomSize()), 0.01f, 0.75f);
+		ImGui::SliderFloat("Hydrogen Scale ##2D", &(layer2D->HydrogenScale()), 0.01f, 1.0f);
+		ImGui::SliderFloat("Bond Width ##2D", &(layer2D->BondWidth()), 0.01f, 0.5f);
+		ImGui::SliderFloat("Bond Seperation ##2D", &(layer2D->BondSeperation()), 0.01f, 0.75f);
 		ImGui::DragInt("World Scale ##2D", &(layer2D->WorldScale()));
 
 		ImGui::SeparatorText("\xef\x86\xb2 3D Visualiser"); // Cube
 
 		View3DLayer* layer3D = Core::Application::Get().GetLayer<View3DLayer>();
 		ImGui::DragFloat("Pan Sensitivity ##3D", &(layer3D->Camera().PanSensitivity()), 0.001f);
-		ImGui::DragFloat("Atom Size ##3D", &(layer3D->AtomSize()), 0.001f);
-		ImGui::DragFloat("Hydrogen Scale ##3D", &(layer3D->HydrogenScale()), 0.001f);
-		ImGui::DragFloat("Bond Radius ##3D", &(layer3D->BondRadius()), 0.001f);
-		ImGui::DragInt("Bond Detail ##3D", &(layer3D->BondDetail()));
-		ImGui::DragFloat("Bond Seperation ##3D", &(layer3D->BondSeperation()), 0.001f);
+		ImGui::SliderFloat("Atom Size ##3D", &(layer3D->AtomSize()), 0.01f, 0.75f);
+		ImGui::SliderFloat("Hydrogen Scale ##3D", &(layer3D->HydrogenScale()), 0.01, 1.0);
+		ImGui::SliderFloat("Bond Radius ##3D", &(layer3D->BondRadius()), 0.001f, 0.25f);
+		ImGui::SliderInt("Bond Detail ##3D", &(layer3D->BondDetail()), 10, 50);
+		ImGui::SliderFloat("Bond Seperation ##3D", &(layer3D->BondSeperation()), 0.01f, 0.75f);
 	}
 	WindowData window = getWindowData(!open);
 	ImGui::End();
@@ -223,6 +245,7 @@ WindowData InterfaceLayer::getWindowData(bool closed)
 
 void InterfaceLayer::PushError(std::string error)
 {
+	std::cout << "ERROR: " << error << "\n";
 	return;
 }
 

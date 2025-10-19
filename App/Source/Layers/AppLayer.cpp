@@ -117,8 +117,7 @@ void AppLayer::GetAutoCompleteOptions()
 
 	if (jsonData.contains("Fault"))
 	{
-		//TODO send error to interface
-		std::cout << "ERROR: autocomplete Request Invalid";
+		Core::Application::Get().GetLayer<InterfaceLayer>()->PushError("Autocomplete Request Invalid");
 		return;
 	}
 

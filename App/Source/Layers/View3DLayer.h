@@ -42,11 +42,11 @@ private:
 
 	std::shared_ptr<ChemVis::Chemical> m_Chemical;
 
-	float m_AtomSize = 0.25f;
-	float m_HydrogenScale = 0.66f;
-	float m_BondRadius = 0.1f;
-	float m_BondSeperation = 0.1f;
-	int m_BondDetail = 10;
+	float m_AtomSize = 0.35f;
+	float m_HydrogenScale = 0.5f;
+	float m_BondRadius = 0.080f;
+	float m_BondSeperation = 0.25f;
+	int m_BondDetail = 20;
 
 
 	void SetupRenderTexture();
