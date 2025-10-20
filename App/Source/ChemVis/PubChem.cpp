@@ -23,7 +23,7 @@ namespace ChemVis::PubChem
 
 	std::string GetAutoComplete(std::string inp)
 	{
-		std::string URL = "https://pubchem.ncbi.nlm.nih.gov/rest/autocomplete/compound/" + Core::String::Replace(inp, ' ', "%20"); +"/JSON?limit=" + std::to_string(5);
+		std::string URL = "https://pubchem.ncbi.nlm.nih.gov/rest/autocomplete/compound/" + Core::String::Replace(inp, ' ', "%20") + "/JSON?limit=" + std::to_string(5);
 		Core::Http::HttpResponse Response = Core::Http::Client::Get(URL);
 		return Response.body;
 	}
