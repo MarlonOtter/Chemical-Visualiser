@@ -27,8 +27,11 @@ namespace ChemVis
 			return Chemical(ParseAtoms(DataJson), ParseBonds(DataJson), ParseInfo(DataJson));
 		}
 		catch (Core::json::parse_error) {
-			// If not valid JSON data
 			return std::optional<Chemical>();
+		}
+		catch (const std::exception& e)
+		{
+			std::cout << "ERROR In Chemical Parser: " << e.what() << "\n";
 		}
 	}
 
@@ -39,22 +42,37 @@ namespace ChemVis
 
 		Core::json AtomTypeJson = data.at(Core::json::json_pointer(AtomTypeAddr));
 		Core::json AtomPosJson = data.at(Core::json::json_pointer(AtomPosAddr));
-
+		size_t AtomCount = AtomPosJson["aid"].size();
+		
 		AtomsInfo atoms = {};
 		atoms.Types = AtomTypeJson["element"].get<std::vector<int>>();
 
-		atoms.Positions2D.x = AtomPosJson["conformers"][0]["x"].get<std::vector<float>>();
-		atoms.Positions2D.y = AtomPosJson["conformers"][0]["y"].get<std::vector<float>>();
-		size_t AtomCount = AtomPosJson["aid"].size();
-		atoms.Positions2D.z = std::vector<float>(AtomCount, 0.0f); //2D structure has no z
-
-		//std::cout << "Conformers: \n" << AtomPosJson["conformers"].dump() << "\n";
-		if (AtomPosJson["conformers"].size() > 1) {
-			atoms.Positions3D.x = AtomPosJson["conformers"][1]["x"].get<std::vector<float>>();
-			atoms.Positions3D.y = AtomPosJson["conformers"][1]["y"].get<std::vector<float>>();
-			atoms.Positions3D.z = AtomPosJson["conformers"][1]["z"].get<std::vector<float>>();
+		Positions pos0 = {
+				AtomPosJson["conformers"][0]["x"],
+				AtomPosJson["conformers"][0]["y"],
+				std::vector<float>(AtomCount, 0.0f),
+		};
+		if (AtomPosJson["conformers"][0].contains("z"))
+		{
+			pos0.z = AtomPosJson["conformers"][0]["z"].get<std::vector<float>>();
+			atoms.Positions3D = pos0;
 		}
+		else atoms.Positions2D = pos0;
 
+		if (AtomPosJson["conformers"].size() > 1)
+		{
+			Positions pos1 = {
+					AtomPosJson["conformers"][1]["x"],
+					AtomPosJson["conformers"][1]["y"],
+					std::vector<float>(AtomCount, 0.0f),
+			};
+			if (AtomPosJson["conformers"][1].contains("z"))
+			{
+				pos1.z = AtomPosJson["conformers"][1]["z"].get<std::vector<float>>();
+				atoms.Positions3D = pos1;
+			}
+			else atoms.Positions2D = pos1;
+		}
 		return atoms;
 	}
 
@@ -75,8 +93,9 @@ namespace ChemVis
 
 	ChemicalInfo Chemical::ParseInfo(Core::json data)
 	{
+		// Maybe use a seperate request for this information to be more accurate/informative
 		ChemicalInfo chemicalInfo = {};
-
+		
 		chemicalInfo.Cid = std::to_string(data.at(Core::json::json_pointer("/PC_Compounds/0/id/id")).value("cid", -1));
 
 		const std::string InfoAddr = "/PC_Compounds/0/props";
@@ -90,8 +109,7 @@ namespace ChemVis
 			std::string label = info["urn"].value("label", "");
 			if (label.empty()) continue;
 			std::string value = info["value"].value("sval", "N/a");
-
-
+	
 			if (label == "IUPAC Name")
 			{
 				std::string name = info["urn"]["name"];
@@ -125,8 +143,6 @@ namespace ChemVis
 				}
 			}
 		}
-		
-
 
 		return chemicalInfo;
 	}
@@ -187,7 +203,10 @@ namespace ChemVis
 			std::cout << "ERROR: Could not Parse data returned from PubChem";
 			return "";
 		}
+		catch (const std::exception& e)
+		{
+			std::cout << "ERROR In Data Merger: " << e.what() << "\n";
+			return "";
+		}
 	}
-
-
 }

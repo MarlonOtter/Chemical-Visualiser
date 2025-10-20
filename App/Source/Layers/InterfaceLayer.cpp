@@ -173,7 +173,7 @@ WindowData InterfaceLayer::DrawMainInterface()
 			}
 		}
 		
-		if (!m_ChemicalInfo.IupacName.empty())
+		if (!m_ChemicalInfo.Cid.empty())
 		{
 			ImGui::NewLine();
 			ImGui::SeparatorText("Chemical Information");

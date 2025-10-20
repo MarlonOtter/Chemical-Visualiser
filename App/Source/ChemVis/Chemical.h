@@ -26,6 +26,19 @@ namespace ChemVis {
 		std::string Smiles = "";
 		std::string InChI = "";
 		std::string Cid = "";
+
+		std::string dump()
+		{
+			std::stringstream out;
+			out << "IUPAC: " << IupacName << ", "
+				<< "Common: " << CommonName << ", "
+				<< "Formula: " << MolecularFormula << ", "
+				<< "Weight: " << MolecularWeight << ", "
+				<< "SMILES: " << Smiles << ", "
+				<< "InChI: " << InChI << ", "
+				<< "CID: " << Cid;
+			return out.str();
+		}
 	};
 
 	struct BondsInfo
@@ -57,15 +70,14 @@ namespace ChemVis {
 
 		static Core::Color GetColor(int type);
 	private:
-		const ChemicalInfo m_Info;
-		const AtomsInfo m_Atoms;
-		const BondsInfo m_Bonds;
+		ChemicalInfo m_Info;
+		AtomsInfo m_Atoms;
+		BondsInfo m_Bonds;
 
 		static AtomsInfo ParseAtoms(Core::json data);
 		static BondsInfo ParseBonds(Core::json data);
 		static ChemicalInfo ParseInfo(Core::json data);
 	};
-
 
 	std::string Merge2Dand3D(std::string data2D, std::string data3D);
 }

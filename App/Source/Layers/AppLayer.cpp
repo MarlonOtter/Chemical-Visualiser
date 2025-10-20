@@ -1,22 +1,22 @@
 #include "AppLayer.h"
 
 #include "Core/Application.h"
+#include "Core/Http/HttpClient.h"
+#include "Core/Utils/String.h"
+#include "Core/Utils/Inputs.h"
+
+#include "ChemVis/Chemical.h"
 
 #include "View2DLayer.h"
 #include "View3DLayer.h"
 #include "InterfaceLayer.h"
 
-#include "ChemVis/Chemical.h"
 
-#include "Core/Http/HttpClient.h"
-#include "Core/Renderer/Text.h"
-#include "Core/Utils/String.h"
 
-#include "Core/Utils/Inputs.h"
 
 AppLayer::AppLayer()
 {
-	m_Chemical = "caffeine";
+	SetChemical("Caffeine");
 }
 
 AppLayer::~AppLayer()
@@ -25,16 +25,49 @@ AppLayer::~AppLayer()
 
 void AppLayer::Update(float ts)
 {
-	static bool startup = true;
-	if (m_ChemicalRecieved || startup) {
-		DisplayChemicalStructure(m_Chemical);
+	// Async Structure Request Handling
+	if (m_ChemicalRecieved && !m_StructureRequestActive)
+	{
+		m_StructureFuture = ChemVis::PubChem::Async::GetChemical(m_Chemical);
+		m_StructureRequestActive = true;
 		m_ChemicalRecieved = false;
 	}
-	if (!m_AutoCompleteInput.empty())
+	if (m_StructureRequestActive && ChemVis::PubChem::Async::isFutureReady(m_StructureFuture))
 	{
-		GetAutoCompleteOptions();
+		m_StructureRequestActive = false;
+		try {
+			auto chemObj = m_StructureFuture.get();
+			m_StructureRequestActive = false;
+
+			if (!chemObj.GetAtoms().Types.empty()) 
+			{
+				auto chem = std::make_shared<ChemVis::Chemical>(chemObj);
+				Core::Application::Get().GetLayer<View2DLayer>()->TransitionTo<View2DLayer>(chem);
+				Core::Application::Get().GetLayer<View3DLayer>()->TransitionTo<View3DLayer>(chem);
+				Core::Application::Get().GetLayer<InterfaceLayer>()->SetChemicalInfo(chem->GetInfo());
+			}
+		}
+		catch (const std::exception& e) {
+			m_StructureRequestActive = false;
+			Core::Application::Get().GetLayer<InterfaceLayer>()->PushError(
+				std::string("Chemical request failed: ") + e.what()
+			);
+		}
 	}
-	startup = false;
+
+	// Async AutoComplete Handling
+	if (!m_AutoCompleteInput.empty() && !m_AutoCompleteRequestActive)
+	{
+		m_AutoCompleteFuture = ChemVis::PubChem::Async::GetAutoComplete(m_AutoCompleteInput);
+		m_AutoCompleteRequestActive = true;
+		m_AutoCompleteInput.clear();
+	}
+	if (m_AutoCompleteRequestActive && ChemVis::PubChem::Async::isFutureReady(m_AutoCompleteFuture))
+	{
+		m_AutoCompleteRequestActive = false;
+		auto options = m_AutoCompleteFuture.get();
+		Core::Application::Get().GetLayer<InterfaceLayer>()->SetAutoComplete(options);
+	}
 
 
 	static int target = 60;
@@ -76,59 +109,16 @@ void AppLayer::OnEvent(Core::Event& event)
 	
 }
 
+void AppLayer::DisplayChemicalStructure(std::string name)
+{
+}
+ 
+void AppLayer::GetAutoCompleteOptions()
+{
+}
+
 void AppLayer::SetChemical(std::string _chemical)
 {
 	m_Chemical = _chemical;
 	m_ChemicalRecieved = true;
-}
-
-//TODO: Async
-void AppLayer::DisplayChemicalStructure(std::string name)
-{
-	std::cout << "HTTP: Making Request to get chemical data\n";
-	std::string URL = "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/" + Core::String::Replace(name, ' ', "%20") + "/JSON";
-	Core::Http::HttpResponse r2D = Core::Http::Client::Get(URL + "?record_type=2d");
-	Core::Http::HttpResponse r3D = Core::Http::Client::Get(URL + "?record_type=3d");
-
-	auto chemObj = ChemVis::Chemical::Parse(ChemVis::Merge2Dand3D(r2D.body, r3D.body));
-	if (!chemObj.has_value())
-	{
-		// send error to interface layer
-		Core::Application::Get().GetLayer<InterfaceLayer>()->PushError("PubChem Request Failed");
-		return;
-	}
-
-	auto chem = std::make_shared<ChemVis::Chemical>(chemObj.value());
-
-	// regenerate the Layers with the new chemical
-	Core::Application::Get().GetLayer<View2DLayer>()->TransitionTo<View2DLayer>(chem);
-	Core::Application::Get().GetLayer<View3DLayer>()->TransitionTo<View3DLayer>(chem);
-	Core::Application::Get().GetLayer<InterfaceLayer>()->SetChemicalInfo(chem.get()->GetInfo());
-}
- 
-//TODO: Async
-void AppLayer::GetAutoCompleteOptions()
-{
-	std::cout << "HTTP: Making Request to get autocomplete options\n";
-	static int ResponseCount = 5;
-	std::string URL = "https://pubchem.ncbi.nlm.nih.gov/rest/autocomplete/compound/" + Core::String::Replace(m_AutoCompleteInput, ' ', "%20"); + "/JSON?limit=" + std::to_string(ResponseCount);
-	m_AutoCompleteInput.clear();
-	Core::Http::HttpResponse Response = Core::Http::Client::Get(URL);
-	Core::json jsonData = Core::json::parse(Response.body);
-
-	if (jsonData.contains("Fault"))
-	{
-		Core::Application::Get().GetLayer<InterfaceLayer>()->PushError("Autocomplete Request Invalid");
-		return;
-	}
-
-	std::vector<std::string> options;
-	for (int i = 0; i < jsonData["total"]; i++)
-	{
-		std::string item = jsonData["dictionary_terms"]["compound"][i];
-		options.push_back(item);
-	}
-
-	if (options.size() == 0) return;
-	Core::Application::Get().GetLayer<InterfaceLayer>()->SetAutoComplete(options);
 }
