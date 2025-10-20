@@ -21,8 +21,8 @@ public:
 	void RequestNewAutoComplete(std::string input) { m_AutoCompleteInput = input; }
 
 private:
-	void DisplayChemicalStructure(std::string name);
-	void GetAutoCompleteOptions();
+	void HandleChemicalStructure();
+	void HandleAutoComplete();
 
 	bool m_ChemicalRecieved;
 	std::string m_Chemical;

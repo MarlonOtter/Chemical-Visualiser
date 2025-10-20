@@ -25,50 +25,8 @@ AppLayer::~AppLayer()
 
 void AppLayer::Update(float ts)
 {
-	// Async Structure Request Handling
-	if (m_ChemicalRecieved && !m_StructureRequestActive)
-	{
-		m_StructureFuture = ChemVis::PubChem::Async::GetChemical(m_Chemical);
-		m_StructureRequestActive = true;
-		m_ChemicalRecieved = false;
-	}
-	if (m_StructureRequestActive && ChemVis::PubChem::Async::isFutureReady(m_StructureFuture))
-	{
-		m_StructureRequestActive = false;
-		try {
-			auto chemObj = m_StructureFuture.get();
-			m_StructureRequestActive = false;
-
-			if (!chemObj.GetAtoms().Types.empty()) 
-			{
-				auto chem = std::make_shared<ChemVis::Chemical>(chemObj);
-				Core::Application::Get().GetLayer<View2DLayer>()->TransitionTo<View2DLayer>(chem);
-				Core::Application::Get().GetLayer<View3DLayer>()->TransitionTo<View3DLayer>(chem);
-				Core::Application::Get().GetLayer<InterfaceLayer>()->SetChemicalInfo(chem->GetInfo());
-			}
-		}
-		catch (const std::exception& e) {
-			m_StructureRequestActive = false;
-			Core::Application::Get().GetLayer<InterfaceLayer>()->PushError(
-				std::string("Chemical request failed: ") + e.what()
-			);
-		}
-	}
-
-	// Async AutoComplete Handling
-	if (!m_AutoCompleteInput.empty() && !m_AutoCompleteRequestActive)
-	{
-		m_AutoCompleteFuture = ChemVis::PubChem::Async::GetAutoComplete(m_AutoCompleteInput);
-		m_AutoCompleteRequestActive = true;
-		m_AutoCompleteInput.clear();
-	}
-	if (m_AutoCompleteRequestActive && ChemVis::PubChem::Async::isFutureReady(m_AutoCompleteFuture))
-	{
-		m_AutoCompleteRequestActive = false;
-		auto options = m_AutoCompleteFuture.get();
-		Core::Application::Get().GetLayer<InterfaceLayer>()->SetAutoComplete(options);
-	}
-
+	HandleChemicalStructure();
+	HandleAutoComplete();
 
 	static int target = 60;
 	static int maxFrameDelay = 10;
@@ -109,12 +67,52 @@ void AppLayer::OnEvent(Core::Event& event)
 	
 }
 
-void AppLayer::DisplayChemicalStructure(std::string name)
+void AppLayer::HandleChemicalStructure()
 {
+	if (m_ChemicalRecieved && !m_StructureRequestActive)
+	{
+		m_StructureFuture = ChemVis::PubChem::Async::GetChemical(m_Chemical);
+		m_StructureRequestActive = true;
+		m_ChemicalRecieved = false;
+	}
+	if (m_StructureRequestActive && ChemVis::PubChem::Async::isFutureReady(m_StructureFuture))
+	{
+		m_StructureRequestActive = false;
+		try {
+			auto chemObj = m_StructureFuture.get();
+			m_StructureRequestActive = false;
+
+			if (!chemObj.GetAtoms().Types.empty())
+			{
+				auto chem = std::make_shared<ChemVis::Chemical>(chemObj);
+				Core::Application::Get().GetLayer<View2DLayer>()->TransitionTo<View2DLayer>(chem);
+				Core::Application::Get().GetLayer<View3DLayer>()->TransitionTo<View3DLayer>(chem);
+				Core::Application::Get().GetLayer<InterfaceLayer>()->SetChemicalInfo(chem->GetInfo());
+			}
+		}
+		catch (const std::exception& e) {
+			m_StructureRequestActive = false;
+			Core::Application::Get().GetLayer<InterfaceLayer>()->PushError(
+				std::string("Chemical request failed: ") + e.what()
+			);
+		}
+	}
 }
  
-void AppLayer::GetAutoCompleteOptions()
+void AppLayer::HandleAutoComplete()
 {
+	if (!m_AutoCompleteInput.empty() && !m_AutoCompleteRequestActive)
+	{
+		m_AutoCompleteFuture = ChemVis::PubChem::Async::GetAutoComplete(m_AutoCompleteInput);
+		m_AutoCompleteRequestActive = true;
+		m_AutoCompleteInput.clear();
+	}
+	if (m_AutoCompleteRequestActive && ChemVis::PubChem::Async::isFutureReady(m_AutoCompleteFuture))
+	{
+		m_AutoCompleteRequestActive = false;
+		auto options = m_AutoCompleteFuture.get();
+		Core::Application::Get().GetLayer<InterfaceLayer>()->SetAutoComplete(options);
+	}
 }
 
 void AppLayer::SetChemical(std::string _chemical)

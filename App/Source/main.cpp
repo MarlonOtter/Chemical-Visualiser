@@ -17,11 +17,9 @@ int main()
 	Core::Application app(appSpec);
 
 	app.PushLayer<AppLayer>();
-
 	app.PushLayer<View2DLayer>();
 	app.PushLayer<View3DLayer>();
 	app.PushLayer<InterfaceLayer>();
-
 
 	app.Run();
 }
