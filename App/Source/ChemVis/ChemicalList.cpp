@@ -5,7 +5,7 @@
 #include <fstream>
 
 #include "Core/Json.h"
-
+#include <algorithm>
 
 namespace ChemVis
 {
@@ -99,7 +99,7 @@ namespace ChemVis
 			}
 			catch (Core::json::parse_error)
 			{
-				std::cout << "ERROR: failed to read data from file\n";
+				std::cerr << "ERROR: failed to read data from file\n";
 				std::filesystem::remove(FilePath);
 				return "";
 			}	
@@ -130,7 +130,7 @@ namespace ChemVis
 
 					for (std::string id : identifiers)
 					{
-						m_Chemicals.try_emplace(id, cid);
+						m_Chemicals.try_emplace(Normalize(id), cid);
 					}
 				}
 				catch (Core::json::parse_error) {
@@ -201,5 +201,4 @@ namespace ChemVis
 		std::transform(s.begin(), s.end(), s.begin(), ::tolower);
 		return s;
 	}
-
 }

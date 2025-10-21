@@ -33,5 +33,5 @@ namespace ChemVis
 		bool WriteFile(std::string FilePath, std::string Contents);
 	};
 
-
+	static std::string Normalize(std::string s);
 }
