@@ -98,10 +98,19 @@ void View2DLayer::OnRender()
 		const float DefaultAtomSize = 0.25f;
 		for (size_t i = 0; i < atoms.Types.size(); i++)
 		{
+			int posX = atoms.Positions2D.x[i] * m_WorldScale;
+			int posY = atoms.Positions2D.y[i] * m_WorldScale;
+
 			Core::Shape::Circle::Draw(
-				atoms.Positions2D.x[i] * m_WorldScale, atoms.Positions2D.y[i] * m_WorldScale,
+				posX, posY,
 				m_AtomSize * DefaultAtomSize * static_cast<float>(m_WorldScale) * (atoms.Types[i] == 1 ? m_HydrogenScale : 1),
-				ChemVis::Chemical::GetColor(atoms.Types[i]));
+				ChemVis::GetAtomColor(atoms.Types[i]));
+			if (m_ShowElementSymbol)
+			{
+				std::string Symbol = ChemVis::GetAtomSymbol(atoms.Types[i]);
+				int FontSize = 0.2 * m_WorldScale;
+				Core::Text::Draw(Symbol.c_str(), posX-Core::Text::Measure(Symbol, FontSize)/2, posY-FontSize/2, FontSize, Core::BLACK);
+			}
 		}
 	}
 

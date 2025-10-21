@@ -43,13 +43,15 @@ void View3DLayer::Update(float ts)
 
 	// Toggle Debug Camera
 	//TODO move to debug UI
-	if (IsKeyPressed(KEY_L)) {
-		m_DebugCamera = !m_DebugCamera;
-	}
+	
 
 	if (m_WindowData.focused && m_WindowData.hovered)
 	{
 		HandleCameraMovement(ts, windowSize);
+
+		if (IsKeyPressed(KEY_L)) {
+			m_DebugCamera = !m_DebugCamera;
+		}
 	}
 }
 
@@ -73,7 +75,7 @@ void View3DLayer::OnRender()
 				Core::Model::Sphere::Draw(
 					atoms.Positions3D.x[i], atoms.Positions3D.y[i], atoms.Positions3D.z[i],
 					m_AtomSize * DefaultAtomSize * (atoms.Types[i] == 1 ? m_HydrogenScale : 1),
-					ChemVis::Chemical::GetColor(atoms.Types[i]));
+					ChemVis::GetAtomColor(atoms.Types[i]));
 			}
 
 			// BONDS

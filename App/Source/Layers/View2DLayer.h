@@ -23,6 +23,7 @@ public:
 	float& BondWidth() { return m_BondWidth; }
 	float& BondSeperation() { return m_BondSeperation; }
 	int& WorldScale() { return m_WorldScale; }
+	bool& ShowSymbol() { return m_ShowElementSymbol; }
 
 	void setWindowData(WindowData data) { windowData = data; }
 
@@ -44,7 +45,7 @@ private:
 	float m_HydrogenScale = 0.5f;
 	float m_BondWidth = 1.0f;
 	float m_BondSeperation = 1.0f;
-
+	bool m_ShowElementSymbol = false;
 
 	std::shared_ptr<ChemVis::Chemical> chemical;
 

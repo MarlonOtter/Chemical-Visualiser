@@ -147,26 +147,46 @@ namespace ChemVis
 		return chemicalInfo;
 	}
 
-	Core::Color Chemical::GetColor(int type)
+	Core::Color GetAtomColor(int type)
 	{
 		switch (type)
 		{
-			case 1: {
-				return Core::WHITE;
-			}
-			case 6: {
-				return Core::GRAY;
-			}
-			case 7: {
-				return Core::BLUE;
-			}
-			case 8: {
-				return Core::RED;
-			}
-			default: {
-				return Core::PINK;
-			}
+		case 1: {
+			return Core::WHITE;
 		}
+		case 6: {
+			return Core::GRAY;
+		}
+		case 7: {
+			return Core::BLUE;
+		}
+		case 8: {
+			return Core::RED;
+		}
+		default: {
+			return Core::PINK;
+		}
+		}
+	}
+
+	//TODO Replace with an API call to get the periodic table with all of its data (it can then be stored)
+	std::string GetAtomSymbol(int type) {
+		switch (type)
+		{
+		case 1: {
+			return "H";
+		}
+		case 6: {
+			return "C";
+		}
+		case 7: {
+			return "N";
+		}
+		case 8: {
+			return "O";
+		}
+		}
+		return "N/a";
 	}
 
 	std::string Merge2Dand3D(std::string data2D, std::string data3D)

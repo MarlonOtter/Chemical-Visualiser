@@ -227,6 +227,7 @@ WindowData InterfaceLayer::DrawSettings()
 		ImGui::SliderFloat("Bond Width ##2D", &(layer2D->BondWidth()), 0.01f, 2.0f);
 		ImGui::SliderFloat("Bond Seperation ##2D", &(layer2D->BondSeperation()), 0.01f, 2.0f);
 		ImGui::DragInt("World Scale ##2D", &(layer2D->WorldScale()));
+		ImGui::Checkbox("Show Element Symbol ##2D", &(layer2D->ShowSymbol()));
 
 		ImGui::SeparatorText("\xef\x86\xb2 3D Visualiser"); // Cube
 

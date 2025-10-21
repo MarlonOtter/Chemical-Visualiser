@@ -21,6 +21,14 @@ AppLayer::AppLayer()
 
 AppLayer::~AppLayer()
 {
+	if (m_StructureRequestActive) 
+	{
+		m_StructureFuture.wait();
+	}
+	if (m_AutoCompleteRequestActive)
+	{
+		m_AutoCompleteFuture.wait();
+	}
 }
 
 void AppLayer::Update(float ts)

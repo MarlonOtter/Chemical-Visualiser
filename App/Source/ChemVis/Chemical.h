@@ -68,7 +68,7 @@ namespace ChemVis {
 		const AtomsInfo& GetAtoms() const { return m_Atoms; }
 		const BondsInfo& GetBonds() const { return m_Bonds; }
 
-		static Core::Color GetColor(int type);
+		
 	private:
 		ChemicalInfo m_Info;
 		AtomsInfo m_Atoms;
@@ -79,5 +79,7 @@ namespace ChemVis {
 		static ChemicalInfo ParseInfo(Core::json data);
 	};
 
+	Core::Color GetAtomColor(int type);
+	std::string GetAtomSymbol(int type);
 	std::string Merge2Dand3D(std::string data2D, std::string data3D);
 }
