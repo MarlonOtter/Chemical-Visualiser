@@ -31,7 +31,9 @@ namespace ChemVis
 		}
 		catch (const std::exception& e)
 		{
-			std::cout << "ERROR In Chemical Parser: " << e.what() << "\n";
+			//! ERROR : [json.exception.out_of_range.404] unresolved reference token 'PC_Compounds'
+			std::cout << "\n\n" << data << "\n\n";
+			std::cerr << "ERROR In Chemical Parser: " << e.what() << "\n";
 		}
 	}
 
@@ -220,7 +222,9 @@ namespace ChemVis
 		}
 		catch (Core::json::parse_error)
 		{
-			std::cout << "ERROR: Could not Parse data returned from PubChem";
+			std::cout << data2D << "\n\n" << data3D << "\n\n\n";
+			std::cout << "ERROR: Could not Parse data returned from PubChem\n";
+
 			return "";
 		}
 		catch (const std::exception& e)

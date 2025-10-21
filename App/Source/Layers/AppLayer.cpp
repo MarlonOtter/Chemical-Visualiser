@@ -17,6 +17,7 @@
 AppLayer::AppLayer()
 {
 	SetChemical("Caffeine");
+	m_ChemicalList = ChemVis::ChemicalList("Cache/Chemicals");
 }
 
 AppLayer::~AppLayer()
@@ -79,24 +80,47 @@ void AppLayer::HandleChemicalStructure()
 {
 	if (m_ChemicalRecieved && !m_StructureRequestActive)
 	{
-		m_StructureFuture = ChemVis::PubChem::Async::GetChemical(m_Chemical);
-		m_StructureRequestActive = true;
+		if (m_ChemicalList.IsStored(m_Chemical))
+		{
+			std::cout << "READING FROM CACHE\n";
+			// Get data from file
+			int cid = m_ChemicalList.GetCid(m_Chemical);
+			std::cout << "CID: " << cid << "\n";
+			std::string data = m_ChemicalList.GetData(cid);
+			//std::cout << "DATA:\n" << data << "\n\n";
+			auto chemical = ChemVis::Chemical::Parse(data);
+			if (chemical.has_value())
+			{
+				SendChemical(chemical.value());
+			}
+		}
+		else
+		{
+			// Get data from API
+			std::cout << "USING API\n";
+			m_StructureFuture = ChemVis::PubChem::Async::GetChemical(m_Chemical);
+			m_StructureRequestActive = true;
+		}
+
 		m_ChemicalRecieved = false;
 	}
 	if (m_StructureRequestActive && ChemVis::PubChem::Async::isFutureReady(m_StructureFuture))
 	{
 		m_StructureRequestActive = false;
 		try {
-			auto chemObj = m_StructureFuture.get();
+			auto result = m_StructureFuture.get();
+			auto chemObj = result.Chemical;
 			m_StructureRequestActive = false;
 
-			if (!chemObj.GetAtoms().Types.empty())
+			//TODO STORE THE CHEMICAL IN m_ChemicalList.
+			std::string ChemicalIdentifier = result.Identifier;
+			if (!result.Data.empty() && !m_ChemicalList.IsStored(ChemicalIdentifier))
 			{
-				auto chem = std::make_shared<ChemVis::Chemical>(chemObj);
-				Core::Application::Get().GetLayer<View2DLayer>()->TransitionTo<View2DLayer>(chem);
-				Core::Application::Get().GetLayer<View3DLayer>()->TransitionTo<View3DLayer>(chem);
-				Core::Application::Get().GetLayer<InterfaceLayer>()->SetChemicalInfo(chem->GetInfo());
+				std::cout << "STORING IN CACHE\n";
+				m_ChemicalList.Store(ChemicalIdentifier, std::stoi(chemObj.GetInfo().Cid), result.Data);
 			}
+
+			if (!chemObj.GetAtoms().Types.empty()) SendChemical(chemObj);
 		}
 		catch (const std::exception& e) {
 			m_StructureRequestActive = false;
@@ -105,6 +129,15 @@ void AppLayer::HandleChemicalStructure()
 			);
 		}
 	}
+}
+
+void AppLayer::SendChemical(ChemVis::Chemical& chemical)
+{
+	//! ERROR HERE: STRING TOO LONG
+	auto chem = std::make_shared<ChemVis::Chemical>(chemical);
+	Core::Application::Get().GetLayer<View2DLayer>()->TransitionTo<View2DLayer>(chem);
+	Core::Application::Get().GetLayer<View3DLayer>()->TransitionTo<View3DLayer>(chem);
+	Core::Application::Get().GetLayer<InterfaceLayer>()->SetChemicalInfo(chem->GetInfo());
 }
  
 void AppLayer::HandleAutoComplete()
