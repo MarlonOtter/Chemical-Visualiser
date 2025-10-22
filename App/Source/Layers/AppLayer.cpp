@@ -34,6 +34,12 @@ AppLayer::~AppLayer()
 
 void AppLayer::Update(float ts)
 {
+	if (m_DeleteCachedChemicals)
+	{
+		m_ChemicalList.DeleteAll();
+		m_DeleteCachedChemicals = false;
+	}
+
 	HandleChemicalStructure();
 	HandleAutoComplete();
 
@@ -82,6 +88,7 @@ void AppLayer::HandleChemicalStructure()
 	{
 		if (m_ChemicalList.IsStored(m_Chemical))
 		{
+			std::cout << "Fetching Data from Disk\n";
 			int cid = m_ChemicalList.GetCid(m_Chemical);
 			std::string data = m_ChemicalList.GetData(cid);
 			auto chemical = ChemVis::Chemical::Parse(data);
@@ -92,6 +99,7 @@ void AppLayer::HandleChemicalStructure()
 		}
 		else
 		{
+			std::cout << "Fetching Data with API\n";
 			m_StructureFuture = ChemVis::PubChem::Async::GetChemical(m_Chemical);
 			m_StructureRequestActive = true;
 		}

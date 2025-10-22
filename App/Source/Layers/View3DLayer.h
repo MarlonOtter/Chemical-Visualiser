@@ -37,7 +37,7 @@ private:
 	RenderTexture2D m_Target;
 	Color m_ClearColor = BLACK;
 	Vector2 m_PrevSize;
-	bool m_Resizing = true;
+	bool m_Resizing = false;
 	WindowData m_WindowData;
 
 	std::shared_ptr<ChemVis::Chemical> m_Chemical;

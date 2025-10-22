@@ -243,6 +243,11 @@ WindowData InterfaceLayer::DrawSettings()
 		ImGui::SeparatorText("\xef\x80\x93 Other"); // Gear
 
 		ImGui::Checkbox("Show Demo", &m_ShowDemo);
+
+		if (ImGui::Button("\xef\x87\xb8 Clear Cached Chemicals")) // Trash
+		{
+			Core::Application::Get().GetLayer<AppLayer>()->QueueDeleteCachedChemicals();
+		}
 	}
 	WindowData window = getWindowData(!open);
 	ImGui::End();

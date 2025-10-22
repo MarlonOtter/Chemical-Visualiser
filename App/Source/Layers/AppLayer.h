@@ -21,7 +21,7 @@ public:
 	void SetChemical(std::string chemical);
 
 	void RequestNewAutoComplete(std::string input) { m_AutoCompleteInput = input; }
-
+	void QueueDeleteCachedChemicals() { m_DeleteCachedChemicals = true; }
 private:
 	void HandleChemicalStructure();
 	void HandleAutoComplete();
@@ -36,6 +36,8 @@ private:
 
 	std::future<std::vector<std::string>> m_AutoCompleteFuture;
 	bool m_AutoCompleteRequestActive = false;
+
+	bool m_DeleteCachedChemicals = false;
 
 	ChemVis::ChemicalList m_ChemicalList;
 };

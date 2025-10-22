@@ -112,6 +112,18 @@ namespace ChemVis
 		return m_Chemicals[Normalize(Identifier)];
 	}
 
+	void ChemicalList::DeleteAll()
+	{
+		if (!FolderExists() || std::filesystem::is_empty(m_FileDirectory)) return;
+		std::cout << "Removing All Files From: " << m_FileDirectory << "\n";
+		for (const auto& entry : std::filesystem::directory_iterator(m_FileDirectory)) {
+			if (entry.is_regular_file()) {
+				std::filesystem::remove(entry.path());
+			}
+		}
+		m_Chemicals.clear();
+	}
+
 	void ChemicalList::TrackStoredData()
 	{
 		if (!FolderExists()) return;

@@ -18,6 +18,8 @@ namespace ChemVis
 		void Store(std::string Identifier, int cid, std::string Data);
 		std::string GetData(int Cid);
 		int GetCid(std::string Identifier);
+
+		void DeleteAll();
 	private:
 		// name/identifier -> cid
 		std::map<std::string, int> m_Chemicals;

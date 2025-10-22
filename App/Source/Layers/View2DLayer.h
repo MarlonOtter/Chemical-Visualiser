@@ -38,7 +38,7 @@ private:
 	WindowData windowData;
 	bool hovered = false;
 
-	bool resizing = true;
+	bool resizing = false;
 
 	int m_WorldScale = 1000;
 	float m_AtomSize = 1.0f;
