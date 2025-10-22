@@ -41,9 +41,8 @@ namespace ChemVis
 
 	void ChemicalList::Store(std::string Identifier, int Cid, std::string Data)
 	{
-		if (IsStored(Cid))
+		if (IsStored(Identifier))
 		{
-			m_Chemicals[Identifier] = Cid;
 			return;
 		}
 
@@ -58,6 +57,7 @@ namespace ChemVis
 			{
 				Core::json json = Core::json::parse(contents);
 				std::vector<std::string> identifiers = json["identifiers"].get<std::vector<std::string>>();
+				//TODO check that the name isn't already in it
 				identifiers.push_back(Identifier);
 				json["identifiers"] = identifiers;
 
@@ -71,7 +71,7 @@ namespace ChemVis
 		if (!ReadComplete) {
 			if (!WriteFile(FilePath, FormatForFile(Identifier, Cid, Data))) return;
 		}
-		m_Chemicals[Identifier] = Cid;
+		m_Chemicals[Normalize(Identifier)] = Cid;
 	}
 
 	std::string ChemicalList::GetData(int Cid)
