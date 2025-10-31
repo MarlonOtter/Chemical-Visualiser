@@ -141,7 +141,9 @@ void View3DLayer::HandleCameraMovement(float ts, Vector2 windowSize)
 
 void View3DLayer::SetupRenderTexture()
 {
-	m_Target = LoadRenderTexture(m_WindowData.width, m_WindowData.height);
+	int w = std::fmax(m_WindowData.width, 10);
+	int h = std::fmax(m_WindowData.height, 10);
+	m_Target = LoadRenderTexture(w, h);
 }
 
 void View3DLayer::ResetCamera()

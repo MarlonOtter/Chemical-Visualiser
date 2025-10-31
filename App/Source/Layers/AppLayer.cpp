@@ -16,16 +16,13 @@
 
 AppLayer::AppLayer()
 {
-	SetChemical("Caffeine");
-	m_ChemicalList = ChemVis::ChemicalList("Cache/Chemicals");
+	// Create the handler that manages the thread that will get the chemical from Disk or API
+	m_FetchThread = std::make_unique<ChemVis::FetchThread>();
+	SetChemical("Aspirin");
 }
 
 AppLayer::~AppLayer()
 {
-	if (m_StructureRequestActive) 
-	{
-		m_StructureFuture.wait();
-	}
 	if (m_AutoCompleteRequestActive)
 	{
 		m_AutoCompleteFuture.wait();
@@ -36,7 +33,7 @@ void AppLayer::Update(float ts)
 {
 	if (m_DeleteCachedChemicals)
 	{
-		m_ChemicalList.DeleteAll();
+		m_FetchThread.get()->RequestDeleteCache();
 		m_DeleteCachedChemicals = false;
 	}
 
@@ -84,49 +81,27 @@ void AppLayer::OnEvent(Core::Event& event)
 
 void AppLayer::HandleChemicalStructure()
 {
-	if (m_ChemicalRecieved && !m_StructureRequestActive)
+	// Request New Chemical
+	if (m_ChemicalRecieved)
 	{
-		if (m_ChemicalList.IsStored(m_Chemical))
+		if (m_FetchThread && 
+			// Check valid
+			(m_CurrentlyDisplayed != m_Chemical) && !m_Chemical.empty()) 
 		{
-			std::cout << "Fetching Data from Disk\n";
-			int cid = m_ChemicalList.GetCid(m_Chemical);
-			std::string data = m_ChemicalList.GetData(cid);
-			auto chemical = ChemVis::Chemical::Parse(data);
-			if (chemical.has_value())
-			{
-				SendChemical(chemical.value());
-			}
+			m_FetchThread->RequestChemical(m_Chemical);
+			m_CurrentlyDisplayed = m_Chemical;
 		}
-		else
-		{
-			std::cout << "Fetching Data with API\n";
-			m_StructureFuture = ChemVis::PubChem::Async::GetChemical(m_Chemical);
-			m_StructureRequestActive = true;
-		}
-
 		m_ChemicalRecieved = false;
 	}
-	if (m_StructureRequestActive && ChemVis::PubChem::Async::isFutureReady(m_StructureFuture))
+
+	// Get Result from thread
+	if (m_FetchThread.get()->IsResultReady())
 	{
-		m_StructureRequestActive = false;
-		try {
-			auto result = m_StructureFuture.get();
-			auto chemObj = result.Chemical;
-			m_StructureRequestActive = false;
-
-			std::string ChemicalIdentifier = result.Identifier;
-			if (!result.Data.empty() && !m_ChemicalList.IsStored(ChemicalIdentifier))
-			{
-				m_ChemicalList.Store(ChemicalIdentifier, std::stoi(chemObj.GetInfo().Cid), result.Data);
-			}
-
-			if (!chemObj.GetAtoms().Types.empty()) SendChemical(chemObj);
-		}
-		catch (const std::exception& e) {
-			m_StructureRequestActive = false;
-			Core::Application::Get().GetLayer<InterfaceLayer>()->PushError(
-				std::string("Chemical request failed: ") + e.what()
-			);
+		auto chemical = m_FetchThread->GetResult();
+		if (!chemical.GetAtoms().Types.empty())
+		{
+			std::cout << "Recieved chemical from thread\n";
+			SendChemical(chemical);
 		}
 	}
 }
@@ -155,8 +130,8 @@ void AppLayer::HandleAutoComplete()
 	}
 }
 
-void AppLayer::SetChemical(std::string _chemical)
+void AppLayer::SetChemical(std::string chemical)
 {
-	m_Chemical = _chemical;
+	m_Chemical = std::move(chemical);
 	m_ChemicalRecieved = true;
 }

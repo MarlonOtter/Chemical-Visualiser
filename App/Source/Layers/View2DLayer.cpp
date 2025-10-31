@@ -139,7 +139,9 @@ void View2DLayer::HandleCameraMovement(float ts, Vector2 windowSize)
 
 void View2DLayer::SetupRenderTexture()
 {
-	target = LoadRenderTexture(windowData.width, windowData.height);
+	int w = std::fmax(windowData.width, 10);
+	int h = std::fmax(windowData.height, 10);
+	target = LoadRenderTexture(w, h);
 	SetTextureFilter(target.texture, TEXTURE_FILTER_BILINEAR);
 }
 

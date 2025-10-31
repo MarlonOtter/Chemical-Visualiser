@@ -1,11 +1,14 @@
 #pragma once
 
+#include <string>
+#include <vector>
+#include <memory>
+
 #include "Core/Layer.h"
 #include "ChemVis/PubChem.h"
 #include "ChemVis/ChemicalList.h"
+#include "ChemVis/FetchThreadHandler.h"
 
-#include <string>
-#include <vector>
 
 class AppLayer : public Core::Layer
 {
@@ -27,17 +30,15 @@ private:
 	void HandleAutoComplete();
 	void SendChemical(ChemVis::Chemical& chemical);
 
-	bool m_ChemicalRecieved;
+	bool m_ChemicalRecieved = false;
 	std::string m_Chemical;
+	std::string m_CurrentlyDisplayed;
+
 	std::string m_AutoCompleteInput;
-
-	std::future<ChemVis::PubChem::Result> m_StructureFuture;
-	bool m_StructureRequestActive = false;
-
 	std::future<std::vector<std::string>> m_AutoCompleteFuture;
 	bool m_AutoCompleteRequestActive = false;
 
 	bool m_DeleteCachedChemicals = false;
 
-	ChemVis::ChemicalList m_ChemicalList;
+	std::unique_ptr<ChemVis::FetchThread> m_FetchThread;
 };
