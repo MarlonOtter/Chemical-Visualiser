@@ -7,9 +7,9 @@ namespace ChemVis
 {
 	FetchThread::FetchThread()
 	{
-		m_Thread = std::thread(&FetchThread::ThreadLoop, this);
-
 		m_ChemicalList = ChemVis::ChemicalList("Cache/Chemicals");
+
+		m_Thread = std::thread(&FetchThread::ThreadLoop, this);
 	}
 	FetchThread::~FetchThread()
 	{
