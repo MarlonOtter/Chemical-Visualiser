@@ -26,38 +26,50 @@ namespace ChemVis
 			// lock while writing the request string
 			std::lock_guard<std::mutex> lock(m_ChemicalRequestMutex);
 			m_ChemicalRequest = name;
+			m_NewRequest = true;
 		}
-		m_NewRequest.store(true);
+		m_ConditionVar.notify_one();	
 	}
 
 	void FetchThread::Stop()
 	{
 		m_RunThread.store(false);
+		m_ConditionVar.notify_one();
 	}
 
 	// Done by fetch thread
 	void FetchThread::ThreadLoop()
 	{
+		std::unique_lock<std::mutex> lock(m_ChemicalRequestMutex);
 		while (m_RunThread.load())
 		{
+			m_ConditionVar.wait(lock, [this]() {
+				return m_NewRequest || m_DeleteCacheRequest || !m_RunThread.load();
+				});
+
+			if (!m_RunThread.load())
+				break;
+
+			std::cout << "Thread Active\n";
+			if (m_DeleteCacheRequest)
+			{
+				lock.unlock();
+				m_ChemicalList.DeleteAll();
+				lock.lock();
+				m_DeleteCacheRequest.store(false);
+				continue;
+			}
+
+
 			if (m_NewRequest.load())
 			{
-				std::string chemicalName;
-				{
-					std::lock_guard<std::mutex> lock(m_ChemicalRequestMutex);
-					chemicalName = m_ChemicalRequest;
-				}
-
+				std::string chemicalName = std::move(m_ChemicalRequest);
+				m_ChemicalRequest.clear();
+				m_NewRequest = false;
+				lock.unlock();
 				FetchChemicalData(chemicalName);
-				m_NewRequest.store(false);
+				lock.lock();
 			}
-			if (m_DeleteCacheRequest.load())
-			{
-				m_ChemicalList.DeleteAll();
-				m_DeleteCacheRequest.store(false);
-			}
-
-			std::this_thread::sleep_for(std::chrono::milliseconds(100)); // Should move to event driven (not polling)
 		}
 	}
 
@@ -74,9 +86,8 @@ namespace ChemVis
 			{
 				{
 					std::lock_guard<std::mutex> lock(m_ResultMutex);
-					m_Result = chemical.value();
+					m_Result = std::move(chemical.value());
 				}
-				m_ResultReady.store(true);
 			}
 		}
 		else
@@ -97,9 +108,8 @@ namespace ChemVis
 				{
 					{
 						std::lock_guard<std::mutex> lock(m_ResultMutex);
-						m_Result = chemObj;
+						m_Result = std::move(chemObj);
 					}
-					m_ResultReady.store(true);
 				}
 			}
 			catch (const std::exception& e) {

@@ -17,18 +17,27 @@ namespace ChemVis
 		FetchThread();
 		~FetchThread();
 		void RequestChemical(const std::string& name);
-		void RequestDeleteCache() { m_DeleteCacheRequest.store(true); }
+		void RequestDeleteCache() { 
+			m_DeleteCacheRequest.store(true);
+			m_ConditionVar.notify_one();
+		}
 
 		Chemical GetResult() { 
-			Chemical ResultCopy;
+			std::optional<Chemical> ResultCopy;
 			{
 				std::lock_guard<std::mutex> lock(m_ResultMutex);
-				ResultCopy = m_Result;
+				ResultCopy = std::move(m_Result);
+				m_Result.reset();
 			}
-			m_ResultReady.store(false);
-			return ResultCopy;
+			if (ResultCopy.has_value())
+				return std::move(ResultCopy.value());
+			return Chemical();
 		}
-		bool IsResultReady() { return m_ResultReady.load(); }
+		bool IsResultReady() 
+		{
+			std::lock_guard<std::mutex> lock(m_ResultMutex);
+			return m_Result.has_value();
+		}
 
 		void Stop();
 	private:
@@ -40,12 +49,12 @@ namespace ChemVis
 		std::string m_ChemicalRequest;
 		std::mutex m_ChemicalRequestMutex;
 
+		std::condition_variable m_ConditionVar;
 		std::atomic<bool> m_NewRequest = { false };
 		std::atomic<bool> m_DeleteCacheRequest = { false };
 
-		std::atomic<bool> m_ResultReady = { false };
 		std::mutex m_ResultMutex;
-		Chemical m_Result;
+		std::optional<Chemical> m_Result;
 
 
 		ChemicalList m_ChemicalList;

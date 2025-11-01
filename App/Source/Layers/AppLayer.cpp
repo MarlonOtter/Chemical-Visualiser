@@ -12,11 +12,8 @@
 #include "InterfaceLayer.h"
 
 
-
-
 AppLayer::AppLayer()
 {
-	// Create the handler that manages the thread that will get the chemical from Disk or API
 	m_FetchThread = std::make_unique<ChemVis::FetchThread>();
 	SetChemical("Aspirin");
 }
