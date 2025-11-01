@@ -12,19 +12,14 @@
 #include "InterfaceLayer.h"
 
 
-
-
 AppLayer::AppLayer()
 {
-	SetChemical("Caffeine");
+	m_FetchThread = std::make_unique<ChemVis::FetchThread>();
+	SetChemical("Aspirin");
 }
 
 AppLayer::~AppLayer()
 {
-	if (m_StructureRequestActive) 
-	{
-		m_StructureFuture.wait();
-	}
 	if (m_AutoCompleteRequestActive)
 	{
 		m_AutoCompleteFuture.wait();
@@ -33,6 +28,12 @@ AppLayer::~AppLayer()
 
 void AppLayer::Update(float ts)
 {
+	if (m_DeleteCachedChemicals)
+	{
+		m_FetchThread.get()->RequestDeleteCache();
+		m_DeleteCachedChemicals = false;
+	}
+
 	HandleChemicalStructure();
 	HandleAutoComplete();
 
@@ -77,34 +78,37 @@ void AppLayer::OnEvent(Core::Event& event)
 
 void AppLayer::HandleChemicalStructure()
 {
-	if (m_ChemicalRecieved && !m_StructureRequestActive)
+	// Request New Chemical
+	if (m_ChemicalRecieved)
 	{
-		m_StructureFuture = ChemVis::PubChem::Async::GetChemical(m_Chemical);
-		m_StructureRequestActive = true;
+		if (m_FetchThread && 
+			// Check valid
+			(m_CurrentlyDisplayed != m_Chemical) && !m_Chemical.empty()) 
+		{
+			m_FetchThread->RequestChemical(m_Chemical);
+			m_CurrentlyDisplayed = m_Chemical;
+		}
 		m_ChemicalRecieved = false;
 	}
-	if (m_StructureRequestActive && ChemVis::PubChem::Async::isFutureReady(m_StructureFuture))
-	{
-		m_StructureRequestActive = false;
-		try {
-			auto chemObj = m_StructureFuture.get();
-			m_StructureRequestActive = false;
 
-			if (!chemObj.GetAtoms().Types.empty())
-			{
-				auto chem = std::make_shared<ChemVis::Chemical>(chemObj);
-				Core::Application::Get().GetLayer<View2DLayer>()->TransitionTo<View2DLayer>(chem);
-				Core::Application::Get().GetLayer<View3DLayer>()->TransitionTo<View3DLayer>(chem);
-				Core::Application::Get().GetLayer<InterfaceLayer>()->SetChemicalInfo(chem->GetInfo());
-			}
-		}
-		catch (const std::exception& e) {
-			m_StructureRequestActive = false;
-			Core::Application::Get().GetLayer<InterfaceLayer>()->PushError(
-				std::string("Chemical request failed: ") + e.what()
-			);
+	// Get Result from thread
+	if (m_FetchThread.get()->IsResultReady())
+	{
+		auto chemical = m_FetchThread->GetResult();
+		if (!chemical.GetAtoms().Types.empty())
+		{
+			std::cout << "Recieved chemical from thread\n";
+			SendChemical(chemical);
 		}
 	}
+}
+
+void AppLayer::SendChemical(ChemVis::Chemical& chemical)
+{
+	auto chem = std::make_shared<ChemVis::Chemical>(chemical);
+	Core::Application::Get().GetLayer<View2DLayer>()->TransitionTo<View2DLayer>(chem);
+	Core::Application::Get().GetLayer<View3DLayer>()->TransitionTo<View3DLayer>(chem);
+	Core::Application::Get().GetLayer<InterfaceLayer>()->SetChemicalInfo(chem->GetInfo());
 }
  
 void AppLayer::HandleAutoComplete()
@@ -123,8 +127,8 @@ void AppLayer::HandleAutoComplete()
 	}
 }
 
-void AppLayer::SetChemical(std::string _chemical)
+void AppLayer::SetChemical(std::string chemical)
 {
-	m_Chemical = _chemical;
+	m_Chemical = std::move(chemical);
 	m_ChemicalRecieved = true;
 }

@@ -31,7 +31,8 @@ namespace ChemVis
 		}
 		catch (const std::exception& e)
 		{
-			std::cout << "ERROR In Chemical Parser: " << e.what() << "\n";
+			//std::cout << "\n\n" << data << "\n\n";
+			std::cerr << "ERROR In Chemical Parser: " << e.what() << "\n";
 		}
 	}
 
@@ -200,7 +201,7 @@ namespace ChemVis
 
 			// VALIDATE
 			if (base.contains("Fault")) {
-				std::cout << "ERROR: Fault in PubChem request: " << base["Fault"]["Message"] << "\n";
+				std::cerr << "ERROR: Fault in PubChem request: " << base["Fault"]["Message"] << "\n";
 				return "";
 			}
 			else if (src.contains("Fault"))
@@ -210,7 +211,7 @@ namespace ChemVis
 
 			if (!base.contains("PC_Compounds"))
 			{
-				std::cout << "ERROR: PubChem Response is missing data or in incorrect format\n";
+				std::cerr << "ERROR: PubChem Response is missing data or in incorrect format\n";
 				return "";
 			}
 
@@ -220,12 +221,13 @@ namespace ChemVis
 		}
 		catch (Core::json::parse_error)
 		{
-			std::cout << "ERROR: Could not Parse data returned from PubChem";
+			//std::cout << data2D << "\n\n" << data3D << "\n\n\n";
+			std::cerr << "ERROR: Could not Parse data returned from PubChem\n";
 			return "";
 		}
 		catch (const std::exception& e)
 		{
-			std::cout << "ERROR In Data Merger: " << e.what() << "\n";
+			std::cerr << "ERROR In Data Merger: " << e.what() << "\n";
 			return "";
 		}
 	}

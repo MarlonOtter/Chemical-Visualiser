@@ -7,6 +7,14 @@
 
 namespace ChemVis::PubChem
 {
+    struct Result
+    {
+        Chemical Chemical;
+        std::string Data;
+        std::string Identifier; // what was in the API query
+    };
+
+
 	std::string Get3D(std::string name);
 	std::string Get2D(std::string name);
 	std::string GetAutoComplete(std::string inp);
@@ -16,20 +24,25 @@ namespace ChemVis::PubChem
 	class Async
     {
     public:
-        static std::future <Chemical> GetChemical(std::string name) {
-        return std::async(std::launch::async, [name]() -> Chemical {
-            auto future3D = std::async(std::launch::async, Get3D, name);
-            auto future2D = std::async(std::launch::async, Get2D, name);
+        static std::future <Result> GetChemical(std::string name) {
+            return std::async(std::launch::async, [name]() -> Result {
+                auto future3D = std::async(std::launch::async, Get3D, name);
+                auto future2D = std::async(std::launch::async, Get2D, name);
 
-            std::string result3D = future3D.get();
-            std::string result2D = future2D.get();
+                std::string result3D = future3D.get();
+                std::string result2D = future2D.get();
 
-            auto optionalChem = Chemical::Parse(Merge2Dand3D(result2D, result3D));
-            if (optionalChem.has_value())
-            {
-                return optionalChem.value();
-            }
-            return {};
+                Result result;
+                std::string mergedData = Merge2Dand3D(result2D, result3D);
+                auto optionalChem = Chemical::Parse(mergedData);
+                if (optionalChem.has_value())
+                {
+                    result.Chemical = optionalChem.value();
+                    result.Data = mergedData;
+                    result.Identifier = name;
+                    return result;
+                }
+                return {};
             });
     }
 

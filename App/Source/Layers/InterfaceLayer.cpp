@@ -75,7 +75,6 @@ void InterfaceLayer::DrawDockSpace()
 	ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking;
 	window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
 	window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
-	//window_flags |= ImGuiWindowFlags_MenuBar;
 	window_flags |= ImGuiWindowFlags_NoBackground;
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
@@ -123,6 +122,7 @@ WindowData InterfaceLayer::DrawView3D()
 	return window;
 }
 
+#define InputBufferSize 256
 WindowData InterfaceLayer::DrawMainInterface()
 {
 	static WindowData window;
@@ -130,9 +130,12 @@ WindowData InterfaceLayer::DrawMainInterface()
 	if (open)
 	{
 		static std::string chemicalInp;
-		bool entered = ImGui::InputTextWithHint("##Chemical Input", "Caffeine", chemicalInp.data(), chemicalInp.capacity() + 1,
-			ImGuiInputTextFlags_CallbackResize | ImGuiInputTextFlags_EnterReturnsTrue,
-			InputTextCallback, &chemicalInp);
+		
+		char buffer[InputBufferSize] = {};
+		std::strncpy(buffer, chemicalInp.c_str(), InputBufferSize - 1);
+
+		bool entered = ImGui::InputTextWithHint("##Chemical Input", "Caffeine", buffer, sizeof(buffer),
+			ImGuiInputTextFlags_EnterReturnsTrue);
 
 		if (ImGui::IsItemEdited())
 		{
@@ -152,6 +155,7 @@ WindowData InterfaceLayer::DrawMainInterface()
 		ImGui::SameLine();
 		if (ImGui::Button(ICON_FA_MAGNIFYING_GLASS) || entered)
 		{
+			chemicalInp = std::string(buffer);
 			entered = false;
 			// send to app layer to fetch
 			Core::Application::Get().GetLayer<AppLayer>()->SetChemical(chemicalInp);
@@ -243,6 +247,11 @@ WindowData InterfaceLayer::DrawSettings()
 		ImGui::SeparatorText("\xef\x80\x93 Other"); // Gear
 
 		ImGui::Checkbox("Show Demo", &m_ShowDemo);
+
+		if (ImGui::Button("\xef\x87\xb8 Clear Cached Chemicals")) // Trash
+		{
+			Core::Application::Get().GetLayer<AppLayer>()->QueueDeleteCachedChemicals();
+		}
 	}
 	WindowData window = getWindowData(!open);
 	ImGui::End();
