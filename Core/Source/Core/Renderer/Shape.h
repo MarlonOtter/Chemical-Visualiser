@@ -6,6 +6,7 @@ namespace Core::Shape
 {
 	namespace Circle
 	{
+		//Todo : shift to instead use a custom circle shader on a quad
 		void Draw(int centerX, int centerY, float radius, Color color);
 	}
 

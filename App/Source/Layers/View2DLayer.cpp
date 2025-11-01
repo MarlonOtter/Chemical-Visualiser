@@ -40,7 +40,8 @@ void View2DLayer::Update(float ts)
 	} 
 	//! Window data is not updated when this is ran for the first frame
 	//! so until the user interacts with the program it is pixelated. 
-	if ((resizing && IsMouseButtonUp(MOUSE_BUTTON_LEFT)) || IsWindowResized())
+	static int frameCount = -1;
+	if ((resizing && IsMouseButtonUp(MOUSE_BUTTON_LEFT)) || IsWindowResized() || frameCount == 2)
 	{
 		resizing = false;
 		prevSize = { static_cast<float>(windowData.width), static_cast<float>(windowData.height) };
@@ -53,6 +54,9 @@ void View2DLayer::Update(float ts)
 	{
 		HandleCameraMovement(ts, windowSize);
 	}
+	
+	if (frameCount < 3)
+		frameCount++;
 }
 
 void View2DLayer::OnRender()

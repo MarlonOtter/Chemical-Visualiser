@@ -32,7 +32,8 @@ void View3DLayer::Update(float ts)
 	{
 		m_Resizing = true;
 	}
-	if ((m_Resizing && !IsMouseButtonDown(MOUSE_BUTTON_LEFT)) || IsWindowResized())
+	static int frameCount = -1;
+	if ((m_Resizing && !IsMouseButtonDown(MOUSE_BUTTON_LEFT)) || IsWindowResized() || frameCount == 2)
 	{
 		m_Resizing = false;
 		m_PrevSize = { static_cast<float>(m_WindowData.width), static_cast<float>(m_WindowData.height) };
@@ -40,10 +41,6 @@ void View3DLayer::Update(float ts)
 		UnloadRenderTexture(m_Target);
 		SetupRenderTexture();
 	}
-
-	// Toggle Debug Camera
-	//TODO move to debug UI
-	
 
 	if (m_WindowData.focused && m_WindowData.hovered)
 	{
@@ -53,6 +50,9 @@ void View3DLayer::Update(float ts)
 			m_DebugCamera = !m_DebugCamera;
 		}
 	}
+
+	if (frameCount < 3)
+		frameCount++;
 }
 
 void View3DLayer::OnRender()

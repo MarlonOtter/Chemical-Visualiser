@@ -52,6 +52,4 @@ private:
 	void SetupRenderTexture();
 	void ResetCamera();
 	void HandleCameraMovement(float ts, Vector2 windowSize);
-
-	
 };
