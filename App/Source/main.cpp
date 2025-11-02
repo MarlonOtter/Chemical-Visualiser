@@ -9,8 +9,8 @@ int main()
 {   
 	Core::ApplicationSpecification appSpec;
 	appSpec.Name = "Chemical Visualiser";
-	appSpec.WindowSpec.Width = 800;
-	appSpec.WindowSpec.Height = 800;
+	appSpec.WindowSpec.Width = 16 * 100;
+	appSpec.WindowSpec.Height = 9 * 100;
 	appSpec.WindowSpec.IsResizeable = true;
 	appSpec.WindowSpec.VSync = true;
 

@@ -1,4 +1,6 @@
 #pragma once
+#include "imgui.h"
+
 
 struct WindowData {
 	int width = 400;
@@ -7,4 +9,5 @@ struct WindowData {
 	bool focused = false;
 	bool resizing = false;
 	bool closed = false;
+	bool dockChange = false;
 };

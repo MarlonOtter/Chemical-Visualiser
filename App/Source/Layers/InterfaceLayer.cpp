@@ -102,7 +102,21 @@ WindowData InterfaceLayer::DrawView2D()
 			ImGui::Image((void*)(intptr_t)renderTexture2D->get().texture.id, { static_cast<float>(renderTexture2D->get().texture.width), static_cast<float>(renderTexture2D->get().texture.height) }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 		}
 	}
-	window = getWindowData(!open);
+
+	static ImGuiID lastDockID = 0;
+	static bool lastDocked = false;
+
+	bool currentDocked = ImGui::IsWindowDocked();
+	ImGuiID currentDockID = ImGui::GetWindowDockID();
+	bool dockChange = false;
+	if (lastDocked != currentDocked || lastDockID != currentDockID)
+	{
+		lastDocked = currentDocked;
+		lastDockID = currentDockID;
+		dockChange = true;
+	}
+
+	window = getWindowData(!open, dockChange);
 	ImGui::End();
 	return window;
 }
@@ -117,7 +131,21 @@ WindowData InterfaceLayer::DrawView3D()
 			ImGui::Image((void*)(intptr_t)renderTexture3D->get().texture.id, { static_cast<float>(renderTexture3D->get().texture.width), static_cast<float>(renderTexture3D->get().texture.height) }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 		}
 	}
-	WindowData window = getWindowData(!open);
+
+	static ImGuiID lastDockID = 0;
+	static bool lastDocked = false;
+
+	bool currentDocked = ImGui::IsWindowDocked();
+	ImGuiID currentDockID = ImGui::GetWindowDockID();
+	bool dockChange = false;
+	if (lastDocked != currentDocked || lastDockID != currentDockID)
+	{
+		lastDocked = currentDocked;
+		lastDockID = currentDockID;
+		dockChange = true;
+	}
+
+	WindowData window = getWindowData(!open, dockChange);
 	ImGui::End();
 	return window;
 }
@@ -139,6 +167,7 @@ WindowData InterfaceLayer::DrawMainInterface()
 
 		if (ImGui::IsItemEdited())
 		{
+			chemicalInp = std::string(buffer);
 			m_TimeSinceLastInput = 0.0f;
 			m_MadeRequest = false;
 		}
@@ -155,7 +184,7 @@ WindowData InterfaceLayer::DrawMainInterface()
 		ImGui::SameLine();
 		if (ImGui::Button(ICON_FA_MAGNIFYING_GLASS) || entered)
 		{
-			chemicalInp = std::string(buffer);
+			//chemicalInp = std::string(buffer);
 			entered = false;
 			// send to app layer to fetch
 			Core::Application::Get().GetLayer<AppLayer>()->SetChemical(chemicalInp);
@@ -262,14 +291,16 @@ void InterfaceLayer::OnEvent(Core::Event& event)
 {
 }
 
-WindowData InterfaceLayer::getWindowData(bool closed)
+WindowData InterfaceLayer::getWindowData(bool closed, bool dockChange)
 {
 	return WindowData{
 		(int)ImGui::GetContentRegionMax().x,
 		(int)ImGui::GetContentRegionMax().y,
 		ImGui::IsWindowHovered(),
 		ImGui::IsWindowFocused(),
+		false,
 		closed,
+		dockChange,
 	};
 }
 

@@ -46,7 +46,7 @@ private:
 	bool m_ShowDemo = false;
 
 
-	WindowData getWindowData(bool closed);
+	WindowData getWindowData(bool closed, bool dockChange = false);
 
 	void SetStyle();
 	

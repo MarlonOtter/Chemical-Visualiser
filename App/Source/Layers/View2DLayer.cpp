@@ -9,67 +9,65 @@
 
 View2DLayer::View2DLayer()
 {
-	SetupRenderTexture();
 	ResetCamera();
 }
 
 
-View2DLayer::View2DLayer(std::shared_ptr<ChemVis::Chemical> chem) : chemical(chem)
+View2DLayer::View2DLayer(std::shared_ptr<ChemVis::Chemical> chem) : m_Chemical(chem)
 {
-	SetupRenderTexture();
 	ResetCamera();
 }
 
 View2DLayer::~View2DLayer()
 {	
-	UnloadRenderTexture(target);
+	UnloadRenderTexture(m_Target);
 }
 
 void View2DLayer::Update(float ts)
 {
-	if (windowData.closed) return;
+	if (m_WindowData.closed) return;
 
 	Core::Application& app = Core::Application::Get();
 	Vector2 windowSize = app.GetWindowSize();
 
-	//std::cout << "width: " << windowData.width << ", height: " << windowData.height;
-
-	if (IsMouseButtonDown(MOUSE_BUTTON_LEFT) && ((windowData.width != static_cast<int>(prevSize.x)) || (windowData.height != static_cast<int>(prevSize.y))))
+	 
+	if (m_ResizeQueued)
 	{
-		resizing = true;
-	} 
-	//! Window data is not updated when this is ran for the first frame
-	//! so until the user interacts with the program it is pixelated. 
-	static int frameCount = -1;
-	if ((resizing && IsMouseButtonUp(MOUSE_BUTTON_LEFT)) || IsWindowResized() || frameCount == 2)
-	{
-		resizing = false;
-		prevSize = { static_cast<float>(windowData.width), static_cast<float>(windowData.height) };
-		// resize render texture
-		UnloadRenderTexture(target);
+		UnloadRenderTexture(m_Target);
 		SetupRenderTexture();
+		m_PrevSize = { static_cast<float>(m_WindowData.width), static_cast<float>(m_WindowData.height) };
+		m_Camera.offset = { static_cast<float>(m_WindowData.width) / 2, static_cast<float>(m_WindowData.height) / 2 };
+		m_ResizeQueued = false;
+	}
+
+	if (IsMouseButtonDown(MOUSE_BUTTON_LEFT) && ((m_WindowData.width != static_cast<int>(m_PrevSize.x)) || (m_WindowData.height != static_cast<int>(m_PrevSize.y))))
+	{
+		m_Resizing = true;
+	}
+	if ((m_Resizing && IsMouseButtonUp(MOUSE_BUTTON_LEFT)) || IsWindowResized() || m_WindowData.dockChange || m_FirstFrame)
+	{
+		m_FirstFrame = false;
+		m_Resizing = false;
+		m_ResizeQueued = true;		
 	}
 		
-	if (windowData.focused && windowData.hovered)
+	if (m_WindowData.focused && m_WindowData.hovered)
 	{
 		HandleCameraMovement(ts, windowSize);
 	}
-	
-	if (frameCount < 3)
-		frameCount++;
 }
 
 void View2DLayer::OnRender()
 {
-	if (windowData.closed) return;
+	if (m_WindowData.closed) return;
 
-	BeginTextureMode(target);
-	ClearBackground(clearColor);
-	BeginMode2D(camera);
+	BeginTextureMode(m_Target);
+	ClearBackground(m_ClearColor);
+	BeginMode2D(m_Camera);
 
-	if (chemical) {
-		ChemVis::AtomsInfo atoms = chemical->GetAtoms();
-		ChemVis::BondsInfo bonds = chemical->GetBonds();
+	if (m_Chemical) {
+		ChemVis::AtomsInfo atoms = m_Chemical->GetAtoms();
+		ChemVis::BondsInfo bonds = m_Chemical->GetBonds();
 		
 		// BONDS
 		const float DefaultBondWidth = 0.1f;
@@ -126,33 +124,30 @@ void View2DLayer::OnComposite()
 {
 }
 
-
 void View2DLayer::HandleCameraMovement(float ts, Vector2 windowSize)
 {
-	camera.offset = { static_cast<float>(windowData.width) / 2, static_cast<float>(windowData.height) / 2 };
-
 	if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
 	{
-		camera.target.x += -GetMouseDelta().x / camera.zoom;
-		camera.target.y += -GetMouseDelta().y / camera.zoom;
+		m_Camera.target.x += -GetMouseDelta().x / m_Camera.zoom;
+		m_Camera.target.y += -GetMouseDelta().y / m_Camera.zoom;
 	}
 
 	float scroll = Clamp(GetMouseWheelMove(), -1.0f, 1.0f) * 0.1f + 1.0f;
-	camera.zoom *= scroll;
+	m_Camera.zoom *= scroll;
 }
 
 void View2DLayer::SetupRenderTexture()
 {
-	int w = std::fmax(windowData.width, 10);
-	int h = std::fmax(windowData.height, 10);
-	target = LoadRenderTexture(w, h);
-	SetTextureFilter(target.texture, TEXTURE_FILTER_BILINEAR);
+	int w = std::fmax(m_WindowData.width, 10);
+	int h = std::fmax(m_WindowData.height, 10);
+	m_Target = LoadRenderTexture(w, h);
+	SetTextureFilter(m_Target.texture, TEXTURE_FILTER_BILINEAR);
 }
 
 void View2DLayer::ResetCamera()
 {
-	camera = {};
-	camera.zoom = 100 / static_cast<float>(m_WorldScale);
-	camera.rotation = 0.0f;
-	camera.target = { 0,0 };
+	m_Camera = {};
+	m_Camera.zoom = 100 / static_cast<float>(m_WorldScale);
+	m_Camera.rotation = 0.0f;
+	m_Camera.target = { 0,0 };
 }

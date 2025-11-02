@@ -5,14 +5,11 @@
 #include "Core/Renderer/Text.h"
 
 View3DLayer::View3DLayer() {
-	SetupRenderTexture();
 	ResetCamera();
 }
 
-
 View3DLayer::View3DLayer(std::shared_ptr<ChemVis::Chemical> chem) : m_Chemical(chem)
 {
-	SetupRenderTexture();
 	ResetCamera();
 }
 
@@ -28,18 +25,24 @@ void View3DLayer::Update(float ts)
 	Core::Application& app = Core::Application::Get();
 	Vector2 windowSize = app.GetWindowSize();
 
+	
+	if (m_ResizeQueued)
+	{
+		UnloadRenderTexture(m_Target);
+		SetupRenderTexture();
+		m_PrevSize = { static_cast<float>(m_WindowData.width), static_cast<float>(m_WindowData.height) };
+		m_ResizeQueued = false;
+	}
+
 	if (IsMouseButtonDown(MOUSE_BUTTON_LEFT) && ((m_WindowData.width != static_cast<int>(m_PrevSize.x)) || (m_WindowData.height != static_cast<int>(m_PrevSize.y))))
 	{
 		m_Resizing = true;
 	}
-	static int frameCount = -1;
-	if ((m_Resizing && !IsMouseButtonDown(MOUSE_BUTTON_LEFT)) || IsWindowResized() || frameCount == 2)
+	if ((m_Resizing && !IsMouseButtonDown(MOUSE_BUTTON_LEFT)) || IsWindowResized() || m_WindowData.dockChange || m_FirstFrame)
 	{
+		m_FirstFrame = false;
 		m_Resizing = false;
-		m_PrevSize = { static_cast<float>(m_WindowData.width), static_cast<float>(m_WindowData.height) };
-		// resize render texture
-		UnloadRenderTexture(m_Target);
-		SetupRenderTexture();
+		m_ResizeQueued = true;
 	}
 
 	if (m_WindowData.focused && m_WindowData.hovered)
@@ -50,9 +53,6 @@ void View3DLayer::Update(float ts)
 			m_DebugCamera = !m_DebugCamera;
 		}
 	}
-
-	if (frameCount < 3)
-		frameCount++;
 }
 
 void View3DLayer::OnRender()

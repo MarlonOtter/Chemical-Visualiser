@@ -34,24 +34,26 @@ public:
 private:
 	Core::Camera::ArcBall m_Camera;
 	bool m_DebugCamera = false;
-	RenderTexture2D m_Target;
+	RenderTexture2D m_Target = { 0 };
 	Color m_ClearColor = BLACK;
+
+	// Window Information
 	Vector2 m_PrevSize;
 	bool m_Resizing = false;
 	WindowData m_WindowData;
+	bool m_FirstFrame = true;
+	bool m_ResizeQueued = false;
 
-	std::shared_ptr<ChemVis::Chemical> m_Chemical;
-
+	// Visualisation Settings
 	float m_AtomSize = 1.0f;
 	float m_HydrogenScale = 0.5f;
 	float m_BondRadius = 1.0f;
 	float m_BondSeperation = 1.0f;
 	float m_BondDetail = 1.0f;
-
+	
+	std::shared_ptr<ChemVis::Chemical> m_Chemical;
 
 	void SetupRenderTexture();
 	void ResetCamera();
 	void HandleCameraMovement(float ts, Vector2 windowSize);
-
-	
 };
