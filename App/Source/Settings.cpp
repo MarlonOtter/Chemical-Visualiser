@@ -44,6 +44,12 @@ std::string Settings::Dump() const
 	return json.dump(4);
 }
 
+void Settings::Save()
+{
+	if (!m_Changed) return;
+	m_SaveQueued = true;
+}
+
 void Settings::ReadFromDisk()
 {
 	if (!std::filesystem::exists(FilePath)) return;
@@ -97,5 +103,7 @@ void Settings::SaveToDisk()
 		outFile << contents;
 		outFile.close();
 	}
+	m_SaveQueued = false;
+	m_Changed = false;
 }
 

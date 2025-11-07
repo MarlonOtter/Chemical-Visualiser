@@ -24,13 +24,6 @@ public:
 	void setWindowData(WindowData data) { m_WindowData = data; }
 	
 	Core::Camera::ArcBall& Camera() { return m_Camera; }
-
-	float& AtomSize() { return m_AtomSize; }
-	float& HydrogenScale() { return m_HydrogenScale; }
-	float& BondRadius() { return m_BondRadius; }
-	float& BondSeperation() { return m_BondSeperation; }
-	float& BondDetail() { return m_BondDetail; }
-
 private:
 	Core::Camera::ArcBall m_Camera;
 	bool m_DebugCamera = false;
@@ -44,13 +37,6 @@ private:
 	bool m_FirstFrame = true;
 	bool m_ResizeQueued = false;
 
-	// Visualisation Settings
-	float m_AtomSize = 1.0f;
-	float m_HydrogenScale = 0.5f;
-	float m_BondRadius = 1.0f;
-	float m_BondSeperation = 1.0f;
-	float m_BondDetail = 1.0f;
-	
 	std::shared_ptr<ChemVis::Chemical> m_Chemical;
 
 	void SetupRenderTexture();

@@ -17,13 +17,13 @@ struct SettingValues
 	float BondSeperation2D = 1.0f;
 	int WorldScale2D = 1000;
 	bool ShowElementLabels = true;;
-	float LabelScale = 1.0f;
+	float LabelScale = 0.25f;
 	std::vector<int> BackgroundColor2D = { 255, 255, 255 };
 
 	// 3D Visualisation Settings
 	float AtomScale3D = 1.0f;
 	float HydrogenScale3D = 0.5f;
-	float BondRadius3D = 0.2f;
+	float BondRadius3D = 1.0f;
 	float BondSeperation3D = 1.0f;
 	float BondDetail3D = 1.0f;
 	std::vector<int> BackgroundColor3D = { 25, 25, 25 };
@@ -163,14 +163,22 @@ public:
 	SettingValues& Values() { return m_Values; }
 	std::string Dump() const;
 
+	void Save();
+	void SaveToDisk();
+
+	void MakeChange() { m_Changed = true; }
+	bool isSaveQueued() { return m_SaveQueued; }
+	bool HasChanged() const { return m_Changed; }
 private:
-	const std::string FilePath = "Settings.cfg";
+	const std::string FilePath = "Cache/Settings.cfg";
 	
+	bool m_SaveQueued = false;
+	bool m_Changed = false;
 	SettingValues m_Values;
 	
 	void ResetToDefaults();
 	void ReadFromDisk();
 	void ParseFromString(std::string data);
 
-	void SaveToDisk();
+	
 };

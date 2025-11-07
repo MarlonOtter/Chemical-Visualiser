@@ -1,6 +1,7 @@
 #include "View2DLayer.h"
 
 #include "View3DLayer.h"
+#include "AppLayer.h"
 #include "Core/Renderer/Text.h"
 #include "Core/Renderer/Shape.h"
 #include "Core/Renderer/Model.h"
@@ -61,6 +62,8 @@ void View2DLayer::OnRender()
 {
 	if (m_WindowData.closed) return;
 
+	auto& values = Core::Application::Get().GetLayer<AppLayer>()->GetSettings().Values();
+
 	BeginTextureMode(m_Target);
 	ClearBackground(m_ClearColor);
 	BeginMode2D(m_Camera);
@@ -85,32 +88,32 @@ void View2DLayer::OnRender()
 			
 			for (int j = 0; j < bondOrder; j++)
 			{
-				Vector2 offset = Perpendicular * ((m_BondSeperation * DefaultBondSeperation) * j - ((m_BondSeperation * DefaultBondSeperation) * (bondOrder - 1) / 2));
+				Vector2 offset = Perpendicular * ((values.BondSeperation2D * DefaultBondSeperation) * j - ((values.BondSeperation2D * DefaultBondSeperation) * (bondOrder - 1) / 2));
 
 				Core::Shape::Line::DrawEx(
-					(StartPos + offset) * m_WorldScale,
-					(EndPos + offset) * m_WorldScale,
-					m_BondWidth * DefaultBondWidth * static_cast<float>(m_WorldScale),
+					(StartPos + offset) * values.WorldScale2D,
+					(EndPos + offset) * values.WorldScale2D,
+					values.BondWidth2D * DefaultBondWidth * static_cast<float>(values.WorldScale2D),
 					Core::RAYWHITE
 				);
 			}
 		}
 
 		// ATOMS
-		const float DefaultAtomSize = 0.25f;
+		const float DefaultAtomScale = 0.25f;
 		for (size_t i = 0; i < atoms.Types.size(); i++)
 		{
-			int posX = atoms.Positions2D.x[i] * m_WorldScale;
-			int posY = atoms.Positions2D.y[i] * m_WorldScale;
+			int posX = atoms.Positions2D.x[i] * values.WorldScale2D;
+			int posY = atoms.Positions2D.y[i] * values.WorldScale2D;
 
 			Core::Shape::Circle::Draw(
 				posX, posY,
-				m_AtomSize * DefaultAtomSize * static_cast<float>(m_WorldScale) * (atoms.Types[i] == 1 ? m_HydrogenScale : 1),
+				values.AtomScale2D * DefaultAtomScale * static_cast<float>(values.WorldScale2D) * (atoms.Types[i] == 1 ? values.HydrogenScale2D : 1),
 				ChemVis::Chemical::GetAtomColor(atoms.Types[i]));
-			if (m_ShowElementSymbol)
+			if (values.ShowElementLabels)
 			{
 				std::string Symbol = ChemVis::Chemical::GetAtomSymbol(atoms.Types[i]);
-				int FontSize = 0.2 * m_WorldScale;
+				int FontSize = values.LabelScale * values.WorldScale2D;
 				Core::Text::Draw(Symbol.c_str(), posX-Core::Text::Measure(Symbol, FontSize)/2, posY-FontSize/2, FontSize, Core::BLACK);
 			}
 		}
@@ -147,7 +150,7 @@ void View2DLayer::SetupRenderTexture()
 void View2DLayer::ResetCamera()
 {
 	m_Camera = {};
-	m_Camera.zoom = 100 / static_cast<float>(m_WorldScale);
+	m_Camera.zoom = 100 / static_cast<float>(Core::Application::Get().GetLayer<AppLayer>()->GetSettings().Values().WorldScale2D);
 	m_Camera.rotation = 0.0f;
 	m_Camera.target = { 0,0 };
 }

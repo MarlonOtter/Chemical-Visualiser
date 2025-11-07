@@ -37,6 +37,11 @@ void AppLayer::Update(float ts)
 		m_DeleteCachedChemicals = false;
 	}
 
+	if (m_Settings.isSaveQueued())
+	{
+		m_Settings.SaveToDisk();
+	}
+
 	HandleChemicalStructure();
 	HandleAutoComplete();
 

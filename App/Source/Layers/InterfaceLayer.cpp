@@ -226,62 +226,87 @@ WindowData InterfaceLayer::DrawMainInterface()
 
 WindowData InterfaceLayer::DrawSettings()
 {
-	
-	bool open = ImGui::Begin("\xef\x80\x93 Settings "); // Gear
+	ImGuiWindowFlags window_flags = ImGuiWindowFlags_None;
+	Settings& settings = Core::Application::Get().GetLayer<AppLayer>()->GetSettings();
+	if (settings.HasChanged())
+	{
+		window_flags |= ImGuiWindowFlags_UnsavedDocument;
+	}
+
+	bool open = ImGui::Begin("\xef\x80\x93 Settings ", NULL, window_flags); // Gear
 	if (open)
 	{
+		
+		auto& values = settings.Values();
+
+		if (!settings.HasChanged())
+		{
+			ImGui::BeginDisabled();
+		}
+		if (ImGui::Button("Apply"))
+		{
+			std::cout << "Saving Settings To Disk\n";
+			settings.Save();
+		}
+		if (!settings.HasChanged())
+		{
+			ImGui::EndDisabled();
+		}
 
 		ImGui::SeparatorText("\xef\x83\x89 General"); // Bars
 
 		ImGuiIO& io = ImGui::GetIO();
-		ImGui::SliderFloat("Font Size ##Global", &io.FontGlobalScale, 0.25f, 2.0f);
-		//ImGui::SliderFloat("Window Rounding"); 
-		//ImGui::SliderFloat("Widget Rounding");
-		
-		static bool StyleDark = true;
-		if (ImGui::Checkbox("Dark Mode ##GlobalUI", &StyleDark))
-		{
-			if (StyleDark)
-			{
-				ImGui::StyleColorsDark();
-				SetStyle();
-			}
-			else {
-				ImGui::StyleColorsLight();
-			}
-		}
+		// Use Bitwise OR so that all the UI is still displayed but I can detect if an entry is changed easily
+		if (
+			ImGui::SliderFloat("Font Size ##Global", &values.FontSize, 0.25f, 2.0f) |
+			ImGui::Checkbox("Dark Mode ##GlobalUI", &values.DarkMode)
+			) settings.MakeChange();
 
+		io.FontGlobalScale = values.FontSize;
+		if (values.DarkMode)
+		{
+			ImGui::StyleColorsDark();
+			SetStyle();
+		}
+		else {
+			ImGui::StyleColorsLight();
+		}
 
 		ImGui::SeparatorText("\xEF\x83\x88 2D Visualiser"); // Square
 
-		View2DLayer* layer2D = Core::Application::Get().GetLayer<View2DLayer>();
-		ImGui::SliderFloat("Atom Size ##2D", &(layer2D->AtomSize()), 0.01f, 2.0f);
-		ImGui::SliderFloat("Hydrogen Scale ##2D", &(layer2D->HydrogenScale()), 0.01f, 1.0f);
-		ImGui::SliderFloat("Bond Width ##2D", &(layer2D->BondWidth()), 0.01f, 2.0f);
-		ImGui::SliderFloat("Bond Seperation ##2D", &(layer2D->BondSeperation()), 0.01f, 2.0f);
-		ImGui::DragInt("World Scale ##2D", &(layer2D->WorldScale()));
-		ImGui::Checkbox("Show Element Symbol ##2D", &(layer2D->ShowSymbol()));
+		if (
+		ImGui::SliderFloat("Atom Size ##2D", &values.AtomScale2D, 0.01f, 2.0f) |
+		ImGui::SliderFloat("Hydrogen Scale ##2D", &values.HydrogenScale2D, 0.01f, 1.0f) |
+		ImGui::SliderFloat("Bond Width ##2D", &values.BondWidth2D, 0.01f, 2.0f) |
+		ImGui::SliderFloat("Bond Seperation ##2D", &values.BondSeperation2D, 0.01f, 2.0f) |
+		ImGui::DragInt("World Scale ##2D", &values.WorldScale2D) |
+		ImGui::Checkbox("Show Element Symbol ##2D", &values.ShowElementLabels) |
+		ImGui::SliderFloat("Label Scale ##2D", &values.LabelScale, 0.01f, 0.5f)
+			) settings.MakeChange();
+
 
 		ImGui::SeparatorText("\xef\x86\xb2 3D Visualiser"); // Cube
 
-		View3DLayer* layer3D = Core::Application::Get().GetLayer<View3DLayer>();
-		ImGui::SliderFloat("Look Sensitivity ##3D", &(layer3D->Camera().LookSensitivity()), 0.0f, 3.0f);
-		ImGui::SliderFloat("Pan Sensitivity ##3D", &(layer3D->Camera().PanSensitivity()), 0.01f, 2.0f);
-		ImGui::SliderFloat("Atom Size ##3D", &(layer3D->AtomSize()), 0.01f, 2.0f);
-		ImGui::SliderFloat("Hydrogen Scale ##3D", &(layer3D->HydrogenScale()), 0.01, 1.0);
-		ImGui::SliderFloat("Bond Radius ##3D", &(layer3D->BondRadius()), 0.01f, 2.0f);
-		ImGui::SliderFloat("Bond Detail ##3D", &(layer3D->BondDetail()), 0.0f, 2.0f);
-		ImGui::SliderFloat("Bond Seperation ##3D", &(layer3D->BondSeperation()), 0.01f, 2.0f);
+		if (
+		ImGui::SliderFloat("Atom Size ##3D", &(values.AtomScale3D), 0.01f, 2.0f) |
+		ImGui::SliderFloat("Hydrogen Scale ##3D", &(values.HydrogenScale3D), 0.01, 1.0) |
+		ImGui::SliderFloat("Bond Radius ##3D", &(values.BondRadius3D), 0.01f, 2.0f) |
+		ImGui::SliderFloat("Bond Detail ##3D", &(values.BondDetail3D), 0.0f, 2.0f) |
+		ImGui::SliderFloat("Bond Seperation ##3D", &(values.BondSeperation3D), 0.01f, 2.0f) |
+		ImGui::SliderFloat("Look Sensitivity ##3D", &(values.LookSensitivity3D), 0.0f, 3.0f) |
+		ImGui::SliderFloat("Pan Sensitivity ##3D", &(values.PanSensitivity3D), 0.01f, 2.0f)
+			) settings.MakeChange();
+
 
 		ImGui::SeparatorText("\xef\x80\x93 Other"); // Gear
 
 		ImGui::Checkbox("Show Demo", &m_ShowDemo);
-
 		if (ImGui::Button("\xef\x87\xb8 Clear Cached Chemicals")) // Trash
 		{
 			Core::Application::Get().GetLayer<AppLayer>()->QueueDeleteCachedChemicals();
 		}
 	}
+	
 	WindowData window = getWindowData(!open);
 	ImGui::End();
 	return window;
