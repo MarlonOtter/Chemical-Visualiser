@@ -5,6 +5,9 @@
 
 namespace ChemVis 
 {
+	std::vector<int> Chemical::s_ElementColors = {};
+	std::vector<std::string> Chemical::s_ElementSymbols = {};
+
 	Chemical::Chemical()
 	{
 	}
@@ -148,30 +151,39 @@ namespace ChemVis
 		return chemicalInfo;
 	}
 
-	Core::Color GetAtomColor(int type)
+	void Chemical::SetAtomColors(std::vector<int> colours)
 	{
-		switch (type)
-		{
-		case 1: {
-			return Core::WHITE;
-		}
-		case 6: {
-			return Core::GRAY;
-		}
-		case 7: {
-			return Core::BLUE;
-		}
-		case 8: {
-			return Core::RED;
-		}
-		default: {
-			return Core::PINK;
-		}
-		}
+		s_ElementColors = colours;
+	}
+
+	Core::Color Chemical::GetAtomColor(int type)
+	{
+		// Get the colour from the list based on atomic number
+		const Core::Color ERROR_COLOR = { 0, 0, 0, 255 };
+		if (type < 1) return ERROR_COLOR;
+		if (type > s_ElementColors.size()) return ERROR_COLOR;
+		unsigned int index = (type - 1) * 3;
+		return Core::Color{
+			(unsigned char)s_ElementColors[index],
+			(unsigned char)s_ElementColors[index + 1],
+			(unsigned char)s_ElementColors[index + 2],
+			255
+		};
+	}
+
+	void Chemical::SetElementSymbols(std::vector<std::string> symbols)
+	{
+		s_ElementSymbols = symbols;
 	}
 
 	//TODO Replace with an API call to get the periodic table with all of its data (it can then be stored)
-	std::string GetAtomSymbol(int type) {
+	std::string Chemical::GetAtomSymbol(int type) {
+
+#if 0
+		if (type < 1) return "";
+		if (type > s_ElementSymbols.size()) return "";
+		return s_ElementSymbols[type - 1];
+#endif
 		switch (type)
 		{
 		case 1: {

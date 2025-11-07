@@ -75,7 +75,7 @@ void View3DLayer::OnRender()
 				Core::Model::Sphere::Draw(
 					atoms.Positions3D.x[i], atoms.Positions3D.y[i], atoms.Positions3D.z[i],
 					m_AtomSize * DefaultAtomSize * (atoms.Types[i] == 1 ? m_HydrogenScale : 1),
-					ChemVis::GetAtomColor(atoms.Types[i]));
+					ChemVis::Chemical::GetAtomColor(atoms.Types[i]));
 			}
 
 			// BONDS

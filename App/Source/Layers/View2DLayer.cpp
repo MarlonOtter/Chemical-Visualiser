@@ -106,10 +106,10 @@ void View2DLayer::OnRender()
 			Core::Shape::Circle::Draw(
 				posX, posY,
 				m_AtomSize * DefaultAtomSize * static_cast<float>(m_WorldScale) * (atoms.Types[i] == 1 ? m_HydrogenScale : 1),
-				ChemVis::GetAtomColor(atoms.Types[i]));
+				ChemVis::Chemical::GetAtomColor(atoms.Types[i]));
 			if (m_ShowElementSymbol)
 			{
-				std::string Symbol = ChemVis::GetAtomSymbol(atoms.Types[i]);
+				std::string Symbol = ChemVis::Chemical::GetAtomSymbol(atoms.Types[i]);
 				int FontSize = 0.2 * m_WorldScale;
 				Core::Text::Draw(Symbol.c_str(), posX-Core::Text::Measure(Symbol, FontSize)/2, posY-FontSize/2, FontSize, Core::BLACK);
 			}

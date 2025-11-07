@@ -62,6 +62,14 @@ namespace ChemVis {
 		Chemical(const AtomsInfo atoms, const BondsInfo bonds, const ChemicalInfo info);
 		~Chemical();
 
+		// Atom colour handling
+		static Core::Color GetAtomColor(int type);
+		static void SetAtomColors(std::vector<int> colours);
+
+		// Atom Sybmol handling
+		static std::string GetAtomSymbol(int type);
+		static void SetElementSymbols(std::vector<std::string> symbols);
+
 		static std::optional<Chemical> Parse(std::string);
 		
 		const ChemicalInfo& GetInfo() const { return m_Info; }
@@ -77,9 +85,10 @@ namespace ChemVis {
 		static AtomsInfo ParseAtoms(Core::json data);
 		static BondsInfo ParseBonds(Core::json data);
 		static ChemicalInfo ParseInfo(Core::json data);
+
+		static std::vector<int> s_ElementColors; // RGB
+		static std::vector<std::string> s_ElementSymbols;
 	};
 
-	Core::Color GetAtomColor(int type);
-	std::string GetAtomSymbol(int type);
 	std::string Merge2Dand3D(std::string data2D, std::string data3D);
 }

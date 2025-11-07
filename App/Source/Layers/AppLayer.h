@@ -8,7 +8,7 @@
 #include "ChemVis/PubChem.h"
 #include "ChemVis/ChemicalList.h"
 #include "ChemVis/FetchThreadHandler.h"
-
+#include "Settings.h"
 
 class AppLayer : public Core::Layer
 {
@@ -41,4 +41,5 @@ private:
 	bool m_DeleteCachedChemicals = false;
 
 	std::unique_ptr<ChemVis::FetchThread> m_FetchThread;
+	Settings m_Settings;
 };
