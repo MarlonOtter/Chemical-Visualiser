@@ -4,6 +4,8 @@ Visualise chemical structure in 2D and 3D.
 
 This project was originally created for my A-Level Final Project in 2024-2025 however I have since made significant changes to the entire codebase.
 
+It works by making requests to the PubChem API to retreive chemical structure data, which is then handled and rendered.
+
 ## Requirements
 
 CMake should download all the required external libraries automatically on build.
@@ -34,3 +36,5 @@ cmake --build .
 ```
 
 Alternatively, you can open the folder in Visual Studio and it should be able to be ran as usual (Run button / F5).
+
+NOTE: copy icon.png to the build folder if you want the window to have an icon. It is not required however.

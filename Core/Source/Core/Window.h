@@ -14,6 +14,7 @@ namespace Core
 		Color ClearColor = BLACK;
 		bool IsResizeable = true;
 		bool VSync = true;
+		std::string IconPath = "";
 	};
 
 	class Window {

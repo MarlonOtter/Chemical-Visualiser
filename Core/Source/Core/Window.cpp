@@ -16,6 +16,14 @@ namespace Core
 	{
 		SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_MSAA_4X_HINT);
 		InitWindow(m_Specification.Width, m_Specification.Height, m_Specification.Title.c_str());
+
+		if (!m_Specification.IconPath.empty())
+		{
+			auto icon = LoadImage(m_Specification.IconPath.c_str());
+			SetWindowIcon(icon);
+			UnloadImage(icon);
+		}
+
 		SetResizeable(m_Specification.IsResizeable);
 		SetVSync(m_Specification.VSync);
 		m_Initialized = true;

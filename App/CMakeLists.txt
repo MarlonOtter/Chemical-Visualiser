@@ -7,5 +7,10 @@ add_executable(ChemicalVisualiser ${APP_SOURCES} ${APP_HEADERS} "Source/Layers/A
 
 target_include_directories(ChemicalVisualiser PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Source)
 
+if(WIN32)
+    enable_language(RC)
+    target_sources(ChemicalVisualiser PRIVATE app_icon.rc)
+endif()
+
 # Link against Core
 target_link_libraries(ChemicalVisualiser PRIVATE Core)
