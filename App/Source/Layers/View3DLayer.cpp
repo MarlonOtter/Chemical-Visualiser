@@ -58,7 +58,7 @@ void View3DLayer::Update(float ts)
 
 void View3DLayer::OnRender()
 {
-	if (m_WindowData.closed) return;
+	if (m_WindowData.closed || (!m_WindowData.focused && !m_WindowData.hovered)) return;
 
 	auto values = Core::Application::Get().GetLayer<AppLayer>()->GetSettings().Values();
 	m_Camera.LookSensitivity() = values.LookSensitivity3D;

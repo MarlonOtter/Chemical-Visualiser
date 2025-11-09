@@ -60,8 +60,8 @@ void View2DLayer::Update(float ts)
 
 void View2DLayer::OnRender()
 {
-	if (m_WindowData.closed) return;
-
+	if (m_WindowData.closed || (!m_WindowData.focused && !m_WindowData.hovered)) return;
+	
 	auto& values = Core::Application::Get().GetLayer<AppLayer>()->GetSettings().Values();
 
 	BeginTextureMode(m_Target);
