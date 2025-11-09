@@ -9,6 +9,8 @@ struct SettingValues
 	// General Settings
 	float FontSize = 1.0f;
 	bool DarkMode = true;
+	int TargetFPS = 60;
+	bool DynamicFramerate = true;
 
 	// 2D Visualisation Settings
 	float AtomScale2D = 1.0f;
@@ -29,6 +31,7 @@ struct SettingValues
 	std::vector<int> BackgroundColor3D = { 25, 25, 25 };
 	float LookSensitivity3D = 1.0f;
 	float PanSensitivity3D = 1.0f;
+	float CameraSmoothing3D = 0.8f;
 
 	// Other Settings
 

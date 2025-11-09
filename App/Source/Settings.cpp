@@ -20,6 +20,8 @@ std::string Settings::Dump() const
 
 	json["FontSize"] = m_Values.FontSize;
 	json["DarkMode"] = m_Values.DarkMode;
+	json["TargetFPS"] = m_Values.TargetFPS;
+	json["DynamicFramerate"] = m_Values.DynamicFramerate;
 	
 	json["AtomScale2D"] = m_Values.AtomScale2D;
 	json["HydrogenScale2D"] = m_Values.HydrogenScale2D;
@@ -38,6 +40,7 @@ std::string Settings::Dump() const
 	json["BackgroundColor3D"] = m_Values.BackgroundColor3D;
 	json["LookSensitivity3D"] = m_Values.LookSensitivity3D;
 	json["PanSensitivity3D"] = m_Values.PanSensitivity3D;
+	json["CameraSmoothing3D"] = m_Values.CameraSmoothing3D;
 	
 	json["ElementColors"] = m_Values.ElementColors;
 
@@ -72,6 +75,8 @@ void Settings::ParseFromString(std::string data)
 
 	m_Values.FontSize = json.value<float>("FontSize", m_Values.FontSize);
 	m_Values.DarkMode = json.value<bool>("DarkMode", m_Values.DarkMode);
+	m_Values.TargetFPS = json.value<int>("TargetFPS", m_Values.TargetFPS);
+	m_Values.DynamicFramerate = json.value<bool>("DynamicFramerate", m_Values.DynamicFramerate);
 
 	m_Values.AtomScale2D = json.value<float>("AtomScale2D", m_Values.AtomScale2D);
 	m_Values.HydrogenScale2D = json.value<float>("HydrogenScale2D", m_Values.HydrogenScale2D);
@@ -90,6 +95,7 @@ void Settings::ParseFromString(std::string data)
 	m_Values.BackgroundColor3D = json.value<std::vector<int>>("BackgroundColor3D", m_Values.BackgroundColor3D);
 	m_Values.LookSensitivity3D = json.value<float>("LookSensitivity3D", m_Values.LookSensitivity3D);
 	m_Values.PanSensitivity3D = json.value<float>("PanSensitivity3D", m_Values.PanSensitivity3D);
+	m_Values.CameraSmoothing3D = json.value<float>("CameraSmoothing3D", m_Values.CameraSmoothing3D);
 
 	m_Values.ElementColors = json.value<std::vector<int>>("ElementColors", m_Values.ElementColors);
 }

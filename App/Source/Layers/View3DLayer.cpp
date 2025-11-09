@@ -58,7 +58,8 @@ void View3DLayer::Update(float ts)
 
 void View3DLayer::OnRender()
 {
-	if (m_WindowData.closed || (!m_WindowData.focused && !m_WindowData.hovered)) return;
+	if ((m_WindowData.closed || (!m_WindowData.focused && !m_WindowData.hovered)) && !m_ForceRender) return;
+	m_ForceRender = false;
 
 	auto values = Core::Application::Get().GetLayer<AppLayer>()->GetSettings().Values();
 	m_Camera.LookSensitivity() = values.LookSensitivity3D;
@@ -149,6 +150,7 @@ void View3DLayer::SetupRenderTexture()
 	int w = std::fmax(m_WindowData.width, 10);
 	int h = std::fmax(m_WindowData.height, 10);
 	m_Target = LoadRenderTexture(w, h);
+	m_ForceRender = true;
 }
 
 void View3DLayer::ResetCamera()

@@ -259,7 +259,9 @@ WindowData InterfaceLayer::DrawSettings()
 		// Use Bitwise OR so that all the UI is still displayed but I can detect if an entry is changed easily
 		if (
 			ImGui::SliderFloat("Font Size ##Global", &values.FontSize, 0.25f, 2.0f) |
-			ImGui::Checkbox("Dark Mode ##GlobalUI", &values.DarkMode)
+			ImGui::Checkbox("Dark Mode ##GlobalUI", &values.DarkMode) |
+			ImGui::DragInt("Target Framerate ##Global", &values.TargetFPS, 1, 15, 240) |
+			ImGui::Checkbox("Dynamic Framerate ##Global", &values.DynamicFramerate)
 			) settings.MakeChange();
 
 		io.FontGlobalScale = values.FontSize;
@@ -294,7 +296,8 @@ WindowData InterfaceLayer::DrawSettings()
 		ImGui::SliderFloat("Bond Detail ##3D", &(values.BondDetail3D), 0.0f, 2.0f) |
 		ImGui::SliderFloat("Bond Seperation ##3D", &(values.BondSeperation3D), 0.01f, 2.0f) |
 		ImGui::SliderFloat("Look Sensitivity ##3D", &(values.LookSensitivity3D), 0.0f, 3.0f) |
-		ImGui::SliderFloat("Pan Sensitivity ##3D", &(values.PanSensitivity3D), 0.01f, 2.0f)
+		ImGui::SliderFloat("Pan Sensitivity ##3D", &(values.PanSensitivity3D), 0.01f, 2.0f) |
+		ImGui::SliderFloat("Camera Smoothing ##3D", &(values.CameraSmoothing3D), 0.0f, 1.0f)
 			) settings.MakeChange();
 
 

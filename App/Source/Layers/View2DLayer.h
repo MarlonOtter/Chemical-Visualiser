@@ -33,6 +33,8 @@ private:
 	bool m_FirstFrame = true;
 	bool m_ResizeQueued = false;
 	
+	bool m_ForceRender = false;
+
 	std::shared_ptr<ChemVis::Chemical> m_Chemical;
 
 	void SetupRenderTexture();

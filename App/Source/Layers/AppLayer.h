@@ -31,6 +31,8 @@ private:
 	void HandleAutoComplete();
 	void SendChemical(ChemVis::Chemical& chemical);
 
+	void ManageFramerate(float ts);
+
 	bool m_ChemicalRecieved = false;
 	std::string m_Chemical;
 	std::string m_CurrentlyDisplayed;
