@@ -10,6 +10,13 @@ target_include_directories(ChemicalVisualiser PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
 if(WIN32)
     enable_language(RC)
     target_sources(ChemicalVisualiser PRIVATE app_icon.rc)
+    
+    if (CMAKE_BUILD_TYPE STREQUAL "Release")
+        set_target_properties(ChemicalVisualiser PROPERTIES
+            WIN32_EXECUTABLE TRUE
+            LINK_FLAGS "/ENTRY:mainCRTStartup"
+        )
+    endif()
 endif()
 
 # Link against Core
