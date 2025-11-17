@@ -1,4 +1,5 @@
 #include "ArcBall.h"
+#include "Core/Math/Interpolation.h"
 
 #include "raymath.h"
 #include "raylib.h"
@@ -91,20 +92,25 @@ namespace Core::Camera
         }
 
         // Mouse wheel zoom
+        m_Distance = Math::Lerp(m_Distance, m_TargetDistance, 1.0f - std::min(decay, 0.90f));
+
         float wheel = GetMouseWheelMove();
-        m_Distance -= wheel * 0.5f;
+        m_TargetDistance -= wheel * 0.5f;
         if (m_Distance < 2.0f) m_Distance = 2.0f;
         if (m_Distance > 50.0f) m_Distance = 50.0f;
 
+		
         // Calculate forward & up vectors from rotation
         Matrix quatMat = QuaternionToMatrix(m_Rotation);
         Vector3 forward = Vector3Transform(Vector3{ 0, 0, -1 }, quatMat);
         Vector3 up = Vector3Transform(Vector3{ 0, 1, 0 }, quatMat);
 
+		// Panning
+		m_Handler.target = Math::Lerp(m_Handler.target, m_TargetPanPosition, 1.0f - std::min(decay, 0.90f));
         if (IsMouseButtonDown(MOUSE_BUTTON_MIDDLE) && !IsMouseButtonDown(MOUSE_BUTTON_LEFT))
         {
             Vector3 right = Vector3Transform(Vector3{ 1, 0, 0 }, quatMat);
-            m_Handler.target += (right * -delta.x * (m_PanSensitivity / static_cast<float>(width)) * m_Distance) + (up * delta.y * (m_PanSensitivity / static_cast<float>(height)) * m_Distance);
+            m_TargetPanPosition += (right * -delta.x * (m_PanSensitivity / static_cast<float>(width)) * m_Distance) + (up * delta.y * (m_PanSensitivity / static_cast<float>(height)) * m_Distance);
         }
 
         // Update camera
@@ -118,7 +124,9 @@ namespace Core::Camera
 	{
 		m_Handler.position = Position;
 		m_Handler.target = Target;
+        m_TargetPanPosition = Target;
 		m_Handler.fovy = Fov;
 		m_Handler.projection = CAMERA_PERSPECTIVE;
+        m_TargetDistance = m_Distance;
 	}
 }

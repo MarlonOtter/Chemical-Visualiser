@@ -21,6 +21,7 @@ struct SettingValues
 	bool ShowElementLabels = true;;
 	float LabelScale = 0.25f;
 	std::vector<int> BackgroundColor2D = { 255, 255, 255 };
+	float CameraSmoothing2D = 0.5f;
 
 	// 3D Visualisation Settings
 	float AtomScale3D = 1.0f;
@@ -167,15 +168,22 @@ public:
 	std::string Dump() const;
 
 	void Save();
+	void QueueRevert();
+	void Revert();
+	
+	void Reset();
 	void SaveToDisk();
 
 	void MakeChange() { m_Changed = true; }
-	bool isSaveQueued() { return m_SaveQueued; }
+	bool isSaveQueued() const { return m_SaveQueued; }
+	bool isRevertQueued() const { return m_RevertQueued; }
 	bool HasChanged() const { return m_Changed; }
 private:
 	const std::string FilePath = "Cache/Settings.cfg";
 	
 	bool m_SaveQueued = false;
+	bool m_RevertQueued = false;
+
 	bool m_Changed = false;
 	SettingValues m_Values;
 	

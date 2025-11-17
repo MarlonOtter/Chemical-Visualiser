@@ -31,6 +31,7 @@ std::string Settings::Dump() const
 	json["ShowElementLabels"] = m_Values.ShowElementLabels;
 	json["LabelScale"] = m_Values.LabelScale;
 	json["BackgroundColor2D"] = m_Values.BackgroundColor2D;
+	json["CameraSmoothing2D"] = m_Values.CameraSmoothing2D;
 	
 	json["AtomScale3D"] = m_Values.AtomScale3D;
 	json["HydrogenScale3D"] = m_Values.HydrogenScale3D;
@@ -51,6 +52,25 @@ void Settings::Save()
 {
 	if (!m_Changed) return;
 	m_SaveQueued = true;
+}
+
+void Settings::QueueRevert()
+{
+	if (!m_Changed) return;
+	m_RevertQueued = true;
+}
+
+void Settings::Revert()
+{
+	ReadFromDisk();
+	m_Changed = false;
+	m_RevertQueued = false;
+}
+
+void Settings::Reset()
+{
+	ResetToDefaults();
+	MakeChange();
 }
 
 void Settings::ReadFromDisk()
@@ -86,6 +106,7 @@ void Settings::ParseFromString(std::string data)
 	m_Values.ShowElementLabels = json.value<bool>("ShowElementLabels", m_Values.ShowElementLabels);
 	m_Values.LabelScale = json.value<float>("LabelScale", m_Values.LabelScale);
 	m_Values.BackgroundColor2D = json.value<std::vector<int>>("BackgroundColor2D", m_Values.BackgroundColor2D);
+	m_Values.CameraSmoothing2D = json.value<float>("CameraSmoothing2D", m_Values.CameraSmoothing2D);
 
 	m_Values.AtomScale3D = json.value<float>("AtomScale3D", m_Values.AtomScale3D);
 	m_Values.HydrogenScale3D = json.value<float>("HydrogenScale3D", m_Values.HydrogenScale3D);

@@ -31,9 +31,13 @@ namespace Core::Camera
 		float m_Distance = 10.0f;
 		float m_Smoothing = 0.8f;
 
-		Quaternion m_Rotation;    
-		Vector3 m_AngularVelocity = { 0, 0, 0 };              
+		Quaternion m_Rotation;
 		
+		// smoothing
+		Vector3 m_AngularVelocity = { 0, 0, 0 };
+		float m_TargetDistance = 10.0f;
+		Vector3 m_TargetPanPosition = { 0, 0, 0 };
+
 		void SetupCamera(Vector3 Position, Vector3 Target, float Fov);
 	};
 }

@@ -26,6 +26,9 @@ private:
 	RenderTexture2D m_Target = { 0 };
 	Color m_ClearColor = BLACK;
 
+	Vector2 m_CameraTarget = { 0, 0 };
+	float m_CameraZoom = 1.0f;
+
 	// Window Information
 	Vector2 m_PrevSize = { 800, 800 };
 	WindowData m_WindowData;

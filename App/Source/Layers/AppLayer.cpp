@@ -41,6 +41,10 @@ void AppLayer::Update(float ts)
 	{
 		m_Settings.SaveToDisk();
 	}
+	if (m_Settings.isRevertQueued())
+	{
+		m_Settings.Revert();
+	}
 
 	HandleChemicalStructure();
 	HandleAutoComplete();

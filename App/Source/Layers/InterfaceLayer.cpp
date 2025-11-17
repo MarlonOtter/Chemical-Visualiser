@@ -236,21 +236,34 @@ WindowData InterfaceLayer::DrawSettings()
 	bool open = ImGui::Begin("\xef\x80\x93 Settings ", NULL, window_flags); // Gear
 	if (open)
 	{
-		
 		auto& values = settings.Values();
 
 		if (!settings.HasChanged())
 		{
 			ImGui::BeginDisabled();
 		}
+
 		if (ImGui::Button("Apply"))
 		{
 			std::cout << "Saving Settings To Disk\n";
 			settings.Save();
 		}
+		ImGui::SameLine();
+		if (ImGui::Button("Revert"))
+		{
+			settings.QueueRevert();
+		}
+
 		if (!settings.HasChanged())
 		{
 			ImGui::EndDisabled();
+		}
+
+		ImGui::SameLine();
+		if (ImGui::Button("Reset"))
+		{
+			std::cout << "Resetting Settings To Default\n";
+			settings.Reset();
 		}
 
 		ImGui::SeparatorText("\xef\x83\x89 General"); // Bars
@@ -260,19 +273,26 @@ WindowData InterfaceLayer::DrawSettings()
 		if (
 			ImGui::SliderFloat("Font Size ##Global", &values.FontSize, 0.25f, 2.0f) |
 			ImGui::Checkbox("Dark Mode ##GlobalUI", &values.DarkMode) |
-			ImGui::DragInt("Target Framerate ##Global", &values.TargetFPS, 1, 15, 240) |
+			ImGui::SliderInt("Target Framerate ##Global", &values.TargetFPS, 15, 240) |
 			ImGui::Checkbox("Dynamic Framerate ##Global", &values.DynamicFramerate)
-			) settings.MakeChange();
-
-		io.FontGlobalScale = values.FontSize;
-		if (values.DarkMode)
+			)
 		{
-			ImGui::StyleColorsDark();
-			SetStyle();
+			settings.MakeChange();
+
+			io.FontGlobalScale = values.FontSize;
+			if (values.DarkMode)
+			{
+				ImGui::StyleColorsDark();
+				SetStyle();
+			}
+			else {
+				ImGui::StyleColorsLight();
+			}
+
+			//values.TargetFPS = std::roundf(values.TargetFPS / 15.0f) * 15; // Round to nearest 15
 		}
-		else {
-			ImGui::StyleColorsLight();
-		}
+
+		
 
 		ImGui::SeparatorText("\xEF\x83\x88 2D Visualiser"); // Square
 
@@ -283,7 +303,8 @@ WindowData InterfaceLayer::DrawSettings()
 		ImGui::SliderFloat("Bond Seperation ##2D", &values.BondSeperation2D, 0.01f, 2.0f) |
 		ImGui::DragInt("World Scale ##2D", &values.WorldScale2D) |
 		ImGui::Checkbox("Show Element Symbol ##2D", &values.ShowElementLabels) |
-		ImGui::SliderFloat("Label Scale ##2D", &values.LabelScale, 0.01f, 0.5f)
+		ImGui::SliderFloat("Label Scale ##2D", &values.LabelScale, 0.01f, 0.5f) |
+		ImGui::SliderFloat("Camera Smoothing ##2D", &values.CameraSmoothing2D, 0.0f, 1.0f)
 			) settings.MakeChange();
 
 

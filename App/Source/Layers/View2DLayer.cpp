@@ -5,6 +5,7 @@
 #include "Core/Renderer/Text.h"
 #include "Core/Renderer/Shape.h"
 #include "Core/Renderer/Model.h"
+#include "Core/Math/Interpolation.h"
 
 #include "raylib.h"
 
@@ -130,14 +131,19 @@ void View2DLayer::OnComposite()
 
 void View2DLayer::HandleCameraMovement(float ts, Vector2 windowSize)
 {
+	auto& values = Core::Application::Get().GetLayer<AppLayer>()->GetSettings().Values();
+	m_Camera.target = Core::Math::Lerp(m_Camera.target, m_CameraTarget, ts * (5.0f + 15.0f * (1.0f-values.CameraSmoothing2D)));
+
 	if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
 	{
-		m_Camera.target.x += -GetMouseDelta().x / m_Camera.zoom;
-		m_Camera.target.y += -GetMouseDelta().y / m_Camera.zoom;
+		m_CameraTarget.x += -GetMouseDelta().x / m_Camera.zoom;
+		m_CameraTarget.y += -GetMouseDelta().y / m_Camera.zoom;
 	}
 
+	m_Camera.zoom = Core::Math::Lerp(m_Camera.zoom, m_CameraZoom, ts * (2.5f + 5.0f * (1.0f-values.CameraSmoothing2D)));
+
 	float scroll = Clamp(GetMouseWheelMove(), -1.0f, 1.0f) * 0.1f + 1.0f;
-	m_Camera.zoom *= scroll;
+	m_CameraZoom *= scroll;
 }
 
 void View2DLayer::SetupRenderTexture()
@@ -152,7 +158,8 @@ void View2DLayer::SetupRenderTexture()
 void View2DLayer::ResetCamera()
 {
 	m_Camera = {};
-	m_Camera.zoom = 100 / static_cast<float>(Core::Application::Get().GetLayer<AppLayer>()->GetSettings().Values().WorldScale2D);
+	m_CameraZoom = 100 / static_cast<float>(Core::Application::Get().GetLayer<AppLayer>()->GetSettings().Values().WorldScale2D);
+	m_Camera.zoom = m_CameraZoom;
 	m_Camera.rotation = 0.0f;
 	m_Camera.target = { 0,0 };
 }
