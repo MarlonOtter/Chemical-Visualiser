@@ -42,6 +42,6 @@ private:
 	std::shared_ptr<ChemVis::Chemical> m_Chemical;
 
 	void SetupRenderTexture();
-	void ResetCamera();
+	void ResetCamera(Vector3 Target = { 0, 0 });
 	void HandleCameraMovement(float ts, Vector2 windowSize);
 };

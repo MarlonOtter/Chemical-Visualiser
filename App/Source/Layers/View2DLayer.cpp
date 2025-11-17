@@ -5,7 +5,7 @@
 #include "Core/Renderer/Text.h"
 #include "Core/Renderer/Shape.h"
 #include "Core/Renderer/Model.h"
-#include "Core/Math/Interpolation.h"
+#include "Core/Math/Math.h"
 
 #include "raylib.h"
 
@@ -17,7 +17,15 @@ View2DLayer::View2DLayer()
 
 View2DLayer::View2DLayer(std::shared_ptr<ChemVis::Chemical> chem) : m_Chemical(chem)
 {
-	ResetCamera();
+	auto& values = Core::Application::Get().GetLayer<AppLayer>()->GetSettings().Values();
+
+	auto& positions = chem.get()->GetAtoms().Positions2D;
+	Vector2 center = {
+		Core::Math::Mean(positions.x) * values.WorldScale2D,
+		Core::Math::Mean(positions.y)* values.WorldScale2D
+	};
+
+	ResetCamera(center);
 }
 
 View2DLayer::~View2DLayer()
@@ -132,12 +140,12 @@ void View2DLayer::OnComposite()
 void View2DLayer::HandleCameraMovement(float ts, Vector2 windowSize)
 {
 	auto& values = Core::Application::Get().GetLayer<AppLayer>()->GetSettings().Values();
-	m_Camera.target = Core::Math::Lerp(m_Camera.target, m_CameraTarget, ts * (5.0f + 15.0f * (1.0f-values.CameraSmoothing2D)));
+	m_Camera.target = Core::Math::Lerp(m_Camera.target, m_TargetPosition, ts * (5.0f + 15.0f * (1.0f-values.CameraSmoothing2D)));
 
 	if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
 	{
-		m_CameraTarget.x += -GetMouseDelta().x / m_Camera.zoom;
-		m_CameraTarget.y += -GetMouseDelta().y / m_Camera.zoom;
+		m_TargetPosition.x += -GetMouseDelta().x / m_Camera.zoom;
+		m_TargetPosition.y += -GetMouseDelta().y / m_Camera.zoom;
 	}
 
 	m_Camera.zoom = Core::Math::Lerp(m_Camera.zoom, m_CameraZoom, ts * (2.5f + 5.0f * (1.0f-values.CameraSmoothing2D)));
@@ -155,11 +163,13 @@ void View2DLayer::SetupRenderTexture()
 	m_ForceRender = true;
 }
 
-void View2DLayer::ResetCamera()
+void View2DLayer::ResetCamera(Vector2 Target)
 {
 	m_Camera = {};
 	m_CameraZoom = 100 / static_cast<float>(Core::Application::Get().GetLayer<AppLayer>()->GetSettings().Values().WorldScale2D);
 	m_Camera.zoom = m_CameraZoom;
 	m_Camera.rotation = 0.0f;
-	m_Camera.target = { 0,0 };
+
+	m_Camera.target = Target;
+	m_TargetPosition = Target;
 }

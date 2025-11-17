@@ -26,7 +26,7 @@ private:
 	RenderTexture2D m_Target = { 0 };
 	Color m_ClearColor = BLACK;
 
-	Vector2 m_CameraTarget = { 0, 0 };
+	Vector2 m_TargetPosition = { 0, 0 };
 	float m_CameraZoom = 1.0f;
 
 	// Window Information
@@ -41,6 +41,6 @@ private:
 	std::shared_ptr<ChemVis::Chemical> m_Chemical;
 
 	void SetupRenderTexture();
-	void ResetCamera();
+	void ResetCamera(Vector2 Target = {0,0});
 	void HandleCameraMovement(float ts, Vector2 windowSize);
 };

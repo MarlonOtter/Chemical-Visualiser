@@ -4,6 +4,7 @@
 #include "AppLayer.h"
 #include "Core/Renderer/Model.h"
 #include "Core/Renderer/Text.h"
+#include "Core/Math/Math.h"
 
 View3DLayer::View3DLayer() {
 	ResetCamera();
@@ -11,7 +12,15 @@ View3DLayer::View3DLayer() {
 
 View3DLayer::View3DLayer(std::shared_ptr<ChemVis::Chemical> chem) : m_Chemical(chem)
 {
-	ResetCamera();
+	auto& positions = chem.get()->GetAtoms().Positions3D;
+	Vector3 center =
+	{
+		Core::Math::Mean(positions.x),
+		Core::Math::Mean(positions.y),
+		Core::Math::Mean(positions.z)
+	};
+
+	ResetCamera(center);
 }
 
 View3DLayer::~View3DLayer()
@@ -153,7 +162,8 @@ void View3DLayer::SetupRenderTexture()
 	m_ForceRender = true;
 }
 
-void View3DLayer::ResetCamera()
+void View3DLayer::ResetCamera(Vector3 Target)
 {
+	m_Camera.SetTarget(Target);
 	m_Camera.Update(0.0f, m_WindowData.width, m_WindowData.height);
 }
