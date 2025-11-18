@@ -4,13 +4,14 @@ file(GLOB_RECURSE APP_HEADERS "Source/*.h" "Source/*.hpp")
 
 add_executable(ChemicalVisualiser ${APP_SOURCES} ${APP_HEADERS} "Source/Layers/AppLayer.cpp" "Source/Layers/View2DLayer.h" "Source/Layers/View3DLayer.h" "Source/Layers/View2DLayer.cpp" "Source/Layers/View3DLayer.cpp"   "Source/ChemVis/Chemical.h" "Source/ChemVis/Chemical.cpp" "Source/Layers/InterfaceLayer.h" "Source/WindowData.h" "Source/ChemVis/PubChem.h" "Source/ChemVis/PubChem.cpp" "Source/ChemVis/ChemicalList.h" "Source/ChemVis/ChemicalList.cpp" "Source/ChemVis/FetchThreadHandler.h" "Source/ChemVis/FetchThreadHandler.cpp" "Source/Settings.h" "Source/Settings.cpp")
 
-
 target_include_directories(ChemicalVisualiser PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Source)
 
 if(WIN32)
+    # add icon to .exe
     enable_language(RC)
     target_sources(ChemicalVisualiser PRIVATE app_icon.rc)
     
+    # remove terminal in release build
     if (CMAKE_BUILD_TYPE STREQUAL "Release")
         set_target_properties(ChemicalVisualiser PROPERTIES
             WIN32_EXECUTABLE TRUE

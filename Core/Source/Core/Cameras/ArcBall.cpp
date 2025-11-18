@@ -92,7 +92,7 @@ namespace Core::Camera
         }
 
         // Mouse wheel zoom
-        m_Distance = Math::Lerp(m_Distance, m_TargetDistance, 1.0f - std::min(decay, 0.90f));
+        m_Distance = Math::Lerp(m_Distance, m_TargetDistance, ts * 30.0f * (1.0f - std::min(decay, 0.90f)));
 
         float wheel = GetMouseWheelMove();
         m_TargetDistance -= wheel * 0.5f;
@@ -106,7 +106,7 @@ namespace Core::Camera
         Vector3 up = Vector3Transform(Vector3{ 0, 1, 0 }, quatMat);
 
 		// Panning
-		m_Handler.target = Math::Lerp(m_Handler.target, m_TargetPanPosition, 1.0f - std::min(decay, 0.90f));
+        m_Handler.target = Math::Lerp(m_Handler.target, m_TargetPanPosition, ts * 30.0f * (1.0f - std::min(decay, 0.90f)));
         if (IsMouseButtonDown(MOUSE_BUTTON_MIDDLE) && !IsMouseButtonDown(MOUSE_BUTTON_LEFT))
         {
             Vector3 right = Vector3Transform(Vector3{ 1, 0, 0 }, quatMat);

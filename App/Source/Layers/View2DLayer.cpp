@@ -140,7 +140,7 @@ void View2DLayer::OnComposite()
 void View2DLayer::HandleCameraMovement(float ts, Vector2 windowSize)
 {
 	auto& values = Core::Application::Get().GetLayer<AppLayer>()->GetSettings().Values();
-	m_Camera.target = Core::Math::Lerp(m_Camera.target, m_TargetPosition, ts * (5.0f + 15.0f * (1.0f-values.CameraSmoothing2D)));
+	m_Camera.target = Core::Math::Lerp(m_Camera.target, m_TargetPosition, 0.01f + ts * 30.0f * (1.0f-values.CameraSmoothing2D));
 
 	if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
 	{
@@ -148,7 +148,7 @@ void View2DLayer::HandleCameraMovement(float ts, Vector2 windowSize)
 		m_TargetPosition.y += -GetMouseDelta().y / m_Camera.zoom;
 	}
 
-	m_Camera.zoom = Core::Math::Lerp(m_Camera.zoom, m_CameraZoom, ts * (2.5f + 5.0f * (1.0f-values.CameraSmoothing2D)));
+	m_Camera.zoom = Core::Math::Lerp(m_Camera.zoom, m_CameraZoom, 0.01f + ts * 7.5f * (1.0f-values.CameraSmoothing2D));
 
 	float scroll = Clamp(GetMouseWheelMove(), -1.0f, 1.0f) * 0.1f + 1.0f;
 	m_CameraZoom *= scroll;
