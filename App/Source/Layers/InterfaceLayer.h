@@ -44,13 +44,15 @@ private:
 	bool m_MadeRequest = false;
 
 	bool m_ShowDemo = false;
-
+	bool m_ShowSettings = false;
 
 	WindowData getWindowData(bool closed, bool dockChange = false);
 
 	void SetStyle();
 	
 	void DrawDockSpace();
+
+	void DrawMenuBar();
 	WindowData DrawView2D();
 	WindowData DrawView3D();
 	WindowData DrawMainInterface();

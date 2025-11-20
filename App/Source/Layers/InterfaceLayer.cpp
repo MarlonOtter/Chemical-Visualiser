@@ -47,15 +47,17 @@ void InterfaceLayer::OnComposite()
 {
 	rlImGuiBegin();
 
+	DrawMenuBar();
+
 	DrawDockSpace();
 	window2D = DrawView2D();
 	window3D = DrawView3D();
 	DrawMainInterface();
-	DrawSettings();
+	if (m_ShowSettings) DrawSettings();
 
 	if (m_ShowDemo)
 	{
-		ImGui::ShowDemoWindow();
+		ImGui::ShowDemoWindow(&m_ShowDemo);
 	}
 
 	rlImGuiEnd();
@@ -89,6 +91,46 @@ void InterfaceLayer::DrawDockSpace()
 	}
 
 	ImGui::End();
+}
+
+void InterfaceLayer::DrawMenuBar()
+{
+	if (ImGui::BeginMainMenuBar())
+	{
+		if (ImGui::BeginMenu("File"))
+		{
+			ImGui::MenuItem("Export"); // TODO : Implement Export Functionality
+			ImGui::MenuItem("Import"); // TODO : Implement Import Functionality
+			
+			if (ImGui::BeginMenu("Cache"))
+			{
+				// TODO : Display List of all cached chemicals
+				ImGui::MenuItem("View");
+				
+				if (ImGui::MenuItem("Clear"))
+				{
+					// TODO : Confirm clear then send message to confirm that the cache has been cleared
+					Core::Application::Get().GetLayer<AppLayer>()->QueueDeleteCachedChemicals();
+				}
+				ImGui::EndMenu();
+			}
+			ImGui::EndMenu();
+		}
+		if (ImGui::BeginMenu("Options"))
+		{
+			ImGui::MenuItem("Settings", nullptr, &m_ShowSettings);
+			ImGui::EndMenu();
+		}
+		if (ImGui::BeginMenu("Help"))
+		{
+			ImGui::MenuItem("Documentation"); // TODO : Link to online docs
+			ImGui::MenuItem("Send Feedback"); // TODO : Link to feedback form
+			ImGui::MenuItem("Dear ImGui Demo", nullptr, &m_ShowDemo);
+			ImGui::MenuItem("About"); // TODO : Opens an About Window
+			ImGui::EndMenu();
+		}
+		ImGui::EndMainMenuBar();
+	}
 }
 
 WindowData InterfaceLayer::DrawView2D()
@@ -224,16 +266,17 @@ WindowData InterfaceLayer::DrawMainInterface()
 	return window;
 }
 
+
 WindowData InterfaceLayer::DrawSettings()
 {
-	ImGuiWindowFlags window_flags = ImGuiWindowFlags_None;
+	ImGuiWindowFlags window_flags = ImGuiWindowFlags_None | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDocking;
 	Settings& settings = Core::Application::Get().GetLayer<AppLayer>()->GetSettings();
 	if (settings.HasChanged())
 	{
 		window_flags |= ImGuiWindowFlags_UnsavedDocument;
 	}
 
-	bool open = ImGui::Begin("\xef\x80\x93 Settings ", NULL, window_flags); // Gear
+	bool open = ImGui::Begin("\xef\x80\x93 Settings ", &m_ShowSettings, window_flags); // Gear
 	if (open)
 	{
 		auto& values = settings.Values();
@@ -243,13 +286,13 @@ WindowData InterfaceLayer::DrawSettings()
 			ImGui::BeginDisabled();
 		}
 
-		if (ImGui::Button("Apply"))
+		if (ImGui::Button("Save"))
 		{
 			std::cout << "Saving Settings To Disk\n";
 			settings.Save();
 		}
 		ImGui::SameLine();
-		if (ImGui::Button("Revert"))
+		if (ImGui::Button("Undo"))
 		{
 			settings.QueueRevert();
 		}
@@ -266,71 +309,69 @@ WindowData InterfaceLayer::DrawSettings()
 			settings.Reset();
 		}
 
-		ImGui::SeparatorText("\xef\x83\x89 General"); // Bars
-
 		ImGuiIO& io = ImGui::GetIO();
-		// Use Bitwise OR so that all the UI is still displayed but I can detect if an entry is changed easily
-		if (
-			ImGui::SliderFloat("Font Size ##Global", &values.FontSize, 0.25f, 2.0f) |
-			ImGui::Checkbox("Dark Mode ##GlobalUI", &values.DarkMode) |
-			ImGui::SliderInt("Target Framerate ##Global", &values.TargetFPS, 15, 240) |
-			ImGui::Checkbox("Dynamic Framerate ##Global", &values.DynamicFramerate)
-			)
-		{
-			settings.MakeChange();
 
-			io.FontGlobalScale = values.FontSize;
-			if (values.DarkMode)
+		if (ImGui::BeginTabBar("SettingsTabs"))
+		{
+			if (ImGui::BeginTabItem("\xef\x83\x89 General ##SettingTab")) // Bars
 			{
-				ImGui::StyleColorsDark();
-				SetStyle();
+				// Use Bitwise OR so that all the UI is still displayed but I can detect if an entry is changed easily
+				if (
+					ImGui::SliderFloat("Font Size ##Global", &values.FontSize, 0.25f, 2.0f) |
+					ImGui::Checkbox("Dark Mode ##GlobalUI", &values.DarkMode) |
+					ImGui::SliderInt("Target Framerate ##Global", &values.TargetFPS, 15, 240) |
+					ImGui::Checkbox("Dynamic Framerate ##Global", &values.DynamicFramerate)
+					)
+				{
+					settings.MakeChange();
+
+					io.FontGlobalScale = values.FontSize;
+					if (values.DarkMode)
+					{
+						ImGui::StyleColorsDark();
+						SetStyle();
+					}
+					else {
+						ImGui::StyleColorsLight();
+					}
+
+					//values.TargetFPS = std::roundf(values.TargetFPS / 15.0f) * 15; // Round to nearest 15
+				}
+
+				ImGui::EndTabItem();
 			}
-			else {
-				ImGui::StyleColorsLight();
+			if (ImGui::BeginTabItem("\xEF\x83\x88 2D ##SettingTab")) // Square
+			{
+				if (
+					ImGui::SliderFloat("Atom Size ##2D", &values.AtomScale2D, 0.01f, 2.0f) |
+					ImGui::SliderFloat("Hydrogen Scale ##2D", &values.HydrogenScale2D, 0.01f, 1.0f) |
+					ImGui::SliderFloat("Bond Width ##2D", &values.BondWidth2D, 0.01f, 2.0f) |
+					ImGui::SliderFloat("Bond Seperation ##2D", &values.BondSeperation2D, 0.01f, 2.0f) |
+					ImGui::DragInt("World Scale ##2D", &values.WorldScale2D) |
+					ImGui::Checkbox("Show Element Symbol ##2D", &values.ShowElementLabels) |
+					ImGui::SliderFloat("Label Scale ##2D", &values.LabelScale, 0.01f, 0.5f) |
+					ImGui::SliderFloat("Camera Smoothing ##2D", &values.CameraSmoothing2D, 0.0f, 1.0f)
+					) settings.MakeChange();
+				ImGui::EndTabItem();
 			}
-
-			//values.TargetFPS = std::roundf(values.TargetFPS / 15.0f) * 15; // Round to nearest 15
-		}
-
-		
-
-		ImGui::SeparatorText("\xEF\x83\x88 2D Visualiser"); // Square
-
-		if (
-		ImGui::SliderFloat("Atom Size ##2D", &values.AtomScale2D, 0.01f, 2.0f) |
-		ImGui::SliderFloat("Hydrogen Scale ##2D", &values.HydrogenScale2D, 0.01f, 1.0f) |
-		ImGui::SliderFloat("Bond Width ##2D", &values.BondWidth2D, 0.01f, 2.0f) |
-		ImGui::SliderFloat("Bond Seperation ##2D", &values.BondSeperation2D, 0.01f, 2.0f) |
-		ImGui::DragInt("World Scale ##2D", &values.WorldScale2D) |
-		ImGui::Checkbox("Show Element Symbol ##2D", &values.ShowElementLabels) |
-		ImGui::SliderFloat("Label Scale ##2D", &values.LabelScale, 0.01f, 0.5f) |
-		ImGui::SliderFloat("Camera Smoothing ##2D", &values.CameraSmoothing2D, 0.0f, 1.0f)
-			) settings.MakeChange();
-
-
-		ImGui::SeparatorText("\xef\x86\xb2 3D Visualiser"); // Cube
-
-		if (
-		ImGui::SliderFloat("Atom Size ##3D", &(values.AtomScale3D), 0.01f, 2.0f) |
-		ImGui::SliderFloat("Hydrogen Scale ##3D", &(values.HydrogenScale3D), 0.01, 1.0) |
-		ImGui::SliderFloat("Bond Radius ##3D", &(values.BondRadius3D), 0.01f, 2.0f) |
-		ImGui::SliderFloat("Bond Detail ##3D", &(values.BondDetail3D), 0.0f, 2.0f) |
-		ImGui::SliderFloat("Bond Seperation ##3D", &(values.BondSeperation3D), 0.01f, 2.0f) |
-		ImGui::SliderFloat("Look Sensitivity ##3D", &(values.LookSensitivity3D), 0.0f, 3.0f) |
-		ImGui::SliderFloat("Pan Sensitivity ##3D", &(values.PanSensitivity3D), 0.01f, 2.0f) |
-		ImGui::SliderFloat("Camera Smoothing ##3D", &(values.CameraSmoothing3D), 0.0f, 1.0f)
-			) settings.MakeChange();
-
-
-		ImGui::SeparatorText("\xef\x80\x93 Other"); // Gear
-
-		ImGui::Checkbox("Show Demo", &m_ShowDemo);
-		if (ImGui::Button("\xef\x87\xb8 Clear Cached Chemicals")) // Trash
-		{
-			Core::Application::Get().GetLayer<AppLayer>()->QueueDeleteCachedChemicals();
+			if (ImGui::BeginTabItem("\xef\x86\xb2 3D ##SettingTab")) // Cube
+			{
+				if (
+					ImGui::SliderFloat("Atom Size ##3D", &(values.AtomScale3D), 0.01f, 2.0f) |
+					ImGui::SliderFloat("Hydrogen Scale ##3D", &(values.HydrogenScale3D), 0.01, 1.0) |
+					ImGui::SliderFloat("Bond Radius ##3D", &(values.BondRadius3D), 0.01f, 2.0f) |
+					ImGui::SliderFloat("Bond Detail ##3D", &(values.BondDetail3D), 0.0f, 2.0f) |
+					ImGui::SliderFloat("Bond Seperation ##3D", &(values.BondSeperation3D), 0.01f, 2.0f) |
+					ImGui::SliderFloat("Look Sensitivity ##3D", &(values.LookSensitivity3D), 0.0f, 3.0f) |
+					ImGui::SliderFloat("Pan Sensitivity ##3D", &(values.PanSensitivity3D), 0.01f, 2.0f) |
+					ImGui::SliderFloat("Camera Smoothing ##3D", &(values.CameraSmoothing3D), 0.0f, 1.0f)
+					) settings.MakeChange();
+				ImGui::EndTabItem();
+			}
+			ImGui::EndTabBar();
 		}
 	}
-	
+
 	WindowData window = getWindowData(!open);
 	ImGui::End();
 	return window;
