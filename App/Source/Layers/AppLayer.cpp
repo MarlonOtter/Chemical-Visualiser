@@ -46,6 +46,8 @@ void AppLayer::Update(float ts)
 		m_Settings.Revert();
 	}
 
+	m_CacheEmpty = m_FetchThread.get()->GetCachedChemicalCount() == 0;
+
 	HandleChemicalStructure();
 	HandleAutoComplete();
 	

@@ -107,11 +107,15 @@ void InterfaceLayer::DrawMenuBar()
 				// TODO : Display List of all cached chemicals
 				ImGui::MenuItem("View");
 				
+				bool CacheEmpty = Core::Application::Get().GetLayer<AppLayer>()->IsCacheEmpty();
+				if (CacheEmpty) ImGui::BeginDisabled();
 				if (ImGui::MenuItem("Clear"))
 				{
 					// TODO : Confirm clear then send message to confirm that the cache has been cleared
 					Core::Application::Get().GetLayer<AppLayer>()->QueueDeleteCachedChemicals();
 				}
+				if (CacheEmpty) ImGui::EndDisabled();
+
 				ImGui::EndMenu();
 			}
 			ImGui::EndMenu();
@@ -281,26 +285,18 @@ WindowData InterfaceLayer::DrawSettings()
 	{
 		auto& values = settings.Values();
 
-		if (!settings.HasChanged())
-		{
-			ImGui::BeginDisabled();
-		}
-
+		bool SettingsChanged = settings.HasChanged();
+		if (!SettingsChanged) ImGui::BeginDisabled();
+		
 		if (ImGui::Button("Save"))
 		{
 			std::cout << "Saving Settings To Disk\n";
 			settings.Save();
 		}
 		ImGui::SameLine();
-		if (ImGui::Button("Undo"))
-		{
-			settings.QueueRevert();
-		}
-
-		if (!settings.HasChanged())
-		{
-			ImGui::EndDisabled();
-		}
+		if (ImGui::Button("Undo")) settings.QueueRevert();
+		
+		if (!SettingsChanged) ImGui::EndDisabled();
 
 		ImGui::SameLine();
 		if (ImGui::Button("Reset"))

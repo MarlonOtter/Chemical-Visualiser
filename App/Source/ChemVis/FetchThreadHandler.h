@@ -21,6 +21,7 @@ namespace ChemVis
 			m_DeleteCacheRequest.store(true);
 			m_ConditionVar.notify_one();
 		}
+		int GetCachedChemicalCount() const { return m_ChemicalList.Size(); }
 
 		Chemical GetResult() { 
 			std::optional<Chemical> ResultCopy;
@@ -55,7 +56,6 @@ namespace ChemVis
 
 		std::mutex m_ResultMutex;
 		std::optional<Chemical> m_Result;
-
 
 		ChemicalList m_ChemicalList;
 	};

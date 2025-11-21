@@ -12,8 +12,9 @@ namespace ChemVis
 		ChemicalList(std::string Dir);
 		~ChemicalList();
 
-		bool IsStored(std::string Identifier);
-		bool IsStored(int Cid);
+		bool IsStored(std::string Identifier) const;
+		bool IsStored(int Cid) const;
+		uint32_t Size() const { return m_Size; }
 
 		void Store(std::string Identifier, int cid, std::string Data);
 		std::string GetData(int Cid);
@@ -28,6 +29,7 @@ namespace ChemVis
 		bool FolderExists();
 		bool FileExists(std::string FileName, bool prefix = true);
 		std::string FileName(int Cid);
+		uint32_t m_Size = 0;
 
 		void TrackStoredData();
 		std::string FormatForFile(std::string Identifer, int cid, std::string Data);
