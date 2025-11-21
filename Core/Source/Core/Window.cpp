@@ -26,6 +26,7 @@ namespace Core
 
 		SetResizeable(m_Specification.IsResizeable);
 		SetVSync(m_Specification.VSync);
+		SetExitKey(KEY_NULL); // Disable default ESC key exit
 		m_Initialized = true;
 	}
 

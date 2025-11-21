@@ -20,6 +20,7 @@ public:
 	virtual void OnComposite() override;
 	virtual void OnEvent(Core::Event& event) override;
 
+	bool IsCacheEmpty() const { return m_CacheEmpty; }
 
 	void SetChemical(std::string chemical);
 	Settings& GetSettings() { return m_Settings; }
@@ -42,6 +43,7 @@ private:
 	bool m_AutoCompleteRequestActive = false;
 
 	bool m_DeleteCachedChemicals = false;
+	bool m_CacheEmpty = true;
 
 	std::unique_ptr<ChemVis::FetchThread> m_FetchThread;
 	Settings m_Settings;
