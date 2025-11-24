@@ -69,25 +69,25 @@ void InterfaceLayer::OnComposite()
 
 void InterfaceLayer::DrawDockSpace()
 {
-	ImGuiViewport* viewport = ImGui::GetMainViewport();
-	ImGui::SetNextWindowPos(viewport->WorkPos);
-	ImGui::SetNextWindowSize(viewport->WorkSize);
-	ImGui::SetNextWindowViewport(viewport->ID);
+	ImGuiViewport* Viewport = ImGui::GetMainViewport();
+	ImGui::SetNextWindowPos(Viewport->WorkPos);
+	ImGui::SetNextWindowSize(Viewport->WorkSize);
+	ImGui::SetNextWindowViewport(Viewport->ID);
 
-	ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking;
-	window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-	window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
-	window_flags |= ImGuiWindowFlags_NoBackground;
+	ImGuiWindowFlags WindowFlags = ImGuiWindowFlags_NoDocking |
+		ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
+		ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus |
+		ImGuiWindowFlags_NoBackground;
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 
-	if (ImGui::Begin("DockSpaceHost", nullptr, window_flags))
+	if (ImGui::Begin("DockSpaceHost", nullptr, WindowFlags))
 	{
 		ImGui::PopStyleVar(3);
-		ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
-		ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_PassthruCentralNode);
+		ImGuiID DockSpaceId = ImGui::GetID("MyDockSpace");
+		ImGui::DockSpace(DockSpaceId, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_PassthruCentralNode);
 	}
 
 	ImGui::End();
@@ -208,7 +208,7 @@ WindowData InterfaceLayer::DrawMainInterface()
 		char buffer[InputBufferSize] = {};
 		std::strncpy(buffer, chemicalInp.c_str(), InputBufferSize - 1);
 
-		bool entered = ImGui::InputTextWithHint("##Chemical Input", "Caffeine", buffer, sizeof(buffer),
+		bool entered = ImGui::InputTextWithHint("##Chemical Input", "Aspirin", buffer, sizeof(buffer),
 			ImGuiInputTextFlags_EnterReturnsTrue);
 
 		if (ImGui::IsItemEdited())
@@ -338,7 +338,14 @@ WindowData InterfaceLayer::DrawSettings()
 			}
 			if (ImGui::BeginTabItem("\xEF\x83\x88 2D ##SettingTab")) // Square
 			{
+				float backgroundColor[3] = {
+					static_cast<float>(values.BackgroundColor2D[0]) / 255.0f,
+					static_cast<float>(values.BackgroundColor2D[1]) / 255.0f,
+					static_cast<float>(values.BackgroundColor2D[2]) / 255.0f
+				};
+
 				if (
+					ImGui::ColorEdit3("Background Color ##2D", backgroundColor, ImGuiColorEditFlags_DisplayHex) |
 					ImGui::SliderFloat("Atom Size ##2D", &values.AtomScale2D, 0.01f, 2.0f) |
 					ImGui::SliderFloat("Hydrogen Scale ##2D", &values.HydrogenScale2D, 0.01f, 1.0f) |
 					ImGui::SliderFloat("Bond Width ##2D", &values.BondWidth2D, 0.01f, 2.0f) |
@@ -347,12 +354,28 @@ WindowData InterfaceLayer::DrawSettings()
 					ImGui::Checkbox("Show Element Symbol ##2D", &values.ShowElementLabels) |
 					ImGui::SliderFloat("Label Scale ##2D", &values.LabelScale, 0.01f, 0.5f) |
 					ImGui::SliderFloat("Camera Smoothing ##2D", &values.CameraSmoothing2D, 0.0f, 1.0f)
-					) settings.MakeChange();
+					)
+				{
+					settings.MakeChange();
+					values.BackgroundColor2D = {
+						static_cast<uint8_t>(std::roundf(backgroundColor[0] * 255.0f)),
+						static_cast<uint8_t>(std::roundf(backgroundColor[1] * 255.0f)),
+						static_cast<uint8_t>(std::roundf(backgroundColor[2] * 255.0f))
+					};
+				}
 				ImGui::EndTabItem();
 			}
 			if (ImGui::BeginTabItem("\xef\x86\xb2 3D ##SettingTab")) // Cube
 			{
+				float backgroundColor[3] = { 
+					static_cast<float>(values.BackgroundColor3D[0]) / 255.0f,
+					static_cast<float>(values.BackgroundColor3D[1]) / 255.0f,
+					static_cast<float>(values.BackgroundColor3D[2]) / 255.0f
+				};
+
 				if (
+					
+					ImGui::ColorEdit3("Background Color ##3D", backgroundColor, ImGuiColorEditFlags_DisplayHex) |
 					ImGui::SliderFloat("Atom Size ##3D", &(values.AtomScale3D), 0.01f, 2.0f) |
 					ImGui::SliderFloat("Hydrogen Scale ##3D", &(values.HydrogenScale3D), 0.01, 1.0) |
 					ImGui::SliderFloat("Bond Radius ##3D", &(values.BondRadius3D), 0.01f, 2.0f) |
@@ -361,7 +384,15 @@ WindowData InterfaceLayer::DrawSettings()
 					ImGui::SliderFloat("Look Sensitivity ##3D", &(values.LookSensitivity3D), 0.0f, 3.0f) |
 					ImGui::SliderFloat("Pan Sensitivity ##3D", &(values.PanSensitivity3D), 0.01f, 2.0f) |
 					ImGui::SliderFloat("Camera Smoothing ##3D", &(values.CameraSmoothing3D), 0.0f, 1.0f)
-					) settings.MakeChange();
+					) 
+				{
+					settings.MakeChange();
+					values.BackgroundColor3D = {
+						static_cast<uint8_t>(std::roundf(backgroundColor[0] * 255.0f)),
+						static_cast<uint8_t>(std::roundf(backgroundColor[1] * 255.0f)),
+						static_cast<uint8_t>(std::roundf(backgroundColor[2] * 255.0f))
+					};
+				}
 				ImGui::EndTabItem();
 			}
 			ImGui::EndTabBar();

@@ -24,7 +24,6 @@ public:
 private:
 	Camera2D m_Camera;
 	RenderTexture2D m_Target = { 0 };
-	Color m_ClearColor = BLACK;
 
 	Vector2 m_TargetPosition = { 0, 0 };
 	float m_CameraZoom = 1.0f;

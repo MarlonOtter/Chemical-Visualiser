@@ -28,7 +28,6 @@ private:
 	Core::Camera::ArcBall m_Camera;
 	bool m_DebugCamera = false;
 	RenderTexture2D m_Target = { 0 };
-	Color m_ClearColor = BLACK;
 
 	// Window Information
 	Vector2 m_PrevSize;

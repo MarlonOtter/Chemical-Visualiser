@@ -75,7 +75,7 @@ void View2DLayer::OnRender()
 	auto& values = Core::Application::Get().GetLayer<AppLayer>()->GetSettings().Values();
 
 	BeginTextureMode(m_Target);
-	ClearBackground(m_ClearColor);
+	ClearBackground(Core::Color(values.BackgroundColor2D[0], values.BackgroundColor2D[1], values.BackgroundColor2D[2], 255));
 	BeginMode2D(m_Camera);
 
 	if (m_Chemical) {

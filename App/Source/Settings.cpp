@@ -105,7 +105,7 @@ void Settings::ParseFromString(std::string data)
 	m_Values.WorldScale2D = json.value<int>("WorldScale2D", m_Values.WorldScale2D);
 	m_Values.ShowElementLabels = json.value<bool>("ShowElementLabels", m_Values.ShowElementLabels);
 	m_Values.LabelScale = json.value<float>("LabelScale", m_Values.LabelScale);
-	m_Values.BackgroundColor2D = json.value<std::vector<int>>("BackgroundColor2D", m_Values.BackgroundColor2D);
+	m_Values.BackgroundColor2D = json.value<std::vector<uint8_t>>("BackgroundColor2D", m_Values.BackgroundColor2D);
 	m_Values.CameraSmoothing2D = json.value<float>("CameraSmoothing2D", m_Values.CameraSmoothing2D);
 
 	m_Values.AtomScale3D = json.value<float>("AtomScale3D", m_Values.AtomScale3D);
@@ -113,7 +113,7 @@ void Settings::ParseFromString(std::string data)
 	m_Values.BondRadius3D = json.value<float>("BondRadius3D", m_Values.BondRadius3D);
 	m_Values.BondSeperation3D = json.value<float>("BondSeperation3D", m_Values.BondSeperation3D);
 	m_Values.BondDetail3D = json.value<float>("BondDetail3D", m_Values.BondDetail3D);
-	m_Values.BackgroundColor3D = json.value<std::vector<int>>("BackgroundColor3D", m_Values.BackgroundColor3D);
+	m_Values.BackgroundColor3D = json.value<std::vector<uint8_t>>("BackgroundColor3D", m_Values.BackgroundColor3D);
 	m_Values.LookSensitivity3D = json.value<float>("LookSensitivity3D", m_Values.LookSensitivity3D);
 	m_Values.PanSensitivity3D = json.value<float>("PanSensitivity3D", m_Values.PanSensitivity3D);
 	m_Values.CameraSmoothing3D = json.value<float>("CameraSmoothing3D", m_Values.CameraSmoothing3D);
