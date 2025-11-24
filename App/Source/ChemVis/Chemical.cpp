@@ -5,7 +5,7 @@
 
 namespace ChemVis 
 {
-	std::vector<int> Chemical::s_ElementColors = {};
+	std::vector<uint8_t> Chemical::s_ElementColors = {};
 	std::vector<std::string> Chemical::s_ElementSymbols = {};
 
 	Chemical::Chemical()
@@ -151,7 +151,7 @@ namespace ChemVis
 		return chemicalInfo;
 	}
 
-	void Chemical::SetAtomColors(std::vector<int> colours)
+	void Chemical::SetAtomColors(std::vector<uint8_t> colours)
 	{
 		s_ElementColors = colours;
 	}
@@ -164,9 +164,9 @@ namespace ChemVis
 		if (type > s_ElementColors.size()) return ERROR_COLOR;
 		unsigned int index = (type - 1) * 3;
 		return Core::Color{
-			(unsigned char)s_ElementColors[index],
-			(unsigned char)s_ElementColors[index + 1],
-			(unsigned char)s_ElementColors[index + 2],
+			s_ElementColors[index],
+			s_ElementColors[index + 1],
+			s_ElementColors[index + 2],
 			255
 		};
 	}

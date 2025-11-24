@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 
+#include "Core/Json.h"
 
 struct SettingValues
 {
@@ -18,7 +19,7 @@ struct SettingValues
 	float BondWidth2D = 1.0f;
 	float BondSeperation2D = 1.0f;
 	int WorldScale2D = 1000;
-	bool ShowElementLabels = true;;
+	bool ShowElementLabels = true;
 	float LabelScale = 0.25f;
 	std::vector<uint8_t> BackgroundColor2D = { 15, 15, 15 };
 	float CameraSmoothing2D = 0.5f;
@@ -37,7 +38,7 @@ struct SettingValues
 	// Other Settings
 
 	// RGB triplets for each element by atomic number
-	std::vector<int> ElementColors = {
+	std::vector<uint8_t> ElementColors = {
 		255, 255, 255,
 		217, 255, 255,
 		204, 128, 255,
@@ -170,7 +171,7 @@ public:
 	void Save();
 	void QueueRevert();
 	void Revert();
-	
+
 	void Reset();
 	void SaveToDisk();
 
@@ -180,16 +181,17 @@ public:
 	bool HasChanged() const { return m_Changed; }
 private:
 	const std::string FilePath = "Cache/Settings.cfg";
-	
+
 	bool m_SaveQueued = false;
 	bool m_RevertQueued = false;
 
 	bool m_Changed = false;
 	SettingValues m_Values;
-	
+
 	void ResetToDefaults();
 	void ReadFromDisk();
 	void ParseFromString(std::string data);
 
-	
+	template<typename T>
+	void ParseSetting(Core::json& json, T* setting, std::string settingName);
 };

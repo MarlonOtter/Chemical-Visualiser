@@ -1,7 +1,6 @@
 #include "Settings.h"
 #include <fstream>
 #include <filesystem>
-#include "Core/Json.h"
 
 Settings::Settings()
 {
@@ -91,34 +90,54 @@ void Settings::ReadFromDisk()
 
 void Settings::ParseFromString(std::string data)
 {
-	Core::json json = Core::json::parse(data);
+	try
+	{
+		Core::json json = Core::json::parse(data);
 
-	m_Values.FontSize = json.value<float>("FontSize", m_Values.FontSize);
-	m_Values.DarkMode = json.value<bool>("DarkMode", m_Values.DarkMode);
-	m_Values.TargetFPS = json.value<int>("TargetFPS", m_Values.TargetFPS);
-	m_Values.DynamicFramerate = json.value<bool>("DynamicFramerate", m_Values.DynamicFramerate);
+		ParseSetting(json, &m_Values.FontSize, "FontSize");
+		ParseSetting(json, &m_Values.DarkMode, "DarkMode");
+		ParseSetting(json, &m_Values.TargetFPS, "TargetFPS");
+		ParseSetting(json, &m_Values.DynamicFramerate, "DynamicFramerate");
+		ParseSetting(json, &m_Values.AtomScale2D, "AtomScale2D");
+		ParseSetting(json, &m_Values.HydrogenScale2D, "HydrogenScale2D");
+		ParseSetting(json, &m_Values.BondWidth2D, "BondWidth2D");
+		ParseSetting(json, &m_Values.BondSeperation2D, "BondSeperation2D");
+		ParseSetting(json, &m_Values.WorldScale2D, "WorldScale2D");
+		ParseSetting(json, &m_Values.ShowElementLabels, "ShowElementLabels");
+		ParseSetting(json, &m_Values.LabelScale, "LabelScale");
+		ParseSetting(json, &m_Values.BackgroundColor2D, "BackgroundColor2D");
+		ParseSetting(json, &m_Values.CameraSmoothing2D, "CameraSmoothing2D");
+		ParseSetting(json, &m_Values.AtomScale3D, "AtomScale3D");
+		ParseSetting(json, &m_Values.HydrogenScale3D, "HydrogenScale3D");
+		ParseSetting(json, &m_Values.BondRadius3D, "BondRadius3D");
+		ParseSetting(json, &m_Values.BondSeperation3D, "BondSeperation3D");
+		ParseSetting(json, &m_Values.BondDetail3D, "BondDetail3D");
+		ParseSetting(json, &m_Values.BackgroundColor3D, "BackgroundColor3D");
+		ParseSetting(json, &m_Values.LookSensitivity3D, "LookSensitivity3D");
+		ParseSetting(json, &m_Values.PanSensitivity3D, "PanSensitivity3D");
+		ParseSetting(json, &m_Values.CameraSmoothing3D, "CameraSmoothing3D");
+		ParseSetting(json, &m_Values.ElementColors, "ElementColors");
+		
+	}
+	catch (const Core::json::parse_error& e)
+	{
+		// Failed To parse Settings.cfg, ignore and use defaults
+		return;
+	}
+}
 
-	m_Values.AtomScale2D = json.value<float>("AtomScale2D", m_Values.AtomScale2D);
-	m_Values.HydrogenScale2D = json.value<float>("HydrogenScale2D", m_Values.HydrogenScale2D);
-	m_Values.BondWidth2D = json.value<float>("BondWidth2D", m_Values.BondWidth2D);
-	m_Values.BondSeperation2D = json.value<float>("BondSeperation2D", m_Values.BondSeperation2D);
-	m_Values.WorldScale2D = json.value<int>("WorldScale2D", m_Values.WorldScale2D);
-	m_Values.ShowElementLabels = json.value<bool>("ShowElementLabels", m_Values.ShowElementLabels);
-	m_Values.LabelScale = json.value<float>("LabelScale", m_Values.LabelScale);
-	m_Values.BackgroundColor2D = json.value<std::vector<uint8_t>>("BackgroundColor2D", m_Values.BackgroundColor2D);
-	m_Values.CameraSmoothing2D = json.value<float>("CameraSmoothing2D", m_Values.CameraSmoothing2D);
+template<typename T>
+void Settings::ParseSetting(Core::json& json, T* setting, std::string settingName)
+{
+	try
+	{
+		*setting = json.value<T>(settingName, *setting);
+	}
+	catch (...)
+	{
+		// Ignore errors and keep default value
+	}
 
-	m_Values.AtomScale3D = json.value<float>("AtomScale3D", m_Values.AtomScale3D);
-	m_Values.HydrogenScale3D = json.value<float>("HydrogenScale3D", m_Values.HydrogenScale3D);
-	m_Values.BondRadius3D = json.value<float>("BondRadius3D", m_Values.BondRadius3D);
-	m_Values.BondSeperation3D = json.value<float>("BondSeperation3D", m_Values.BondSeperation3D);
-	m_Values.BondDetail3D = json.value<float>("BondDetail3D", m_Values.BondDetail3D);
-	m_Values.BackgroundColor3D = json.value<std::vector<uint8_t>>("BackgroundColor3D", m_Values.BackgroundColor3D);
-	m_Values.LookSensitivity3D = json.value<float>("LookSensitivity3D", m_Values.LookSensitivity3D);
-	m_Values.PanSensitivity3D = json.value<float>("PanSensitivity3D", m_Values.PanSensitivity3D);
-	m_Values.CameraSmoothing3D = json.value<float>("CameraSmoothing3D", m_Values.CameraSmoothing3D);
-
-	m_Values.ElementColors = json.value<std::vector<int>>("ElementColors", m_Values.ElementColors);
 }
 
 void Settings::SaveToDisk()
