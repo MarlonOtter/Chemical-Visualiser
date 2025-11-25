@@ -30,7 +30,7 @@ InterfaceLayer::InterfaceLayer()
 	ImGuiIO& io = ImGui::GetIO();
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 	io.ConfigWindowsMoveFromTitleBarOnly = true;
-	SetStyle();
+	SetDarkStyle();
 }
 
 InterfaceLayer::~InterfaceLayer()
@@ -317,22 +317,25 @@ WindowData InterfaceLayer::DrawSettings()
 					ImGui::Checkbox("Dark Mode ##GlobalUI", &values.DarkMode) |
 					ImGui::SliderInt("Target Framerate ##Global", &values.TargetFPS, 15, 240) |
 					ImGui::Checkbox("Dynamic Framerate ##Global", &values.DynamicFramerate)
-					)
-				{
-					settings.MakeChange();
+					) settings.MakeChange();
+				
 
-					io.FontGlobalScale = values.FontSize;
+				// If dark mode setting has been reverted, it will also need to update any changes
+				if (m_PreviousDarkMode != values.DarkMode)
+				{
 					if (values.DarkMode)
 					{
 						ImGui::StyleColorsDark();
-						SetStyle();
+						SetDarkStyle();
 					}
 					else {
 						ImGui::StyleColorsLight();
 					}
-
-					//values.TargetFPS = std::roundf(values.TargetFPS / 15.0f) * 15; // Round to nearest 15
+					m_PreviousDarkMode = values.DarkMode;
 				}
+				io.FontGlobalScale = values.FontSize;
+				
+				
 
 				ImGui::EndTabItem();
 			}
@@ -452,7 +455,7 @@ void InterfaceLayer::PushError(std::string error)
 	return;
 }
 
-void InterfaceLayer::SetStyle()
+void InterfaceLayer::SetDarkStyle()
 {
 	// Set style values (font DPI scaling and rounding)
 	ImGuiStyle& style = ImGui::GetStyle();

@@ -46,9 +46,11 @@ private:
 	bool m_ShowDemo = false;
 	bool m_ShowSettings = false;
 
+	bool m_PreviousDarkMode = true;
+
 	WindowData getWindowData(bool closed, bool dockChange = false);
 
-	void SetStyle();
+	void SetDarkStyle();
 	
 	void DrawDockSpace();
 
