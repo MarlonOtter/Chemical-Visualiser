@@ -374,7 +374,6 @@ WindowData InterfaceLayer::DrawSettings()
 				};
 
 				if (
-					
 					ImGui::ColorEdit3("Background Color ##3D", backgroundColor, ImGuiColorEditFlags_DisplayHex) |
 					ImGui::SliderFloat("Atom Size ##3D", &(values.AtomScale3D), 0.01f, 2.0f) |
 					ImGui::SliderFloat("Hydrogen Scale ##3D", &(values.HydrogenScale3D), 0.01, 1.0) |
@@ -395,6 +394,32 @@ WindowData InterfaceLayer::DrawSettings()
 				}
 				ImGui::EndTabItem();
 			}
+			
+			if (ImGui::BeginTabItem("Element Colours ##SettingTab"))
+			{
+				for (size_t i = 0; i < 118; i++)
+				{
+					size_t index = i * 3;
+					float colour[3] = {
+						Core::Uint8ToFloat(values.ElementColors[index]),
+						Core::Uint8ToFloat(values.ElementColors[index + 1]),
+						Core::Uint8ToFloat(values.ElementColors[index + 2]),
+					};
+
+					std::string label = ChemVis::Chemical::GetAtomSymbol(i+1);
+					if (ImGui::ColorEdit3(label.c_str(), colour))
+					{
+						settings.MakeChange();
+						values.ElementColors[index] = Core::FloatToUint8(colour[0]);
+						values.ElementColors[index + 1] = Core::FloatToUint8(colour[1]);
+						values.ElementColors[index + 2] = Core::FloatToUint8(colour[2]);
+					}
+
+				}
+
+				ImGui::EndTabItem();
+			}
+
 			ImGui::EndTabBar();
 		}
 	}

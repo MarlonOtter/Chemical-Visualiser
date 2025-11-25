@@ -64,7 +64,6 @@ namespace ChemVis {
 
 		// Atom colour handling
 		static Core::Color GetAtomColor(int type);
-		static void SetAtomColors(std::vector<uint8_t> colours);
 
 		// Atom Sybmol handling
 		static std::string GetAtomSymbol(int type);
@@ -86,7 +85,6 @@ namespace ChemVis {
 		static BondsInfo ParseBonds(Core::json data);
 		static ChemicalInfo ParseInfo(Core::json data);
 
-		static std::vector<uint8_t> s_ElementColors; // RGB
 		static std::vector<std::string> s_ElementSymbols;
 	};
 

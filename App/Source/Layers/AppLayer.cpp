@@ -16,9 +16,6 @@ AppLayer::AppLayer()
 {
 	m_FetchThread = std::make_unique<ChemVis::FetchThread>();
 	SetChemical("Aspirin");
-
-	// Preload element data (symbols and colours)
-	ChemVis::Chemical::SetAtomColors(m_Settings.Values().ElementColors);
 }
 
 AppLayer::~AppLayer()
