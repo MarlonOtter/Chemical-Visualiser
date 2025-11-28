@@ -5,6 +5,8 @@
 #include "View3DLayer.h"
 #include "AppLayer.h"
 
+#include "ChemVis/Exporter.h"
+
 #include "rlImGui.h"
 #include "imgui.h"
 #include "windowData.h"
@@ -53,12 +55,12 @@ void InterfaceLayer::OnComposite()
 	window2D = DrawView2D();
 	window3D = DrawView3D();
 	DrawMainInterface();
+	
 	if (m_ShowSettings) DrawSettings();
+	if (m_ShowExport) DrawExport();
 
-	if (m_ShowDemo)
-	{
-		ImGui::ShowDemoWindow(&m_ShowDemo);
-	}
+	if (m_ShowDemo) ImGui::ShowDemoWindow(&m_ShowDemo);
+	
 
 	rlImGuiEnd();
 
@@ -99,7 +101,7 @@ void InterfaceLayer::DrawMenuBar()
 	{
 		if (ImGui::BeginMenu("File"))
 		{
-			ImGui::MenuItem("Export"); // TODO : Implement Export Functionality
+			ImGui::MenuItem("Export", nullptr, &m_ShowExport);
 			ImGui::MenuItem("Import"); // TODO : Implement Import Functionality
 			
 			if (ImGui::BeginMenu("Cache"))
@@ -162,7 +164,7 @@ WindowData InterfaceLayer::DrawView2D()
 		dockChange = true;
 	}
 
-	window = getWindowData(!open, dockChange);
+	window = GetWindowData(!open, dockChange);
 	ImGui::End();
 	return window;
 }
@@ -191,7 +193,7 @@ WindowData InterfaceLayer::DrawView3D()
 		dockChange = true;
 	}
 
-	WindowData window = getWindowData(!open, dockChange);
+	WindowData window = GetWindowData(!open, dockChange);
 	ImGui::End();
 	return window;
 }
@@ -265,7 +267,7 @@ WindowData InterfaceLayer::DrawMainInterface()
 			ImGui::Text((std::string("InChI: ") + m_ChemicalInfo.InChI).c_str());
 		}
 	}
-	window = getWindowData(!open);
+	window = GetWindowData(!open);
 	ImGui::End();
 	return window;
 }
@@ -427,16 +429,60 @@ WindowData InterfaceLayer::DrawSettings()
 		}
 	}
 
-	WindowData window = getWindowData(!open);
+	WindowData window = GetWindowData(!open);
 	ImGui::End();
 	return window;
 }
+
+WindowData InterfaceLayer::DrawExport()
+{
+	if (ImGui::Begin("Export", &m_ShowExport));
+	{
+		static int SelectedView = 0; 
+		const char* Views[] = { "2D", "3D" };
+		ImGui::Combo("View", &SelectedView, Views, IM_ARRAYSIZE(Views));
+
+		if (ImGui::BeginTabBar("ExportType"))
+		{
+			if (ImGui::BeginTabItem("Image"))
+			{
+				ImGui::EndTabItem();
+			}
+			if (ImGui::BeginTabItem("Model"))
+			{
+				ImGui::EndTabItem();
+			}
+			if (ImGui::BeginTabItem(".mol"))
+			{
+				ImGui::EndTabItem();
+			}
+			ImGui::EndTabBar();
+		}
+
+
+		if (ImGui::Button("Export"))
+		{
+			//TODO : Implement File Dialog Opening so the user can select where they want to store/name the file  
+			ChemVis::Exporter exporter;
+
+			ChemVis::Visualiser selectVis = ChemVis::Visualiser2D;
+			if (SelectedView == 1) { selectVis = ChemVis::Visualiser3D; }
+			exporter.Config()->Visualiser = selectVis;
+			exporter.Config()->Mode = ChemVis::Image;
+			exporter.Export("");
+		}
+	}
+	auto window = GetWindowData(true);
+	ImGui::End();
+	return window;
+}
+
 
 void InterfaceLayer::OnEvent(Core::Event& event)
 {
 }
 
-WindowData InterfaceLayer::getWindowData(bool closed, bool dockChange)
+WindowData InterfaceLayer::GetWindowData(bool closed, bool dockChange)
 {
 	return WindowData{
 		(int)ImGui::GetContentRegionMax().x,

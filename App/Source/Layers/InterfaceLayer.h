@@ -45,10 +45,11 @@ private:
 
 	bool m_ShowDemo = false;
 	bool m_ShowSettings = false;
+	bool m_ShowExport = false;
 
 	bool m_PreviousDarkMode = true;
 
-	WindowData getWindowData(bool closed, bool dockChange = false);
+	WindowData GetWindowData(bool closed, bool dockChange = false);
 
 	void SetDarkStyle();
 	
@@ -59,4 +60,5 @@ private:
 	WindowData DrawView3D();
 	WindowData DrawMainInterface();
 	WindowData DrawSettings();
+	WindowData DrawExport();
 };
