@@ -23,20 +23,23 @@ namespace ChemVis
 		{
 			case (ExportMode::Image) :
 			{
-				ExportImage();
+				ExportImage(dir);
+				break;
 			}
 			case (ExportMode::Model) :
 			{
-				ExportModel();
+				ExportModel(dir);
+				break;
 			}
 			case (ExportMode::Mol) :
 			{
-				ExportMol();
+				ExportMol(dir);
+				break;
 			}
 		}
 	}
 
-	void Exporter::ExportImage()
+	void Exporter::ExportImage(std::string dir)
 	{
 		Core::Application& application = Core::Application::Get();
 
@@ -44,11 +47,13 @@ namespace ChemVis
 		if (m_Config.Visualiser == Visualiser2D)
 		{
 			View2DLayer* View2D = application.GetLayer<View2DLayer>();
+			//TODO : Set Background to the desired value then re-render  
 			RenderTex = View2D->getRenderTexture();
 		}
 		else if (m_Config.Visualiser == Visualiser3D)
 		{
 			View3DLayer* View3D = application.GetLayer<View3DLayer>();
+			//TODO : Set Background to the desired value then re-render  
 			RenderTex = View3D->getRenderTexture();
 		}
 		else {
@@ -56,18 +61,18 @@ namespace ChemVis
 			return;
 		}
 		::Image image = LoadImageFromTexture(RenderTex.texture);
-		::ExportImage(image, "ImageExport.png");
+		::ExportImage(image, (dir + ".png").c_str());
 
 		::UnloadImage(image);
 	}
 
-	void Exporter::ExportModel()
+	void Exporter::ExportModel(std::string dir)
 	{
-
+		std::cout << "CANNOT EXPORT MODEL : NOT YET IMPLEMENTED\n";
 	}
 
-	void Exporter::ExportMol()
+	void Exporter::ExportMol(std::string dir)
 	{
-
+		std::cout << "CANNOT EXPORT .MOL : NOT YET IMPLEMENTED\n";
 	}
 }

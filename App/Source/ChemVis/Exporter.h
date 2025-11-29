@@ -9,9 +9,18 @@ namespace ChemVis
 		Visualiser3D
 	};
 	enum ExportMode {
-		Model,
 		Image,
+		Model,
 		Mol
+	};
+	enum ImageExportType {
+		PNG,
+		JPG,
+		BMP,
+		TGA
+	};
+	enum ModelExportType {
+		OBJ
 	};
 
 	struct ExportConfig
@@ -22,15 +31,16 @@ namespace ChemVis
 
 	struct ExportImageConfig
 	{
-		int ImageWidth = 0;
-		int ImageHeight = 0;
+		int Size[2] = {100, 100};
 		bool Background = true;
+		ImageExportType type = PNG;
 	};
 
 	struct ExportModelConfig
 	{
-		float ModelScale = 1.0f;
-		unsigned int ModelResolution = 0;
+		float Scale = 1.0f;
+		int Quality = 0;
+		ModelExportType type = OBJ;
 	};
 
 	class Exporter
@@ -46,9 +56,9 @@ namespace ChemVis
 		void Export(std::string dir);
 
 
-		void ExportImage();
-		void ExportModel();
-		void ExportMol();
+		void ExportImage(std::string dir);
+		void ExportModel(std::string dir);
+		void ExportMol(std::string dir);
 
 		ExportConfig m_Config;
 		ExportImageConfig m_ImageConfig;

@@ -440,40 +440,52 @@ WindowData InterfaceLayer::DrawSettings()
 
 WindowData InterfaceLayer::DrawExport()
 {
-	if (ImGui::Begin("Export", &m_ShowExport));
+	if (ImGui::Begin("\xef\x82\x8b Export", &m_ShowExport, ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoCollapse)) // arrow-right-from-bracket
 	{
+		static ChemVis::Exporter exporter;
+
 		static int SelectedView = 0; 
 		const char* Views[] = { "2D", "3D" };
-		ImGui::Combo("View", &SelectedView, Views, IM_ARRAYSIZE(Views));
-
-		if (ImGui::BeginTabBar("ExportType"))
+		if (ImGui::Combo("View", &SelectedView, Views, IM_ARRAYSIZE(Views)))
+		{
+			if (SelectedView == 0) exporter.Config()->Visualiser = ChemVis::Visualiser2D;
+			else if (SelectedView == 1) exporter.Config()->Visualiser = ChemVis::Visualiser3D;
+		}
+		
+		if (ImGui::BeginTabBar("ExportType")) 
 		{
 			if (ImGui::BeginTabItem("Image"))
 			{
+				exporter.Config()->Mode = ChemVis::Image;
+
+				ImGui::Checkbox("Transparent Background ##ImgExport", &exporter.ImageConfig()->Background);
+				ImGui::DragInt2("Size ##ImgExport", exporter.ImageConfig()->Size, 1.0f, 100, 100000);
 				ImGui::EndTabItem();
 			}
 			if (ImGui::BeginTabItem("Model"))
 			{
+				exporter.Config()->Mode = ChemVis::Model;
+
+				ImGui::DragFloat("Scale ##ModelExport", &exporter.ModelConfig()->Scale, 0.01f, 0.0f, 100.0f);
+				ImGui::SliderInt("Quality ##ModelExport", &exporter.ModelConfig()->Quality, 0, 10);
 				ImGui::EndTabItem();
 			}
 			if (ImGui::BeginTabItem(".mol"))
 			{
+				exporter.Config()->Mode = ChemVis::Mol;
+
+				ImGui::Text("Not Yet Implemented");
 				ImGui::EndTabItem();
 			}
 			ImGui::EndTabBar();
 		}
 
-
+		static char fileName[255];
+		ImGui::InputText("FileName", fileName, 255);
 		if (ImGui::Button("Export"))
 		{
 			//TODO : Implement File Dialog Opening so the user can select where they want to store/name the file  
-			ChemVis::Exporter exporter;
-
-			ChemVis::Visualiser selectVis = ChemVis::Visualiser2D;
-			if (SelectedView == 1) { selectVis = ChemVis::Visualiser3D; }
-			exporter.Config()->Visualiser = selectVis;
-			exporter.Config()->Mode = ChemVis::Image;
-			exporter.Export("");
+			exporter.Export(fileName);
 		}
 	}
 	auto window = GetWindowData(true);
