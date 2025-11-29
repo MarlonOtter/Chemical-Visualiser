@@ -29,6 +29,7 @@ std::string Settings::Dump() const
 	json["WorldScale2D"] = m_Values.WorldScale2D;
 	json["ShowElementLabels"] = m_Values.ShowElementLabels;
 	json["LabelScale"] = m_Values.LabelScale;
+	json["Background2D"] = m_Values.Background2D;
 	json["BackgroundColor2D"] = m_Values.BackgroundColor2D;
 	json["CameraSmoothing2D"] = m_Values.CameraSmoothing2D;
 	
@@ -37,6 +38,7 @@ std::string Settings::Dump() const
 	json["BondRadius3D"] = m_Values.BondRadius3D;
 	json["BondSeperation3D"] = m_Values.BondSeperation3D;
 	json["BondDetail3D"] = m_Values.BondDetail3D;
+	json["Background3D"] = m_Values.Background3D;
 	json["BackgroundColor3D"] = m_Values.BackgroundColor3D;
 	json["LookSensitivity3D"] = m_Values.LookSensitivity3D;
 	json["PanSensitivity3D"] = m_Values.PanSensitivity3D;
@@ -105,6 +107,7 @@ void Settings::ParseFromString(std::string data)
 		ParseSetting(json, &m_Values.WorldScale2D, "WorldScale2D");
 		ParseSetting(json, &m_Values.ShowElementLabels, "ShowElementLabels");
 		ParseSetting(json, &m_Values.LabelScale, "LabelScale");
+		ParseSetting(json, &m_Values.Background2D, "Background2D");
 		ParseSetting(json, &m_Values.BackgroundColor2D, "BackgroundColor2D");
 		ParseSetting(json, &m_Values.CameraSmoothing2D, "CameraSmoothing2D");
 		ParseSetting(json, &m_Values.AtomScale3D, "AtomScale3D");
@@ -112,6 +115,7 @@ void Settings::ParseFromString(std::string data)
 		ParseSetting(json, &m_Values.BondRadius3D, "BondRadius3D");
 		ParseSetting(json, &m_Values.BondSeperation3D, "BondSeperation3D");
 		ParseSetting(json, &m_Values.BondDetail3D, "BondDetail3D");
+		ParseSetting(json, &m_Values.Background3D, "Background3D");
 		ParseSetting(json, &m_Values.BackgroundColor3D, "BackgroundColor3D");
 		ParseSetting(json, &m_Values.LookSensitivity3D, "LookSensitivity3D");
 		ParseSetting(json, &m_Values.PanSensitivity3D, "PanSensitivity3D");

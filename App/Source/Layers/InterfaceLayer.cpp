@@ -348,7 +348,9 @@ WindowData InterfaceLayer::DrawSettings()
 				};
 
 				if (
-					ImGui::ColorEdit3("Background Color ##2D", backgroundColor, ImGuiColorEditFlags_DisplayHex) |
+					ImGui::Checkbox("Background ##2D", &values.Background2D) |
+					// Only Draw the background colour edit if background is enabled
+					(values.Background2D && ImGui::ColorEdit3("Background Color ##2D", backgroundColor, ImGuiColorEditFlags_DisplayHex)) |
 					ImGui::SliderFloat("Atom Size ##2D", &values.AtomScale2D, 0.01f, 2.0f) |
 					ImGui::SliderFloat("Hydrogen Scale ##2D", &values.HydrogenScale2D, 0.01f, 1.0f) |
 					ImGui::SliderFloat("Bond Width ##2D", &values.BondWidth2D, 0.01f, 2.0f) |
@@ -377,7 +379,9 @@ WindowData InterfaceLayer::DrawSettings()
 				};
 
 				if (
-					ImGui::ColorEdit3("Background Color ##3D", backgroundColor, ImGuiColorEditFlags_DisplayHex) |
+					ImGui::Checkbox("Background ##3D", &values.Background3D) |
+					// Only Draw the background colour edit if background is enabled
+					(values.Background3D && ImGui::ColorEdit3("Background Color ##3D", backgroundColor, ImGuiColorEditFlags_DisplayHex)) |
 					ImGui::SliderFloat("Atom Size ##3D", &(values.AtomScale3D), 0.01f, 2.0f) |
 					ImGui::SliderFloat("Hydrogen Scale ##3D", &(values.HydrogenScale3D), 0.01, 1.0) |
 					ImGui::SliderFloat("Bond Radius ##3D", &(values.BondRadius3D), 0.01f, 2.0f) |

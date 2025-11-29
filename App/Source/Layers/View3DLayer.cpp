@@ -75,7 +75,7 @@ void View3DLayer::OnRender()
 	m_Camera.PanSensitivity() = values.PanSensitivity3D;
 
 	BeginTextureMode(m_Target);
-	ClearBackground(Core::Color(values.BackgroundColor3D[0], values.BackgroundColor3D[1], values.BackgroundColor3D[2], 255));
+	ClearBackground(Core::Color(values.BackgroundColor3D[0], values.BackgroundColor3D[1], values.BackgroundColor3D[2], values.Background3D ? 255 : 0));
 	BeginMode3D(m_Camera.GetHandler());
 
 	if (m_Chemical) {

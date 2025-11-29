@@ -21,6 +21,7 @@ struct SettingValues
 	int WorldScale2D = 1000;
 	bool ShowElementLabels = true;
 	float LabelScale = 0.25f;
+	bool Background2D = false;
 	std::vector<uint8_t> BackgroundColor2D = { 15, 15, 15 };
 	float CameraSmoothing2D = 0.5f;
 
@@ -30,12 +31,13 @@ struct SettingValues
 	float BondRadius3D = 1.0f;
 	float BondSeperation3D = 1.0f;
 	float BondDetail3D = 1.0f;
+	bool Background3D = false;
 	std::vector<uint8_t> BackgroundColor3D = { 15, 15, 15 };
 	float LookSensitivity3D = 1.0f;
 	float PanSensitivity3D = 1.0f;
 	float CameraSmoothing3D = 0.8f;
 
-	// Other Settings
+	// Element Colours
 
 	// RGB triplets for each element by atomic number
 	std::vector<uint8_t> ElementColors = {
