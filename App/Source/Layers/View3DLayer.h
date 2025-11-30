@@ -18,6 +18,7 @@ public:
 	virtual void OnRender() override;
 	virtual void OnComposite() override;
 
+	void ForceNextRender() { m_ForceRender = true; }
 	RenderTexture2D& getRenderTexture() { return m_Target; }
 
 	WindowData GetWindowData() { return m_WindowData; }

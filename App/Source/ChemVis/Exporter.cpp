@@ -46,14 +46,26 @@ namespace ChemVis
 		RenderTexture2D RenderTex;
 		if (m_Config.Visualiser == Visualiser2D)
 		{
+			std::cout << m_ImageConfig.Background << ": Background ImageConfig\n";
 			View2DLayer* View2D = application.GetLayer<View2DLayer>();
-			//TODO : Set Background to the desired value then re-render  
+			bool& background = application.GetLayer<AppLayer>()->GetSettings().Values().Background2D;
+			bool OldBackground = background;
+			background = m_ImageConfig.Background;
+			View2D->ForceNextRender();
+			View2D->OnRender();
+			background = OldBackground;
+
 			RenderTex = View2D->getRenderTexture();
 		}
 		else if (m_Config.Visualiser == Visualiser3D)
 		{
 			View3DLayer* View3D = application.GetLayer<View3DLayer>();
-			//TODO : Set Background to the desired value then re-render  
+			bool& background = application.GetLayer<AppLayer>()->GetSettings().Values().Background3D;
+			bool OldBackground = background;
+			background = m_ImageConfig.Background;
+			View3D->ForceNextRender();
+			View3D->OnRender();
+			background = OldBackground;
 			RenderTex = View3D->getRenderTexture();
 		}
 		else {

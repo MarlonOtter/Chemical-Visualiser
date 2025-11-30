@@ -33,14 +33,14 @@ namespace ChemVis
 	{
 		int Size[2] = {100, 100};
 		bool Background = true;
-		ImageExportType type = PNG;
+		ImageExportType Type = PNG;
 	};
 
 	struct ExportModelConfig
 	{
 		float Scale = 1.0f;
 		int Quality = 0;
-		ModelExportType type = OBJ;
+		ModelExportType Type = OBJ;
 	};
 
 	class Exporter

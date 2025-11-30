@@ -19,6 +19,7 @@ public:
 
 	RenderTexture2D& getRenderTexture() { return m_Target; }
 
+	void ForceNextRender() { m_ForceRender = true; }
 	void setWindowData(WindowData data) { m_WindowData = data; }
 
 private:

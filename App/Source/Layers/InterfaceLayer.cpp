@@ -458,7 +458,7 @@ WindowData InterfaceLayer::DrawExport()
 			{
 				exporter.Config()->Mode = ChemVis::Image;
 
-				ImGui::Checkbox("Transparent Background ##ImgExport", &exporter.ImageConfig()->Background);
+				ImGui::Checkbox("Background ##ImgExport", &exporter.ImageConfig()->Background);
 				ImGui::DragInt2("Size ##ImgExport", exporter.ImageConfig()->Size, 1.0f, 100, 100000);
 				ImGui::EndTabItem();
 			}
@@ -480,7 +480,7 @@ WindowData InterfaceLayer::DrawExport()
 			ImGui::EndTabBar();
 		}
 
-		static char fileName[255];
+		static char fileName[255] = "ExportedFile";
 		ImGui::InputText("FileName", fileName, 255);
 		if (ImGui::Button("Export"))
 		{
