@@ -1,53 +1,61 @@
-# 
-# Dependencies
-#
-
 include(FetchContent)
 
-# raylib - Abstracts away the graphics API
+# raylib - prefer system package, otherwise fetch
 set(RAYLIB_VERSION 5.5)
-find_package(raylib ${RAYLIB_VERSION} QUIET) # QUIET or REQUIRED
-if (NOT raylib_FOUND) # If there's none, fetch and build raylib
-  include(FetchContent)
+find_package(raylib ${RAYLIB_VERSION} QUIET)
+if (NOT raylib_FOUND)
   FetchContent_Declare(
     raylib
     DOWNLOAD_EXTRACT_TIMESTAMP OFF
     URL https://github.com/raysan5/raylib/archive/refs/tags/${RAYLIB_VERSION}.tar.gz
   )
   FetchContent_GetProperties(raylib)
-  if (NOT raylib_POPULATED) # Have we downloaded raylib yet?
+  if (NOT raylib_POPULATED)
     set(FETCHCONTENT_QUIET NO)
     FetchContent_MakeAvailable(raylib)
   endif()
 endif()
 
-# nlohmann::json - JSON for Modern C++
+# nlohmann::json
 FetchContent_Declare(
   json
   GIT_REPOSITORY https://github.com/nlohmann/json.git
-  GIT_TAG v3.11.2 # or latest stable tag
+  GIT_TAG v3.11.2
 )
+FetchContent_GetProperties(json)
+if (NOT json_POPULATED)
+  FetchContent_MakeAvailable(json)
+endif()
 
-FetchContent_MakeAvailable(json)
-
-
-# cpr - C++ Requests 
-# reuires meson build system : (can be done through python: pip install meson)
+# cpr
 FetchContent_Declare(
   cpr
   GIT_REPOSITORY https://github.com/libcpr/cpr.git
-  GIT_TAG        1.12.0
+  GIT_TAG 1.12.0
 )
-
-FetchContent_MakeAvailable(cpr)
-
+FetchContent_GetProperties(cpr)
+if (NOT cpr_POPULATED)
+  FetchContent_MakeAvailable(cpr)
+endif()
 
 # ImGui
 FetchContent_Declare(
   imgui
   GIT_REPOSITORY https://github.com/ocornut/imgui.git
-  GIT_TAG docking  # or latest stable tag
+  GIT_TAG docking
 )
-FetchContent_MakeAvailable(imgui)
+FetchContent_GetProperties(imgui)
+if (NOT imgui_POPULATED)
+  FetchContent_MakeAvailable(imgui)
+endif()
 
-set(IMGUI_INCLUDE_DIR ${imgui_SOURCE_DIR})
+# nfd
+FetchContent_Declare(
+  nfd
+  GIT_REPOSITORY https://github.com/MarlonOtter/nativefiledialog-extended.git
+  GIT_TAG master
+)
+FetchContent_GetProperties(nfd)
+if (NOT nfd_POPULATED)
+  FetchContent_MakeAvailable(nfd)
+endif()

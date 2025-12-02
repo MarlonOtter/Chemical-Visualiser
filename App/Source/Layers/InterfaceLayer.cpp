@@ -1,16 +1,17 @@
 #include "InterfaceLayer.h"
 
 #include "Core/Application.h"
+#include "Core/System/FileDialog.h"
+
 #include "View2DLayer.h"
 #include "View3DLayer.h"
 #include "AppLayer.h"
 
+#include "windowData.h"
 #include "ChemVis/Exporter.h"
 
 #include "rlImGui.h"
 #include "imgui.h"
-#include "windowData.h"
-
 #include "extras/IconsFontAwesome6.h"
 
 
@@ -480,12 +481,15 @@ WindowData InterfaceLayer::DrawExport()
 			ImGui::EndTabBar();
 		}
 
-		static char fileName[255] = "ExportedFile";
-		ImGui::InputText("FileName", fileName, 255);
 		if (ImGui::Button("Export"))
 		{
-			//TODO : Implement File Dialog Opening so the user can select where they want to store/name the file  
-			exporter.Export(fileName);
+			Core::System::FileFilterList filters = {
+					{"Image (png)", { "png"}},
+					{"Image (jpeg)", { "jpeg", "jpg" }}
+			};
+			std::string FileDirectory = Core::System::SaveDialog(filters);
+			exporter.Export(FileDirectory);
+
 		}
 	}
 	auto window = GetWindowData(true);

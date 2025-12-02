@@ -1,11 +1,12 @@
 cmake_minimum_required(VERSION 3.15)
-project(MyProject)
+project(ChemicalVisualiser)
 
 set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Generate compile_commands.json
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
 
 # Dependencies
 include(Dependencies.cmake)
@@ -27,3 +28,4 @@ target_include_directories(imgui PUBLIC ${imgui_SOURCE_DIR})
 # Projects
 add_subdirectory(Core)
 add_subdirectory(App)
+
