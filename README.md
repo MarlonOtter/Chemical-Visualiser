@@ -25,6 +25,7 @@ pip install meson
 -   nlohmann::json - parsing json data
 -   imgui - UI
 -   rlImgui - allow imgui to work with raylib
+-   nativefiledialog-extended - opens a file dialog with the OS so the user can select a file/path
 
 ## Build
 
