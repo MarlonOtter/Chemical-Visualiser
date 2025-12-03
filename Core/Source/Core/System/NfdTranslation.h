@@ -8,6 +8,16 @@
 
 namespace Core::System
 {
+    // Converts the array of filetypes to a string that nfd can use
+    std::string ConvertSpec(std::vector<std::string> Spec) {
+        std::string result = "";
+        for (int i = 0; i < Spec.size(); i++)
+        {
+            result += Spec[i] + ",";
+        }
+        return result.substr(0, result.size() - 1);
+    };
+
     // Translate between the NFD types and Types that the user uses
     std::vector<nfdfilteritem_t> ConvertFilters(const FileFilterList& Filters, std::vector<std::string>& Storage)
     {
@@ -31,12 +41,5 @@ namespace Core::System
         return NfdFilters;
     }
 
-    std::string ConvertSpec(std::vector<std::string> Spec) {
-        std::string result = "";
-        for (int i = 0; i < Spec.size(); i++)
-        {
-            result += Spec[i] + ",";
-        }
-        return result.substr(0, result.size() - 1);
-    };
+   
 }
