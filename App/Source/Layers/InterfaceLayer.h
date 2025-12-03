@@ -45,6 +45,7 @@ private:
 
 	bool m_ShowDemo = false;
 	bool m_ShowSettings = false;
+	bool m_ShowCacheList = false;
 
 	bool m_PreviousDarkMode = true;
 
@@ -59,4 +60,5 @@ private:
 	WindowData DrawView3D();
 	WindowData DrawMainInterface();
 	WindowData DrawSettings();
+	WindowData DrawCacheList();
 };

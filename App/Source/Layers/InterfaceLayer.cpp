@@ -54,6 +54,7 @@ void InterfaceLayer::OnComposite()
 	window3D = DrawView3D();
 	DrawMainInterface();
 	if (m_ShowSettings) DrawSettings();
+	if (m_ShowCacheList) DrawCacheList();
 
 	if (m_ShowDemo)
 	{
@@ -104,8 +105,10 @@ void InterfaceLayer::DrawMenuBar()
 			
 			if (ImGui::BeginMenu("Cache"))
 			{
-				// TODO : Display List of all cached chemicals
-				ImGui::MenuItem("View");
+				if (ImGui::MenuItem("View", nullptr, &m_ShowCacheList) && m_ShowCacheList)
+				{
+					Core::Application::Get().GetLayer<AppLayer>()->UpdateCacheSnapshot();
+				}
 				
 				bool CacheEmpty = Core::Application::Get().GetLayer<AppLayer>()->IsCacheEmpty();
 				if (CacheEmpty) ImGui::BeginDisabled();
@@ -434,6 +437,43 @@ WindowData InterfaceLayer::DrawSettings()
 	WindowData window = getWindowData(!open);
 	ImGui::End();
 	return window;
+}
+
+WindowData InterfaceLayer::DrawCacheList() 
+{
+	if (ImGui::Begin("\xef\x80\xba Cache", &m_ShowCacheList, ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoCollapse)) // List
+	{
+		auto cache = Core::Application::Get().GetLayer<AppLayer>()->GetCache();
+
+		ImGuiTableFlags flags = ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_BordersV | ImGuiTableFlags_SizingStretchProp;
+		if (!cache.empty() && ImGui::BeginTable("CacheList", 3, flags))
+		{
+			ImGui::TableSetupColumn("CID");
+			ImGui::TableSetupColumn("Name");
+			ImGui::TableSetupColumn("");
+			ImGui::TableHeadersRow();
+
+			for (const auto& [Name, Cid] : cache)
+			{
+				ImGui::TableNextRow();
+				
+				ImGui::TableNextColumn();
+				ImGui::Text(std::to_string(Cid).c_str());
+				ImGui::TableNextColumn();
+				ImGui::Text(Name.c_str());
+				ImGui::TableNextColumn();
+				
+				if (ImGui::Button((std::string("\xef\x82\x8e##Display") + Name).c_str())) //Arrow Up right from square
+				{
+					Core::Application::Get().GetLayer<AppLayer>()->SetChemical(Name);
+				}
+			}
+			ImGui::EndTable();
+		}
+		
+	}
+	ImGui::End();
+	return getWindowData(m_ShowCacheList, false);
 }
 
 void InterfaceLayer::OnEvent(Core::Event& event)

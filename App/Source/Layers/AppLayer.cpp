@@ -67,6 +67,11 @@ void AppLayer::OnEvent(Core::Event& event)
 	
 }
 
+void AppLayer::UpdateCacheSnapshot()
+{
+	m_CacheSnapshot = m_FetchThread.get()->GetCachedListSnapshot();
+}
+
 void AppLayer::HandleChemicalStructure()
 {
 	// Request New Chemical

@@ -21,6 +21,8 @@ namespace ChemVis
 		int GetCid(std::string Identifier);
 
 		void DeleteAll();
+
+		std::map<std::string, int> getList() const { return m_Chemicals; }
 	private:
 		// name/identifier -> cid
 		std::map<std::string, int> m_Chemicals;

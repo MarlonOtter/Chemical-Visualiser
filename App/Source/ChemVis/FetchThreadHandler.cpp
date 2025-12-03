@@ -7,7 +7,10 @@ namespace ChemVis
 {
 	FetchThread::FetchThread()
 	{
-		m_ChemicalList = ChemVis::ChemicalList("Cache/Chemicals");
+		{
+			std::lock_guard<std::mutex> lock(m_ChemicalListMutex);
+			m_ChemicalList = ChemVis::ChemicalList("Cache/Chemicals");
+		}
 
 		m_Thread = std::thread(&FetchThread::ThreadLoop, this);
 	}
@@ -29,6 +32,35 @@ namespace ChemVis
 			m_NewRequest = true;
 		}
 		m_ConditionVar.notify_one();	
+	}
+
+	void FetchThread::RequestDeleteCache() {
+		m_DeleteCacheRequest.store(true);
+		m_ConditionVar.notify_one();
+	}
+
+	std::map<std::string, int> FetchThread::GetCachedListSnapshot() const
+	{
+		std::lock_guard<std::mutex> lock(m_ChemicalListMutex);
+		return m_ChemicalList.getList();
+	}
+
+	bool FetchThread::IsResultReady()
+	{
+		std::lock_guard<std::mutex> lock(m_ResultMutex);
+		return m_Result.has_value();
+	}
+
+	Chemical FetchThread::GetResult() {
+		std::optional<Chemical> ResultCopy;
+		{
+			std::lock_guard<std::mutex> lock(m_ResultMutex);
+			ResultCopy = std::move(m_Result);
+			m_Result.reset();
+		}
+		if (ResultCopy.has_value())
+			return std::move(ResultCopy.value());
+		return Chemical();
 	}
 
 	void FetchThread::Stop()
@@ -54,7 +86,10 @@ namespace ChemVis
 			if (m_DeleteCacheRequest)
 			{
 				lock.unlock();
-				m_ChemicalList.DeleteAll();
+				{
+					std::lock_guard<std::mutex> cacheLock(m_ChemicalListMutex);
+					m_ChemicalList.DeleteAll();
+				}
 				lock.lock();
 				m_DeleteCacheRequest.store(false);
 				continue;
@@ -76,46 +111,51 @@ namespace ChemVis
 	void FetchThread::FetchChemicalData(const std::string& name)
 	{
 		// Check if chemical is stored locally
-		if (m_ChemicalList.IsStored(name))
 		{
-			std::cout << "READING FROM DISK\n";
-			int cid = m_ChemicalList.GetCid(name);
-			std::string data = m_ChemicalList.GetData(cid);
-			auto chemical = ChemVis::Chemical::Parse(data);
-			if (chemical.has_value())
+			std::lock_guard<std::mutex> lock(m_ChemicalListMutex);
+			if (m_ChemicalList.IsStored(name))
 			{
+				std::cout << "READING FROM DISK\n";
+				int cid = m_ChemicalList.GetCid(name);
+				std::string data = m_ChemicalList.GetData(cid);
+				auto chemical = ChemVis::Chemical::Parse(data);
+				if (chemical.has_value())
 				{
-					std::lock_guard<std::mutex> lock(m_ResultMutex);
-					m_Result = std::move(chemical.value());
+					{
+						std::lock_guard<std::mutex> lock(m_ResultMutex);
+						m_Result = std::move(chemical.value());
+					}
 				}
+				return;
 			}
 		}
-		else
-		{
-			std::cout << "FETCHING FROM DB\n";
-			auto m_StructureFuture = PubChem::Async::GetChemical(name);	
-			try {
-				auto result = m_StructureFuture.get();
-				auto chemObj = result.Chemical;
 
-				std::string ChemicalIdentifier = result.Identifier;
+		std::cout << "FETCHING FROM DB\n";
+		auto m_StructureFuture = PubChem::Async::GetChemical(name);
+		try {
+			auto result = m_StructureFuture.get();
+			auto chemObj = result.Chemical;
+
+			std::string ChemicalIdentifier = result.Identifier;
+			{
+				std::lock_guard<std::mutex> lock(m_ChemicalListMutex);
 				if (!result.Data.empty() && !m_ChemicalList.IsStored(ChemicalIdentifier))
 				{
 					m_ChemicalList.Store(ChemicalIdentifier, std::stoi(chemObj.GetInfo().Cid), result.Data);
 				}
+			}
 
-				if (!chemObj.GetAtoms().Types.empty())
+			if (!chemObj.GetAtoms().Types.empty())
+			{
 				{
-					{
-						std::lock_guard<std::mutex> lock(m_ResultMutex);
-						m_Result = std::move(chemObj);
-					}
+					std::lock_guard<std::mutex> lock(m_ResultMutex);
+					m_Result = std::move(chemObj);
 				}
 			}
-			catch (const std::exception& e) {
-				// Should push an error to the UI instead
-				std::cerr << "Chemical request failed: " << e.what() << std::endl;
-			}
+		}
+		catch (const std::exception& e) {
+			// Should push an error to the UI instead
+			std::cerr << "Chemical request failed: " << e.what() << std::endl;
 		}
 	}
 }
