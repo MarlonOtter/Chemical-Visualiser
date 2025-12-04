@@ -63,7 +63,7 @@ void InterfaceLayer::OnComposite()
 
 	rlImGuiEnd();
 
-	Core::Application& app = Core::Application::Get();
+	static Core::Application& app = Core::Application::Get();
 	app.GetLayer<View2DLayer>()->setWindowData(window2D);
 	app.GetLayer<View3DLayer>()->setWindowData(window3D);
 }
@@ -115,7 +115,7 @@ void InterfaceLayer::DrawMenuBar()
 				if (ImGui::MenuItem("Clear"))
 				{
 					// TODO : Confirm clear then send message to confirm that the cache has been cleared
-					Core::Application::Get().GetLayer<AppLayer>()->QueueDeleteCachedChemicals();
+					Core::Application::Get().GetLayer<AppLayer>()->QueueDeleteAllCachedChemicals();
 				}
 				if (CacheEmpty) ImGui::EndDisabled();
 
@@ -443,6 +443,7 @@ WindowData InterfaceLayer::DrawCacheList()
 {
 	if (ImGui::Begin("\xef\x80\xba Cache", &m_ShowCacheList, ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoCollapse)) // List
 	{
+		Core::Application::Get().GetLayer<AppLayer>()->UpdateCacheSnapshot();
 		auto cache = Core::Application::Get().GetLayer<AppLayer>()->GetCache();
 
 		ImGuiTableFlags flags = ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_BordersV | ImGuiTableFlags_SizingStretchProp;
@@ -453,6 +454,7 @@ WindowData InterfaceLayer::DrawCacheList()
 			ImGui::TableSetupColumn("");
 			ImGui::TableHeadersRow();
 
+			AppLayer* appLayer = Core::Application::Get().GetLayer<AppLayer>();
 			for (const auto& [Name, Cid] : cache)
 			{
 				ImGui::TableNextRow();
@@ -463,9 +465,16 @@ WindowData InterfaceLayer::DrawCacheList()
 				ImGui::Text(Name.c_str());
 				ImGui::TableNextColumn();
 				
+				if (ImGui::Button((std::string("\xef\x8b\xad##Delete") + Name).c_str())) // Trash can
+				{
+					appLayer->QueueDeleteCachedChemical(Cid);
+				}
+
+				ImGui::SameLine();
+				
 				if (ImGui::Button((std::string("\xef\x82\x8e##Display") + Name).c_str())) //Arrow Up right from square
 				{
-					Core::Application::Get().GetLayer<AppLayer>()->SetChemical(Name);
+					appLayer->SetChemical(Name);
 				}
 			}
 			ImGui::EndTable();

@@ -20,6 +20,7 @@ namespace ChemVis
 		std::string GetData(int Cid);
 		int GetCid(std::string Identifier);
 
+		void Delete(int cid);
 		void DeleteAll();
 
 		std::map<std::string, int> getList() const { return m_Chemicals; }

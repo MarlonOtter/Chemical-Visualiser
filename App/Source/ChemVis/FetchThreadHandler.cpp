@@ -34,7 +34,20 @@ namespace ChemVis
 		m_ConditionVar.notify_one();	
 	}
 
-	void FetchThread::RequestDeleteCache() {
+	void FetchThread::RequestDeleteCache(std::vector<int> cids) {
+		{
+			std::lock_guard<std::mutex> lock(m_DeleteQueueMutex);
+			for (const int id : cids)
+			{
+				m_DeleteQueue.push_back(id);
+			}
+		}
+		m_DeleteCacheRequest.store(true);
+		m_ConditionVar.notify_one();
+	}
+
+	void FetchThread::RequestDeleteCacheAll() {
+		m_DeleteCacheAll.store(true);
 		m_DeleteCacheRequest.store(true);
 		m_ConditionVar.notify_one();
 	}
@@ -88,7 +101,16 @@ namespace ChemVis
 				lock.unlock();
 				{
 					std::lock_guard<std::mutex> cacheLock(m_ChemicalListMutex);
-					m_ChemicalList.DeleteAll();
+					if (m_DeleteCacheAll) m_ChemicalList.DeleteAll();
+					else
+					{
+						std::lock_guard<std::mutex> deleteQueueLock(m_DeleteQueueMutex);
+						for (const int id : m_DeleteQueue)
+						{
+							m_ChemicalList.Delete(id);
+						}
+						m_DeleteQueue.clear();
+					}
 				}
 				lock.lock();
 				m_DeleteCacheRequest.store(false);

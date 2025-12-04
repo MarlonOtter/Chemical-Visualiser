@@ -17,7 +17,8 @@ namespace ChemVis
 		FetchThread();
 		~FetchThread();
 		void RequestChemical(const std::string& name);
-		void RequestDeleteCache();
+		void RequestDeleteCache(std::vector<int> cids);
+		void RequestDeleteCacheAll();
 		int GetCachedChemicalCount() const { return m_ChemicalList.Size(); }
 		std::map<std::string, int> GetCachedListSnapshot() const;
 
@@ -36,7 +37,11 @@ namespace ChemVis
 
 		std::condition_variable m_ConditionVar;
 		std::atomic<bool> m_NewRequest = { false };
+
 		std::atomic<bool> m_DeleteCacheRequest = { false };
+		std::atomic<bool> m_DeleteCacheAll = { false };
+		mutable std::mutex m_DeleteQueueMutex;
+		std::vector<int> m_DeleteQueue;
 
 		mutable std::mutex m_ResultMutex;
 		std::optional<Chemical> m_Result;

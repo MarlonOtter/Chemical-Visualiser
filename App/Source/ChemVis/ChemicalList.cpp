@@ -126,6 +126,25 @@ namespace ChemVis
 		m_Chemicals.clear();
 	}
 
+	void ChemicalList::Delete(int Cid)
+	{
+		if (!FolderExists() || std::filesystem::is_empty(m_FileDirectory)) return;
+		std::string FilePath = m_FileDirectory + "/" + FileName(Cid);
+		if (!FileExists(FilePath, false)) return;
+
+		std::cout << "Removing File: " << FilePath << "\n";
+		std::filesystem::remove(FilePath);
+
+		for (auto it = m_Chemicals.begin(); it != m_Chemicals.end(); ) {
+			if (it->second == Cid) {
+				it = m_Chemicals.erase(it);
+			}
+			else {
+				++it;
+			}
+		}
+	}
+
 	void ChemicalList::TrackStoredData()
 	{
 		if (!FolderExists()) return;
