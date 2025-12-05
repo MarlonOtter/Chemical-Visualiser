@@ -469,12 +469,20 @@ WindowData InterfaceLayer::DrawCacheList()
 				{
 					appLayer->QueueDeleteCachedChemical(Cid);
 				}
+				if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayShort))
+				{
+					ImGui::SetTooltip("Delete Chemical");
+				}
 
 				ImGui::SameLine();
 				
 				if (ImGui::Button((std::string("\xef\x82\x8e##Display") + Name).c_str())) //Arrow Up right from square
 				{
 					appLayer->SetChemical(Name);
+				}
+				if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayShort))
+				{
+					ImGui::SetTooltip("Display Chemical");
 				}
 			}
 			ImGui::EndTable();
