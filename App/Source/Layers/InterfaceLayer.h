@@ -61,4 +61,6 @@ private:
 	WindowData DrawMainInterface();
 	WindowData DrawSettings();
 	WindowData DrawCacheList();
+
+	void HelpTooltip(std::string msg, bool SameLine = true);
 };

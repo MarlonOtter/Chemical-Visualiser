@@ -239,6 +239,11 @@ WindowData InterfaceLayer::DrawMainInterface()
 			Core::Application::Get().GetLayer<AppLayer>()->SetChemical(chemicalInp);
 		}
 
+		if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal))
+		{
+			ImGui::SetTooltip("Search");
+		}
+
 		if (m_AutoCompleteOptions.size() > 0)
 		{
 			static int selected = 0;
@@ -291,22 +296,19 @@ WindowData InterfaceLayer::DrawSettings()
 		bool SettingsChanged = settings.HasChanged();
 		if (!SettingsChanged) ImGui::BeginDisabled();
 		
-		if (ImGui::Button("Save"))
-		{
-			std::cout << "Saving Settings To Disk\n";
-			settings.Save();
-		}
+		if (ImGui::Button("Save")) settings.Save();
+
 		ImGui::SameLine();
-		if (ImGui::Button("Undo")) settings.QueueRevert();
 		
+		if (ImGui::Button("Undo")) settings.QueueRevert();
+		if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal)) ImGui::SetTooltip("Reset To Last Saved Values");
+
 		if (!SettingsChanged) ImGui::EndDisabled();
 
 		ImGui::SameLine();
-		if (ImGui::Button("Reset"))
-		{
-			std::cout << "Resetting Settings To Default\n";
-			settings.Reset();
-		}
+		
+		if (ImGui::Button("Reset")) settings.Reset();
+		if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal)) ImGui::SetTooltip("Reset Values To Defaults");
 
 		ImGuiIO& io = ImGui::GetIO();
 
@@ -315,15 +317,15 @@ WindowData InterfaceLayer::DrawSettings()
 			if (ImGui::BeginTabItem("\xef\x83\x89 General ##SettingTab")) // Bars
 			{
 				// Use Bitwise OR so that all the UI is still displayed but I can detect if an entry is changed easily
-				if (
-					ImGui::SliderFloat("Font Size ##Global", &values.FontSize, 0.25f, 2.0f) |
-					ImGui::Checkbox("Dark Mode ##GlobalUI", &values.DarkMode) |
-					ImGui::SliderInt("Target Framerate ##Global", &values.TargetFPS, 15, 240) |
-					ImGui::Checkbox("Dynamic Framerate ##Global", &values.DynamicFramerate)
-					) settings.MakeChange();
-				
+				bool HasChanged = false;
+				HasChanged |= ImGui::SliderFloat("Font Size##Global", &values.FontSize, 0.25f, 2.0f);
+				HasChanged |= ImGui::Checkbox("Dark Mode##GlobalUI", &values.DarkMode);
+				HasChanged |= ImGui::SliderInt("Target Framerate##Global", &values.TargetFPS, 15, 240);
+				HasChanged |= ImGui::Checkbox("Dynamic Framerate##Global", &values.DynamicFramerate);
+				HelpTooltip("Reduces performance when the program is inactive");
 
 				// If dark mode setting has been reverted, it will also need to update any changes
+				// So I can't have this in HasChanged
 				if (m_PreviousDarkMode != values.DarkMode)
 				{
 					if (values.DarkMode)
@@ -338,6 +340,10 @@ WindowData InterfaceLayer::DrawSettings()
 				}
 				io.FontGlobalScale = values.FontSize;
 				
+				if (HasChanged)
+				{
+					settings.MakeChange();
+				}
 				
 
 				ImGui::EndTabItem();
@@ -349,20 +355,20 @@ WindowData InterfaceLayer::DrawSettings()
 					static_cast<float>(values.BackgroundColor2D[1]) / 255.0f,
 					static_cast<float>(values.BackgroundColor2D[2]) / 255.0f
 				};
-
-				if (
-					ImGui::Checkbox("Background ##2D", &values.Background2D) |
-					// Only Draw the background colour edit if background is enabled
-					(values.Background2D && ImGui::ColorEdit3("Background Color ##2D", backgroundColor, ImGuiColorEditFlags_DisplayHex)) |
-					ImGui::SliderFloat("Atom Size ##2D", &values.AtomScale2D, 0.01f, 2.0f) |
-					ImGui::SliderFloat("Hydrogen Scale ##2D", &values.HydrogenScale2D, 0.01f, 1.0f) |
-					ImGui::SliderFloat("Bond Width ##2D", &values.BondWidth2D, 0.01f, 2.0f) |
-					ImGui::SliderFloat("Bond Seperation ##2D", &values.BondSeperation2D, 0.01f, 2.0f) |
-					ImGui::DragInt("World Scale ##2D", &values.WorldScale2D) |
-					ImGui::Checkbox("Show Element Symbol ##2D", &values.ShowElementLabels) |
-					ImGui::SliderFloat("Label Scale ##2D", &values.LabelScale, 0.01f, 0.5f) |
-					ImGui::SliderFloat("Camera Smoothing ##2D", &values.CameraSmoothing2D, 0.0f, 1.0f)
-					)
+				bool HasChanged = false;
+				HasChanged |= ImGui::Checkbox("Background ##2D", &values.Background2D);
+				HelpTooltip("Toggle Background Transparency For 2D View");
+				// Only Draw the background colour edit if background is enabled
+				HasChanged |= (values.Background2D && ImGui::ColorEdit3("Background Color ##2D", backgroundColor, ImGuiColorEditFlags_DisplayHex));
+				HasChanged |= ImGui::SliderFloat("Atom Size ##2D", &values.AtomScale2D, 0.01f, 2.0f);
+				HasChanged |= ImGui::SliderFloat("Hydrogen Scale ##2D", &values.HydrogenScale2D, 0.01f, 1.0f);
+				HasChanged |= ImGui::SliderFloat("Bond Width ##2D", &values.BondWidth2D, 0.01f, 2.0f);
+				HasChanged |= ImGui::SliderFloat("Bond Seperation ##2D", &values.BondSeperation2D, 0.01f, 2.0f);
+				HasChanged |= ImGui::DragInt("World Scale ##2D", &values.WorldScale2D);
+				HasChanged |= ImGui::Checkbox("Show Element Symbol ##2D", &values.ShowElementLabels);
+				HasChanged |= ImGui::SliderFloat("Label Scale ##2D", &values.LabelScale, 0.01f, 0.5f);
+				HasChanged |= ImGui::SliderFloat("Camera Smoothing ##2D", &values.CameraSmoothing2D, 0.0f, 1.0f);
+				if (HasChanged)
 				{
 					settings.MakeChange();
 					values.BackgroundColor2D = {
@@ -380,20 +386,21 @@ WindowData InterfaceLayer::DrawSettings()
 					static_cast<float>(values.BackgroundColor3D[1]) / 255.0f,
 					static_cast<float>(values.BackgroundColor3D[2]) / 255.0f
 				};
+				bool HasChanged = false;
+				HasChanged |= ImGui::Checkbox("Background ##3D", &values.Background3D);
+				HelpTooltip("Toggle Background Transparency For 3D View");
+				// Only Draw the background colour edit if background is enabled
+				HasChanged |= (values.Background3D && ImGui::ColorEdit3("Background Color ##3D", backgroundColor, ImGuiColorEditFlags_DisplayHex));
+				HasChanged |= ImGui::SliderFloat("Atom Size ##3D", &(values.AtomScale3D), 0.01f, 2.0f);
+				HasChanged |= ImGui::SliderFloat("Hydrogen Scale ##3D", &(values.HydrogenScale3D), 0.01, 1.0);
+				HasChanged |= ImGui::SliderFloat("Bond Radius ##3D", &(values.BondRadius3D), 0.01f, 2.0f);
+				HasChanged |= ImGui::SliderFloat("Bond Detail ##3D", &(values.BondDetail3D), 0.0f, 2.0f);
+				HasChanged |= ImGui::SliderFloat("Bond Seperation ##3D", &(values.BondSeperation3D), 0.01f, 2.0f);
+				HasChanged |= ImGui::SliderFloat("Look Sensitivity ##3D", &(values.LookSensitivity3D), 0.0f, 3.0f);
+				HasChanged |= ImGui::SliderFloat("Pan Sensitivity ##3D", &(values.PanSensitivity3D), 0.01f, 2.0f);
+				HasChanged |= ImGui::SliderFloat("Camera Smoothing ##3D", &(values.CameraSmoothing3D), 0.0f, 1.0f);
 
-				if (
-					ImGui::Checkbox("Background ##3D", &values.Background3D) |
-					// Only Draw the background colour edit if background is enabled
-					(values.Background3D && ImGui::ColorEdit3("Background Color ##3D", backgroundColor, ImGuiColorEditFlags_DisplayHex)) |
-					ImGui::SliderFloat("Atom Size ##3D", &(values.AtomScale3D), 0.01f, 2.0f) |
-					ImGui::SliderFloat("Hydrogen Scale ##3D", &(values.HydrogenScale3D), 0.01, 1.0) |
-					ImGui::SliderFloat("Bond Radius ##3D", &(values.BondRadius3D), 0.01f, 2.0f) |
-					ImGui::SliderFloat("Bond Detail ##3D", &(values.BondDetail3D), 0.0f, 2.0f) |
-					ImGui::SliderFloat("Bond Seperation ##3D", &(values.BondSeperation3D), 0.01f, 2.0f) |
-					ImGui::SliderFloat("Look Sensitivity ##3D", &(values.LookSensitivity3D), 0.0f, 3.0f) |
-					ImGui::SliderFloat("Pan Sensitivity ##3D", &(values.PanSensitivity3D), 0.01f, 2.0f) |
-					ImGui::SliderFloat("Camera Smoothing ##3D", &(values.CameraSmoothing3D), 0.0f, 1.0f)
-					) 
+				if (HasChanged) 
 				{
 					settings.MakeChange();
 					values.BackgroundColor3D = {
@@ -407,6 +414,7 @@ WindowData InterfaceLayer::DrawSettings()
 			
 			if (ImGui::BeginTabItem("Element Colours ##SettingTab"))
 			{
+				HelpTooltip("Change the colour that different elements display", false);
 				for (size_t i = 0; i < 118; i++)
 				{
 					size_t index = i * 3;
@@ -416,8 +424,10 @@ WindowData InterfaceLayer::DrawSettings()
 						Core::Uint8ToFloat(values.ElementColors[index + 2]),
 					};
 
-					std::string label = ChemVis::Chemical::GetAtomSymbol(i+1);
-					if (ImGui::ColorEdit3(label.c_str(), colour))
+					std::string label = ChemVis::Chemical::GetAtomSymbol(i + 1);
+					bool HasChanged = false;
+					HasChanged |= ImGui::ColorEdit3(label.c_str(), colour);
+					if (HasChanged)
 					{
 						settings.MakeChange();
 						values.ElementColors[index] = Core::FloatToUint8(colour[0]);
@@ -429,7 +439,6 @@ WindowData InterfaceLayer::DrawSettings()
 
 				ImGui::EndTabItem();
 			}
-
 			ImGui::EndTabBar();
 		}
 	}
@@ -556,3 +565,12 @@ void InterfaceLayer::SetDarkStyle()
 	colors[ImGuiCol_NavCursor] = ImVec4(0.60f, 0.60f, 0.60f, 1.00f);
 }
 
+void InterfaceLayer::HelpTooltip(std::string msg, bool SameLine)
+{
+	if (SameLine) ImGui::SameLine();
+	ImGui::TextDisabled("(?)");
+	if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayShort))
+	{
+		ImGui::SetTooltip(msg.c_str());
+	}
+}
