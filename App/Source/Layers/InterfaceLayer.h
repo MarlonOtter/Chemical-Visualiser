@@ -59,4 +59,6 @@ private:
 	WindowData DrawView3D();
 	WindowData DrawMainInterface();
 	WindowData DrawSettings();
+
+	void HelpTooltip(std::string msg, bool SameLine = true);
 };
