@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <map>
 #include <memory>
 
 #include "Core/Layer.h"
@@ -21,12 +22,15 @@ public:
 	virtual void OnEvent(Core::Event& event) override;
 
 	bool IsCacheEmpty() const { return m_CacheEmpty; }
+	std::map<std::string, int>& GetCache() { return m_CacheSnapshot; }
+	void UpdateCacheSnapshot();
 
 	void SetChemical(std::string chemical);
 	Settings& GetSettings() { return m_Settings; }
 
 	void RequestNewAutoComplete(std::string input) { m_AutoCompleteInput = input; }
-	void QueueDeleteCachedChemicals() { m_DeleteCachedChemicals = true; }
+	void QueueDeleteAllCachedChemicals() { m_DeleteAllCachedChemicals = true; }
+	void QueueDeleteCachedChemical(int cid);
 private:
 	void HandleChemicalStructure();
 	void HandleAutoComplete();
@@ -42,8 +46,11 @@ private:
 	std::future<std::vector<std::string>> m_AutoCompleteFuture;
 	bool m_AutoCompleteRequestActive = false;
 
-	bool m_DeleteCachedChemicals = false;
+	bool m_DeleteAllCachedChemicals = false;
+	std::vector<int> m_DeleteQueue;
+
 	bool m_CacheEmpty = true;
+	std::map<std::string, int> m_CacheSnapshot;
 
 	std::unique_ptr<ChemVis::FetchThread> m_FetchThread;
 	Settings m_Settings;

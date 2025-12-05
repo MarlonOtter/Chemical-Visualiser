@@ -28,10 +28,15 @@ AppLayer::~AppLayer()
 
 void AppLayer::Update(float ts)
 {
-	if (m_DeleteCachedChemicals)
+	if (m_DeleteAllCachedChemicals)
 	{
-		m_FetchThread.get()->RequestDeleteCache();
-		m_DeleteCachedChemicals = false;
+		m_FetchThread.get()->RequestDeleteCacheAll();
+		m_DeleteAllCachedChemicals = false;
+	}
+	if (m_DeleteQueue.size() > 0)
+	{
+		m_FetchThread.get()->RequestDeleteCache(m_DeleteQueue);
+		m_DeleteQueue.clear();
 	}
 
 	if (m_Settings.isSaveQueued())
@@ -65,6 +70,16 @@ void AppLayer::OnComposite()
 void AppLayer::OnEvent(Core::Event& event)
 {
 	
+}
+
+void AppLayer::UpdateCacheSnapshot()
+{
+	m_CacheSnapshot = m_FetchThread.get()->GetCachedListSnapshot();
+}
+
+void AppLayer::QueueDeleteCachedChemical(int cid)
+{
+	m_DeleteQueue.push_back(cid);
 }
 
 void AppLayer::HandleChemicalStructure()
