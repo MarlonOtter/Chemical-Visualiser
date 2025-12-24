@@ -1,9 +1,11 @@
 #include "View2DLayer.h"
 
 #include "View3DLayer.h"
+#include "AppLayer.h"
 #include "Core/Renderer/Text.h"
 #include "Core/Renderer/Shape.h"
 #include "Core/Renderer/Model.h"
+#include "Core/Math/Math.h"
 
 #include "raylib.h"
 
@@ -15,7 +17,15 @@ View2DLayer::View2DLayer()
 
 View2DLayer::View2DLayer(std::shared_ptr<ChemVis::Chemical> chem) : m_Chemical(chem)
 {
-	ResetCamera();
+	auto& values = Core::Application::Get().GetLayer<AppLayer>()->GetSettings().Values();
+
+	auto& positions = chem.get()->GetAtoms().Positions2D;
+	Vector2 center = {
+		Core::Math::Mean(positions.x) * values.WorldScale2D,
+		Core::Math::Mean(positions.y)* values.WorldScale2D
+	};
+
+	ResetCamera(center);
 }
 
 View2DLayer::~View2DLayer()
@@ -59,10 +69,13 @@ void View2DLayer::Update(float ts)
 
 void View2DLayer::OnRender()
 {
-	if (m_WindowData.closed) return;
+	if ((m_WindowData.closed || (!m_WindowData.focused && !m_WindowData.hovered)) && !m_ForceRender) return;
+	m_ForceRender = false;
+
+	auto& values = Core::Application::Get().GetLayer<AppLayer>()->GetSettings().Values();
 
 	BeginTextureMode(m_Target);
-	ClearBackground(m_ClearColor);
+	ClearBackground(Core::Color(values.BackgroundColor2D[0], values.BackgroundColor2D[1], values.BackgroundColor2D[2], values.Background2D ? 255 : 0));
 	BeginMode2D(m_Camera);
 
 	if (m_Chemical) {
@@ -85,32 +98,32 @@ void View2DLayer::OnRender()
 			
 			for (int j = 0; j < bondOrder; j++)
 			{
-				Vector2 offset = Perpendicular * ((m_BondSeperation * DefaultBondSeperation) * j - ((m_BondSeperation * DefaultBondSeperation) * (bondOrder - 1) / 2));
+				Vector2 offset = Perpendicular * ((values.BondSeperation2D * DefaultBondSeperation) * j - ((values.BondSeperation2D * DefaultBondSeperation) * (bondOrder - 1) / 2));
 
 				Core::Shape::Line::DrawEx(
-					(StartPos + offset) * m_WorldScale,
-					(EndPos + offset) * m_WorldScale,
-					m_BondWidth * DefaultBondWidth * static_cast<float>(m_WorldScale),
+					(StartPos + offset) * values.WorldScale2D,
+					(EndPos + offset) * values.WorldScale2D,
+					values.BondWidth2D * DefaultBondWidth * static_cast<float>(values.WorldScale2D),
 					Core::RAYWHITE
 				);
 			}
 		}
 
 		// ATOMS
-		const float DefaultAtomSize = 0.25f;
+		const float DefaultAtomScale = 0.25f;
 		for (size_t i = 0; i < atoms.Types.size(); i++)
 		{
-			int posX = atoms.Positions2D.x[i] * m_WorldScale;
-			int posY = atoms.Positions2D.y[i] * m_WorldScale;
+			int posX = atoms.Positions2D.x[i] * values.WorldScale2D;
+			int posY = atoms.Positions2D.y[i] * values.WorldScale2D;
 
 			Core::Shape::Circle::Draw(
 				posX, posY,
-				m_AtomSize * DefaultAtomSize * static_cast<float>(m_WorldScale) * (atoms.Types[i] == 1 ? m_HydrogenScale : 1),
-				ChemVis::GetAtomColor(atoms.Types[i]));
-			if (m_ShowElementSymbol)
+				values.AtomScale2D * DefaultAtomScale * static_cast<float>(values.WorldScale2D) * (atoms.Types[i] == 1 ? values.HydrogenScale2D : 1),
+				ChemVis::Chemical::GetAtomColor(atoms.Types[i]));
+			if (values.ShowElementLabels)
 			{
-				std::string Symbol = ChemVis::GetAtomSymbol(atoms.Types[i]);
-				int FontSize = 0.2 * m_WorldScale;
+				std::string Symbol = ChemVis::Chemical::GetAtomSymbol(atoms.Types[i]);
+				int FontSize = values.LabelScale * values.WorldScale2D;
 				Core::Text::Draw(Symbol.c_str(), posX-Core::Text::Measure(Symbol, FontSize)/2, posY-FontSize/2, FontSize, Core::BLACK);
 			}
 		}
@@ -126,14 +139,19 @@ void View2DLayer::OnComposite()
 
 void View2DLayer::HandleCameraMovement(float ts, Vector2 windowSize)
 {
+	auto& values = Core::Application::Get().GetLayer<AppLayer>()->GetSettings().Values();
+	m_Camera.target = Core::Math::Lerp(m_Camera.target, m_TargetPosition, 0.01f + ts * 30.0f * (1.0f-values.CameraSmoothing2D));
+
 	if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
 	{
-		m_Camera.target.x += -GetMouseDelta().x / m_Camera.zoom;
-		m_Camera.target.y += -GetMouseDelta().y / m_Camera.zoom;
+		m_TargetPosition.x += -GetMouseDelta().x / m_Camera.zoom;
+		m_TargetPosition.y += -GetMouseDelta().y / m_Camera.zoom;
 	}
 
+	m_Camera.zoom = Core::Math::Lerp(m_Camera.zoom, m_CameraZoom, 0.01f + ts * 7.5f * (1.0f-values.CameraSmoothing2D));
+
 	float scroll = Clamp(GetMouseWheelMove(), -1.0f, 1.0f) * 0.1f + 1.0f;
-	m_Camera.zoom *= scroll;
+	m_CameraZoom *= scroll;
 }
 
 void View2DLayer::SetupRenderTexture()
@@ -142,12 +160,16 @@ void View2DLayer::SetupRenderTexture()
 	int h = std::fmax(m_WindowData.height, 10);
 	m_Target = LoadRenderTexture(w, h);
 	SetTextureFilter(m_Target.texture, TEXTURE_FILTER_BILINEAR);
+	m_ForceRender = true;
 }
 
-void View2DLayer::ResetCamera()
+void View2DLayer::ResetCamera(Vector2 Target)
 {
 	m_Camera = {};
-	m_Camera.zoom = 100 / static_cast<float>(m_WorldScale);
+	m_CameraZoom = 100 / static_cast<float>(Core::Application::Get().GetLayer<AppLayer>()->GetSettings().Values().WorldScale2D);
+	m_Camera.zoom = m_CameraZoom;
 	m_Camera.rotation = 0.0f;
-	m_Camera.target = { 0,0 };
+
+	m_Camera.target = Target;
+	m_TargetPosition = Target;
 }

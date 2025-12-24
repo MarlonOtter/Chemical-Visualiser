@@ -11,3 +11,5 @@ Chemical Visualiser/imgui.ini
 /build
 /.vs
 /out
+App/app_icon.aps
+/enc_temp_folder

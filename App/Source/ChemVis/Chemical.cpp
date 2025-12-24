@@ -1,10 +1,132 @@
 #include "Chemical.h"
 #include <iostream>
 #include "raymath.h"
-
+#include "Core/Application.h"
+#include "../Layers/AppLayer.h"
 
 namespace ChemVis 
 {
+	std::vector<std::string> Chemical::s_ElementSymbols = {
+		"H",
+		"He",
+		"Li",
+		"Be",
+		"B",
+		"C",
+		"N",
+		"O",
+		"F",
+		"Ne",
+		"Na",
+		"Mg",
+		"Al",
+		"Si",
+		"P",
+		"S",
+		"Cl",
+		"Ar",
+		"K",
+		"Ca",
+		"Sc",
+		"Ti",
+		"V",
+		"Cr",
+		"Mn",
+		"Fe",
+		"Co",
+		"Ni",
+		"Cu",
+		"Zn",
+		"Ga",
+		"Ge",
+		"As",
+		"Se",
+		"Br",
+		"Kr",
+		"Rb",
+		"Sr",
+		"Y",
+		"Zr",
+		"Nb",
+		"Mo",
+		"Tc",
+		"Ru",
+		"Rh",
+		"Pd",
+		"Ag",
+		"Cd",
+		"In",
+		"Sn",
+		"Sb",
+		"Te",
+		"I",
+		"Xe",
+		"Cs",
+		"Ba",
+		"La",
+		"Ce",
+		"Pr",
+		"Nd",
+		"Pm",
+		"Sm",
+		"Eu",
+		"Gd",
+		"Tb",
+		"Dy",
+		"Ho",
+		"Er",
+		"Tm",
+		"Yb",
+		"Lu",
+		"Hf",
+		"Ta",
+		"W",
+		"Re",
+		"Os",
+		"Ir",
+		"Pt",
+		"Au",
+		"Hg",
+		"Tl",
+		"Pb",
+		"Bi",
+		"Po",
+		"At",
+		"Rn",
+		"Fr",
+		"Ra",
+		"Ac",
+		"Th",
+		"Pa",
+		"U",
+		"Np",
+		"Pu",
+		"Am",
+		"Cm",
+		"Bk",
+		"Cf",
+		"Es",
+		"Fm",
+		"Md",
+		"No",
+		"Lr",
+		"Rf",
+		"Db",
+		"Sg",
+		"Bh",
+		"Hs",
+		"Mt",
+		"Ds",
+		"Rg",
+		"Cn",
+		"Nh",
+		"Fl",
+		"Mc",
+		"Lv",
+		"Ts",
+		"Og",
+	};
+
 	Chemical::Chemical()
 	{
 	}
@@ -148,46 +270,31 @@ namespace ChemVis
 		return chemicalInfo;
 	}
 
-	Core::Color GetAtomColor(int type)
+	Core::Color Chemical::GetAtomColor(int type)
 	{
-		switch (type)
-		{
-		case 1: {
-			return Core::WHITE;
-		}
-		case 6: {
-			return Core::GRAY;
-		}
-		case 7: {
-			return Core::BLUE;
-		}
-		case 8: {
-			return Core::RED;
-		}
-		default: {
-			return Core::PINK;
-		}
-		}
+		auto elementColours = Core::Application::Get().GetLayer<AppLayer>()->GetSettings().Values().ElementColors;
+		const Core::Color ERROR_COLOR = { 0, 0, 0, 255 };
+		if (type < 1) return ERROR_COLOR;
+		if (type > elementColours.size()) return ERROR_COLOR;
+		unsigned int index = (type - 1) * 3;
+		return Core::Color{
+			elementColours[index],
+			elementColours[index + 1],
+			elementColours[index + 2],
+			255
+		};
+	}
+
+	void Chemical::SetElementSymbols(std::vector<std::string> symbols)
+	{
+		s_ElementSymbols = symbols;
 	}
 
 	//TODO Replace with an API call to get the periodic table with all of its data (it can then be stored)
-	std::string GetAtomSymbol(int type) {
-		switch (type)
-		{
-		case 1: {
-			return "H";
-		}
-		case 6: {
-			return "C";
-		}
-		case 7: {
-			return "N";
-		}
-		case 8: {
-			return "O";
-		}
-		}
-		return "N/a";
+	std::string Chemical::GetAtomSymbol(int type) {
+		if (type < 1) return "";
+		if (type > s_ElementSymbols.size()) return "";
+		return s_ElementSymbols[type - 1];
 	}
 
 	std::string Merge2Dand3D(std::string data2D, std::string data3D)

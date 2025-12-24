@@ -30,7 +30,7 @@ InterfaceLayer::InterfaceLayer()
 	ImGuiIO& io = ImGui::GetIO();
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 	io.ConfigWindowsMoveFromTitleBarOnly = true;
-	SetStyle();
+	SetDarkStyle();
 }
 
 InterfaceLayer::~InterfaceLayer()
@@ -47,48 +47,103 @@ void InterfaceLayer::OnComposite()
 {
 	rlImGuiBegin();
 
+	DrawMenuBar();
+
 	DrawDockSpace();
 	window2D = DrawView2D();
 	window3D = DrawView3D();
 	DrawMainInterface();
-	DrawSettings();
+	if (m_ShowSettings) DrawSettings();
+	if (m_ShowCacheList) DrawCacheList();
 
 	if (m_ShowDemo)
 	{
-		ImGui::ShowDemoWindow();
+		ImGui::ShowDemoWindow(&m_ShowDemo);
 	}
 
 	rlImGuiEnd();
 
-	Core::Application& app = Core::Application::Get();
+	static Core::Application& app = Core::Application::Get();
 	app.GetLayer<View2DLayer>()->setWindowData(window2D);
 	app.GetLayer<View3DLayer>()->setWindowData(window3D);
 }
 
 void InterfaceLayer::DrawDockSpace()
 {
-	ImGuiViewport* viewport = ImGui::GetMainViewport();
-	ImGui::SetNextWindowPos(viewport->WorkPos);
-	ImGui::SetNextWindowSize(viewport->WorkSize);
-	ImGui::SetNextWindowViewport(viewport->ID);
+	ImGuiViewport* Viewport = ImGui::GetMainViewport();
+	ImGui::SetNextWindowPos(Viewport->WorkPos);
+	ImGui::SetNextWindowSize(Viewport->WorkSize);
+	ImGui::SetNextWindowViewport(Viewport->ID);
 
-	ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking;
-	window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-	window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
-	window_flags |= ImGuiWindowFlags_NoBackground;
+	ImGuiWindowFlags WindowFlags = ImGuiWindowFlags_NoDocking |
+		ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
+		ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus |
+		ImGuiWindowFlags_NoBackground;
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 
-	if (ImGui::Begin("DockSpaceHost", nullptr, window_flags))
+	if (ImGui::Begin("DockSpaceHost", nullptr, WindowFlags))
 	{
 		ImGui::PopStyleVar(3);
-		ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
-		ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_PassthruCentralNode);
+		ImGuiID DockSpaceId = ImGui::GetID("MyDockSpace");
+		ImGui::DockSpace(DockSpaceId, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_PassthruCentralNode);
 	}
 
 	ImGui::End();
+}
+
+void InterfaceLayer::DrawMenuBar()
+{
+	if (ImGui::BeginMainMenuBar())
+	{
+		if (ImGui::BeginMenu("File"))
+		{
+			ImGui::BeginDisabled();
+			ImGui::MenuItem("Export"); // TODO : Implement Export Functionality
+			ImGui::MenuItem("Import"); // TODO : Implement Import Functionality
+			ImGui::EndDisabled();
+
+			if (ImGui::BeginMenu("Cache"))
+			{
+				if (ImGui::MenuItem("View", nullptr, &m_ShowCacheList) && m_ShowCacheList)
+				{
+					Core::Application::Get().GetLayer<AppLayer>()->UpdateCacheSnapshot();
+				}
+				
+				bool CacheEmpty = Core::Application::Get().GetLayer<AppLayer>()->IsCacheEmpty();
+				if (CacheEmpty) ImGui::BeginDisabled();
+				if (ImGui::MenuItem("Clear"))
+				{
+					// TODO : Confirm clear then send message to confirm that the cache has been cleared
+					Core::Application::Get().GetLayer<AppLayer>()->QueueDeleteAllCachedChemicals();
+				}
+				if (CacheEmpty) ImGui::EndDisabled();
+
+				ImGui::EndMenu();
+			}
+			ImGui::EndMenu();
+		}
+		if (ImGui::BeginMenu("Options"))
+		{
+			ImGui::MenuItem("Settings", nullptr, &m_ShowSettings);
+			ImGui::EndMenu();
+		}
+		if (ImGui::BeginMenu("Help"))
+		{
+			ImGui::BeginDisabled();
+			ImGui::MenuItem("Documentation"); // TODO : Link to online docs
+			ImGui::MenuItem("Send Feedback"); // TODO : Link to feedback form
+			ImGui::EndDisabled();
+			ImGui::MenuItem("Dear ImGui Demo", nullptr, &m_ShowDemo);
+			ImGui::BeginDisabled();
+			ImGui::MenuItem("About"); // TODO : Opens an About Window
+			ImGui::EndDisabled();
+			ImGui::EndMenu();
+		}
+		ImGui::EndMainMenuBar();
+	}
 }
 
 WindowData InterfaceLayer::DrawView2D()
@@ -162,7 +217,7 @@ WindowData InterfaceLayer::DrawMainInterface()
 		char buffer[InputBufferSize] = {};
 		std::strncpy(buffer, chemicalInp.c_str(), InputBufferSize - 1);
 
-		bool entered = ImGui::InputTextWithHint("##Chemical Input", "Caffeine", buffer, sizeof(buffer),
+		bool entered = ImGui::InputTextWithHint("##Chemical Input", "Aspirin", buffer, sizeof(buffer),
 			ImGuiInputTextFlags_EnterReturnsTrue);
 
 		if (ImGui::IsItemEdited())
@@ -188,6 +243,11 @@ WindowData InterfaceLayer::DrawMainInterface()
 			entered = false;
 			// send to app layer to fetch
 			Core::Application::Get().GetLayer<AppLayer>()->SetChemical(chemicalInp);
+		}
+
+		if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal))
+		{
+			ImGui::SetTooltip("Search");
 		}
 
 		if (m_AutoCompleteOptions.size() > 0)
@@ -224,67 +284,228 @@ WindowData InterfaceLayer::DrawMainInterface()
 	return window;
 }
 
+
 WindowData InterfaceLayer::DrawSettings()
 {
-	
-	bool open = ImGui::Begin("\xef\x80\x93 Settings "); // Gear
+	ImGuiWindowFlags window_flags = ImGuiWindowFlags_None | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDocking;
+	Settings& settings = Core::Application::Get().GetLayer<AppLayer>()->GetSettings();
+	if (settings.HasChanged())
+	{
+		window_flags |= ImGuiWindowFlags_UnsavedDocument;
+	}
+
+	bool open = ImGui::Begin("\xef\x80\x93 Settings ", &m_ShowSettings, window_flags); // Gear
 	if (open)
 	{
+		auto& values = settings.Values();
 
-		ImGui::SeparatorText("\xef\x83\x89 General"); // Bars
+		bool SettingsChanged = settings.HasChanged();
+		if (!SettingsChanged) ImGui::BeginDisabled();
+		
+		if (ImGui::Button("Save")) settings.Save();
+
+		ImGui::SameLine();
+		
+		if (ImGui::Button("Undo")) settings.QueueRevert();
+		if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal)) ImGui::SetTooltip("Reset To Last Saved Values");
+
+		if (!SettingsChanged) ImGui::EndDisabled();
+
+		ImGui::SameLine();
+		
+		if (ImGui::Button("Reset")) settings.Reset();
+		if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal)) ImGui::SetTooltip("Reset Values To Defaults");
 
 		ImGuiIO& io = ImGui::GetIO();
-		ImGui::SliderFloat("Font Size ##Global", &io.FontGlobalScale, 0.25f, 2.0f);
-		//ImGui::SliderFloat("Window Rounding"); 
-		//ImGui::SliderFloat("Widget Rounding");
-		
-		static bool StyleDark = true;
-		if (ImGui::Checkbox("Dark Mode ##GlobalUI", &StyleDark))
+
+		if (ImGui::BeginTabBar("SettingsTabs"))
 		{
-			if (StyleDark)
+			if (ImGui::BeginTabItem("\xef\x83\x89 General ##SettingTab")) // Bars
 			{
-				ImGui::StyleColorsDark();
-				SetStyle();
+				// Use Bitwise OR so that all the UI is still displayed but I can detect if an entry is changed easily
+				bool HasChanged = false;
+				HasChanged |= ImGui::SliderFloat("Font Size##Global", &values.FontSize, 0.25f, 2.0f);
+				HasChanged |= ImGui::Checkbox("Dark Mode##GlobalUI", &values.DarkMode);
+				HasChanged |= ImGui::SliderInt("Target Framerate##Global", &values.TargetFPS, 15, 240);
+				HasChanged |= ImGui::Checkbox("Dynamic Framerate##Global", &values.DynamicFramerate);
+				HelpTooltip("Reduces performance when the program is inactive");
+
+				// If dark mode setting has been reverted, it will also need to update any changes
+				// So I can't have this in HasChanged
+				if (m_PreviousDarkMode != values.DarkMode)
+				{
+					if (values.DarkMode)
+					{
+						ImGui::StyleColorsDark();
+						SetDarkStyle();
+					}
+					else {
+						ImGui::StyleColorsLight();
+					}
+					m_PreviousDarkMode = values.DarkMode;
+				}
+				io.FontGlobalScale = values.FontSize;
+				
+				if (HasChanged)
+				{
+					settings.MakeChange();
+				}
+				
+
+				ImGui::EndTabItem();
 			}
-			else {
-				ImGui::StyleColorsLight();
+			if (ImGui::BeginTabItem("\xEF\x83\x88 2D ##SettingTab")) // Square
+			{
+				float backgroundColor[3] = {
+					static_cast<float>(values.BackgroundColor2D[0]) / 255.0f,
+					static_cast<float>(values.BackgroundColor2D[1]) / 255.0f,
+					static_cast<float>(values.BackgroundColor2D[2]) / 255.0f
+				};
+				bool HasChanged = false;
+				HasChanged |= ImGui::Checkbox("Background ##2D", &values.Background2D);
+				HelpTooltip("Toggle Background Transparency For 2D View");
+				// Only Draw the background colour edit if background is enabled
+				HasChanged |= (values.Background2D && ImGui::ColorEdit3("Background Color ##2D", backgroundColor, ImGuiColorEditFlags_DisplayHex));
+				HasChanged |= ImGui::SliderFloat("Atom Size ##2D", &values.AtomScale2D, 0.01f, 2.0f);
+				HasChanged |= ImGui::SliderFloat("Hydrogen Scale ##2D", &values.HydrogenScale2D, 0.01f, 1.0f);
+				HasChanged |= ImGui::SliderFloat("Bond Width ##2D", &values.BondWidth2D, 0.01f, 2.0f);
+				HasChanged |= ImGui::SliderFloat("Bond Seperation ##2D", &values.BondSeperation2D, 0.01f, 2.0f);
+				HasChanged |= ImGui::DragInt("World Scale ##2D", &values.WorldScale2D);
+				HasChanged |= ImGui::Checkbox("Show Element Symbol ##2D", &values.ShowElementLabels);
+				HasChanged |= ImGui::SliderFloat("Label Scale ##2D", &values.LabelScale, 0.01f, 0.5f);
+				HasChanged |= ImGui::SliderFloat("Camera Smoothing ##2D", &values.CameraSmoothing2D, 0.0f, 1.0f);
+				if (HasChanged)
+				{
+					settings.MakeChange();
+					values.BackgroundColor2D = {
+						static_cast<uint8_t>(std::roundf(backgroundColor[0] * 255.0f)),
+						static_cast<uint8_t>(std::roundf(backgroundColor[1] * 255.0f)),
+						static_cast<uint8_t>(std::roundf(backgroundColor[2] * 255.0f))
+					};
+				}
+				ImGui::EndTabItem();
 			}
-		}
+			if (ImGui::BeginTabItem("\xef\x86\xb2 3D ##SettingTab")) // Cube
+			{
+				float backgroundColor[3] = { 
+					static_cast<float>(values.BackgroundColor3D[0]) / 255.0f,
+					static_cast<float>(values.BackgroundColor3D[1]) / 255.0f,
+					static_cast<float>(values.BackgroundColor3D[2]) / 255.0f
+				};
+				bool HasChanged = false;
+				HasChanged |= ImGui::Checkbox("Background ##3D", &values.Background3D);
+				HelpTooltip("Toggle Background Transparency For 3D View");
+				// Only Draw the background colour edit if background is enabled
+				HasChanged |= (values.Background3D && ImGui::ColorEdit3("Background Color ##3D", backgroundColor, ImGuiColorEditFlags_DisplayHex));
+				HasChanged |= ImGui::SliderFloat("Atom Size ##3D", &(values.AtomScale3D), 0.01f, 2.0f);
+				HasChanged |= ImGui::SliderFloat("Hydrogen Scale ##3D", &(values.HydrogenScale3D), 0.01, 1.0);
+				HasChanged |= ImGui::SliderFloat("Bond Radius ##3D", &(values.BondRadius3D), 0.01f, 2.0f);
+				HasChanged |= ImGui::SliderFloat("Bond Detail ##3D", &(values.BondDetail3D), 0.0f, 2.0f);
+				HasChanged |= ImGui::SliderFloat("Bond Seperation ##3D", &(values.BondSeperation3D), 0.01f, 2.0f);
+				HasChanged |= ImGui::SliderFloat("Look Sensitivity ##3D", &(values.LookSensitivity3D), 0.0f, 3.0f);
+				HasChanged |= ImGui::SliderFloat("Pan Sensitivity ##3D", &(values.PanSensitivity3D), 0.01f, 2.0f);
+				HasChanged |= ImGui::SliderFloat("Camera Smoothing ##3D", &(values.CameraSmoothing3D), 0.0f, 1.0f);
 
+				if (HasChanged) 
+				{
+					settings.MakeChange();
+					values.BackgroundColor3D = {
+						static_cast<uint8_t>(std::roundf(backgroundColor[0] * 255.0f)),
+						static_cast<uint8_t>(std::roundf(backgroundColor[1] * 255.0f)),
+						static_cast<uint8_t>(std::roundf(backgroundColor[2] * 255.0f))
+					};
+				}
+				ImGui::EndTabItem();
+			}
+			
+			if (ImGui::BeginTabItem("Element Colours ##SettingTab"))
+			{
+				HelpTooltip("Change the colour that different elements display", false);
+				for (size_t i = 0; i < 118; i++)
+				{
+					size_t index = i * 3;
+					float colour[3] = {
+						Core::Uint8ToFloat(values.ElementColors[index]),
+						Core::Uint8ToFloat(values.ElementColors[index + 1]),
+						Core::Uint8ToFloat(values.ElementColors[index + 2]),
+					};
 
-		ImGui::SeparatorText("\xEF\x83\x88 2D Visualiser"); // Square
+					std::string label = ChemVis::Chemical::GetAtomSymbol(i + 1);
+					bool HasChanged = false;
+					HasChanged |= ImGui::ColorEdit3(label.c_str(), colour);
+					if (HasChanged)
+					{
+						settings.MakeChange();
+						values.ElementColors[index] = Core::FloatToUint8(colour[0]);
+						values.ElementColors[index + 1] = Core::FloatToUint8(colour[1]);
+						values.ElementColors[index + 2] = Core::FloatToUint8(colour[2]);
+					}
 
-		View2DLayer* layer2D = Core::Application::Get().GetLayer<View2DLayer>();
-		ImGui::SliderFloat("Atom Size ##2D", &(layer2D->AtomSize()), 0.01f, 2.0f);
-		ImGui::SliderFloat("Hydrogen Scale ##2D", &(layer2D->HydrogenScale()), 0.01f, 1.0f);
-		ImGui::SliderFloat("Bond Width ##2D", &(layer2D->BondWidth()), 0.01f, 2.0f);
-		ImGui::SliderFloat("Bond Seperation ##2D", &(layer2D->BondSeperation()), 0.01f, 2.0f);
-		ImGui::DragInt("World Scale ##2D", &(layer2D->WorldScale()));
-		ImGui::Checkbox("Show Element Symbol ##2D", &(layer2D->ShowSymbol()));
+				}
 
-		ImGui::SeparatorText("\xef\x86\xb2 3D Visualiser"); // Cube
-
-		View3DLayer* layer3D = Core::Application::Get().GetLayer<View3DLayer>();
-		ImGui::SliderFloat("Look Sensitivity ##3D", &(layer3D->Camera().LookSensitivity()), 0.0f, 3.0f);
-		ImGui::SliderFloat("Pan Sensitivity ##3D", &(layer3D->Camera().PanSensitivity()), 0.01f, 2.0f);
-		ImGui::SliderFloat("Atom Size ##3D", &(layer3D->AtomSize()), 0.01f, 2.0f);
-		ImGui::SliderFloat("Hydrogen Scale ##3D", &(layer3D->HydrogenScale()), 0.01, 1.0);
-		ImGui::SliderFloat("Bond Radius ##3D", &(layer3D->BondRadius()), 0.01f, 2.0f);
-		ImGui::SliderFloat("Bond Detail ##3D", &(layer3D->BondDetail()), 0.0f, 2.0f);
-		ImGui::SliderFloat("Bond Seperation ##3D", &(layer3D->BondSeperation()), 0.01f, 2.0f);
-
-		ImGui::SeparatorText("\xef\x80\x93 Other"); // Gear
-
-		ImGui::Checkbox("Show Demo", &m_ShowDemo);
-
-		if (ImGui::Button("\xef\x87\xb8 Clear Cached Chemicals")) // Trash
-		{
-			Core::Application::Get().GetLayer<AppLayer>()->QueueDeleteCachedChemicals();
+				ImGui::EndTabItem();
+			}
+			ImGui::EndTabBar();
 		}
 	}
+
 	WindowData window = getWindowData(!open);
 	ImGui::End();
 	return window;
+}
+
+WindowData InterfaceLayer::DrawCacheList() 
+{
+	if (ImGui::Begin("\xef\x80\xba Cache", &m_ShowCacheList, ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoCollapse)) // List
+	{
+		Core::Application::Get().GetLayer<AppLayer>()->UpdateCacheSnapshot();
+		auto cache = Core::Application::Get().GetLayer<AppLayer>()->GetCache();
+
+		ImGuiTableFlags flags = ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_BordersV | ImGuiTableFlags_SizingStretchProp;
+		if (!cache.empty() && ImGui::BeginTable("CacheList", 3, flags))
+		{
+			ImGui::TableSetupColumn("CID");
+			ImGui::TableSetupColumn("Name");
+			ImGui::TableSetupColumn("");
+			ImGui::TableHeadersRow();
+
+			AppLayer* appLayer = Core::Application::Get().GetLayer<AppLayer>();
+			for (const auto& [Name, Cid] : cache)
+			{
+				ImGui::TableNextRow();
+				
+				ImGui::TableNextColumn();
+				ImGui::Text(std::to_string(Cid).c_str());
+				ImGui::TableNextColumn();
+				ImGui::Text(Name.c_str());
+				ImGui::TableNextColumn();
+				
+				if (ImGui::Button((std::string("\xef\x8b\xad##Delete") + Name).c_str())) // Trash can
+				{
+					appLayer->QueueDeleteCachedChemical(Cid);
+				}
+				if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayShort))
+				{
+					ImGui::SetTooltip("Delete Chemical");
+				}
+
+				ImGui::SameLine();
+				
+				if (ImGui::Button((std::string("\xef\x82\x8e##Display") + Name).c_str())) //Arrow Up right from square
+				{
+					appLayer->SetChemical(Name);
+				}
+				if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayShort))
+				{
+					ImGui::SetTooltip("Display Chemical");
+				}
+			}
+			ImGui::EndTable();
+		}
+		
+	}
+	ImGui::End();
+	return getWindowData(m_ShowCacheList, false);
 }
 
 void InterfaceLayer::OnEvent(Core::Event& event)
@@ -310,7 +531,7 @@ void InterfaceLayer::PushError(std::string error)
 	return;
 }
 
-void InterfaceLayer::SetStyle()
+void InterfaceLayer::SetDarkStyle()
 {
 	// Set style values (font DPI scaling and rounding)
 	ImGuiStyle& style = ImGui::GetStyle();
@@ -350,3 +571,12 @@ void InterfaceLayer::SetStyle()
 	colors[ImGuiCol_NavCursor] = ImVec4(0.60f, 0.60f, 0.60f, 1.00f);
 }
 
+void InterfaceLayer::HelpTooltip(std::string msg, bool SameLine)
+{
+	if (SameLine) ImGui::SameLine();
+	ImGui::TextDisabled("(?)");
+	if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayShort))
+	{
+		ImGui::SetTooltip(msg.c_str());
+	}
+}

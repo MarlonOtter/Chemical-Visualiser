@@ -13,6 +13,7 @@ int main()
 	appSpec.WindowSpec.Height = 9 * 100;
 	appSpec.WindowSpec.IsResizeable = true;
 	appSpec.WindowSpec.VSync = true;
+	appSpec.WindowSpec.IconPath = "icon.png";
 
 	Core::Application app(appSpec);
 

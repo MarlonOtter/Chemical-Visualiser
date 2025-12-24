@@ -44,15 +44,23 @@ private:
 	bool m_MadeRequest = false;
 
 	bool m_ShowDemo = false;
+	bool m_ShowSettings = false;
+	bool m_ShowCacheList = false;
 
+	bool m_PreviousDarkMode = true;
 
 	WindowData getWindowData(bool closed, bool dockChange = false);
 
-	void SetStyle();
+	void SetDarkStyle();
 	
 	void DrawDockSpace();
+
+	void DrawMenuBar();
 	WindowData DrawView2D();
 	WindowData DrawView3D();
 	WindowData DrawMainInterface();
 	WindowData DrawSettings();
+	WindowData DrawCacheList();
+
+	void HelpTooltip(std::string msg, bool SameLine = true);
 };

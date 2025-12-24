@@ -28,38 +28,34 @@ AppLayer::~AppLayer()
 
 void AppLayer::Update(float ts)
 {
-	if (m_DeleteCachedChemicals)
+	if (m_DeleteAllCachedChemicals)
 	{
-		m_FetchThread.get()->RequestDeleteCache();
-		m_DeleteCachedChemicals = false;
+		m_FetchThread.get()->RequestDeleteCacheAll();
+		m_DeleteAllCachedChemicals = false;
 	}
+	if (m_DeleteQueue.size() > 0)
+	{
+		m_FetchThread.get()->RequestDeleteCache(m_DeleteQueue);
+		m_DeleteQueue.clear();
+	}
+
+	if (m_Settings.isSaveQueued())
+	{
+		m_Settings.SaveToDisk();
+	}
+	if (m_Settings.isRevertQueued())
+	{
+		m_Settings.Revert();
+	}
+
+	m_CacheEmpty = m_FetchThread.get()->GetCachedChemicalCount() == 0;
 
 	HandleChemicalStructure();
 	HandleAutoComplete();
-
-	static int target = 60;
-	static int maxFrameDelay = 10;
-	static int frameDelay = maxFrameDelay;
 	
-	if (Core::anyInputs()) 
-	{
-		// reduce framerate after a short delay
-		if (target != 10 && frameDelay <= 0) {
-			frameDelay = maxFrameDelay;
-			target = 10;
-			SetTargetFPS(target);
-		}
-		frameDelay--;
-	}
-	else
-	{
-		// if any input go back up to 60FPS 
-		frameDelay = maxFrameDelay;
-		if (target != 60) {
-			target = 60;
-			SetTargetFPS(target);
-		}
-	}
+	ManageFramerate(ts);
+
+	Core::Application::Get().GetLayer<View3DLayer>()->Camera().SetSmoothingRate(m_Settings.Values().CameraSmoothing3D);
 }
 
 void AppLayer::OnComposite()
@@ -74,6 +70,16 @@ void AppLayer::OnComposite()
 void AppLayer::OnEvent(Core::Event& event)
 {
 	
+}
+
+void AppLayer::UpdateCacheSnapshot()
+{
+	m_CacheSnapshot = m_FetchThread.get()->GetCachedListSnapshot();
+}
+
+void AppLayer::QueueDeleteCachedChemical(int cid)
+{
+	m_DeleteQueue.push_back(cid);
 }
 
 void AppLayer::HandleChemicalStructure()
@@ -131,4 +137,51 @@ void AppLayer::SetChemical(std::string chemical)
 {
 	m_Chemical = std::move(chemical);
 	m_ChemicalRecieved = true;
+}
+
+void AppLayer::ManageFramerate(float ts)
+{
+	static bool targetMax = true;
+	static int currentMaxFPS = m_Settings.Values().TargetFPS;
+
+	const float maxFrameDelay = 0.5f;
+	static float frameDelay = maxFrameDelay;
+
+	const int maxTarget = m_Settings.Values().TargetFPS;
+	const int minTarget = 10;
+
+	if (currentMaxFPS != m_Settings.Values().TargetFPS)
+	{
+		currentMaxFPS = m_Settings.Values().TargetFPS;
+		if (targetMax) {
+			SetTargetFPS(currentMaxFPS);
+		}
+	}
+
+	if (m_Settings.Values().DynamicFramerate == false)
+	{
+		targetMax = true;
+		return;
+	}
+
+	if (Core::anyInputs())
+	{
+		// reduce framerate after a short delay
+		if (targetMax && frameDelay <= 0) {
+			frameDelay = maxFrameDelay;
+			targetMax = false;
+			SetTargetFPS(minTarget);
+		}
+		frameDelay -= ts;
+	}
+	else
+	{
+		// if any input go back up to max FPS 
+		frameDelay = maxFrameDelay;
+		if (!targetMax) {
+			targetMax = true;
+			SetTargetFPS(maxTarget);
+			currentMaxFPS = maxTarget;
+		}
+	}
 }

@@ -24,12 +24,12 @@ namespace ChemVis
 		// create a file and stash m_Chemicals map
 	}
 
-	bool ChemicalList::IsStored(std::string Identifier)
+	bool ChemicalList::IsStored(std::string Identifier) const
 	{
 		return m_Chemicals.contains(Normalize(Identifier));
 	}
 
-	bool ChemicalList::IsStored(int Cid)
+	bool ChemicalList::IsStored(int Cid) const
 	{
 		for (const auto& [key, value] : m_Chemicals) {
 			if (value == Cid) {
@@ -70,6 +70,7 @@ namespace ChemVis
 		}
 		if (!ReadComplete) {
 			if (!WriteFile(FilePath, FormatForFile(Identifier, Cid, Data))) return;
+			m_Size++;
 		}
 		m_Chemicals[Normalize(Identifier)] = Cid;
 	}
@@ -121,7 +122,27 @@ namespace ChemVis
 				std::filesystem::remove(entry.path());
 			}
 		}
+		m_Size = 0;
 		m_Chemicals.clear();
+	}
+
+	void ChemicalList::Delete(int Cid)
+	{
+		if (!FolderExists() || std::filesystem::is_empty(m_FileDirectory)) return;
+		std::string FilePath = m_FileDirectory + "/" + FileName(Cid);
+		if (!FileExists(FilePath, false)) return;
+
+		std::cout << "Removing File: " << FilePath << "\n";
+		std::filesystem::remove(FilePath);
+
+		for (auto it = m_Chemicals.begin(); it != m_Chemicals.end(); ) {
+			if (it->second == Cid) {
+				it = m_Chemicals.erase(it);
+			}
+			else {
+				++it;
+			}
+		}
 	}
 
 	void ChemicalList::TrackStoredData()
@@ -139,6 +160,7 @@ namespace ChemVis
 
 					std::vector<std::string> identifiers = json["identifiers"].get<std::vector<std::string>>();
 					int cid = json["cid"].get<int>();
+					m_Size++;
 
 					for (std::string id : identifiers)
 					{

@@ -1,8 +1,10 @@
 #include "View3DLayer.h"
 
 #include "View2DLayer.h"
+#include "AppLayer.h"
 #include "Core/Renderer/Model.h"
 #include "Core/Renderer/Text.h"
+#include "Core/Math/Math.h"
 
 View3DLayer::View3DLayer() {
 	ResetCamera();
@@ -10,7 +12,15 @@ View3DLayer::View3DLayer() {
 
 View3DLayer::View3DLayer(std::shared_ptr<ChemVis::Chemical> chem) : m_Chemical(chem)
 {
-	ResetCamera();
+	auto& positions = chem.get()->GetAtoms().Positions3D;
+	Vector3 center =
+	{
+		Core::Math::Mean(positions.x),
+		Core::Math::Mean(positions.y),
+		Core::Math::Mean(positions.z)
+	};
+
+	ResetCamera(center);
 }
 
 View3DLayer::~View3DLayer()
@@ -57,10 +67,15 @@ void View3DLayer::Update(float ts)
 
 void View3DLayer::OnRender()
 {
-	if (m_WindowData.closed) return;
+	if ((m_WindowData.closed || (!m_WindowData.focused && !m_WindowData.hovered)) && !m_ForceRender) return;
+	m_ForceRender = false;
+
+	auto values = Core::Application::Get().GetLayer<AppLayer>()->GetSettings().Values();
+	m_Camera.LookSensitivity() = values.LookSensitivity3D;
+	m_Camera.PanSensitivity() = values.PanSensitivity3D;
 
 	BeginTextureMode(m_Target);
-	ClearBackground(m_ClearColor);
+	ClearBackground(Core::Color(values.BackgroundColor3D[0], values.BackgroundColor3D[1], values.BackgroundColor3D[2], values.Background3D ? 255 : 0));
 	BeginMode3D(m_Camera.GetHandler());
 
 	if (m_Chemical) {
@@ -74,8 +89,8 @@ void View3DLayer::OnRender()
 			{
 				Core::Model::Sphere::Draw(
 					atoms.Positions3D.x[i], atoms.Positions3D.y[i], atoms.Positions3D.z[i],
-					m_AtomSize * DefaultAtomSize * (atoms.Types[i] == 1 ? m_HydrogenScale : 1),
-					ChemVis::GetAtomColor(atoms.Types[i]));
+					values.AtomScale3D * DefaultAtomSize * (atoms.Types[i] == 1 ? values.HydrogenScale3D : 1),
+					ChemVis::Chemical::GetAtomColor(atoms.Types[i]));
 			}
 
 			// BONDS
@@ -96,14 +111,14 @@ void View3DLayer::OnRender()
 
 				for (size_t j = 0; j < bondOrder; j++)
 				{
-					Vector3 offset = Perpendicular * ((m_BondSeperation * DefaultBondSeperation) * j - ((m_BondSeperation * DefaultBondSeperation) * (bondOrder - 1) / 2));
+					Vector3 offset = Perpendicular * ((values.BondSeperation3D * DefaultBondSeperation) * j - ((values.BondSeperation3D * DefaultBondSeperation) * (bondOrder - 1) / 2));
 
 					Core::Model::Cylinder::DrawEx(
 						StartPos + offset,
 						EndPos + offset,
-						m_BondRadius * DefaultBondRadius,
-						m_BondRadius * DefaultBondRadius,
-						static_cast<int>(m_BondDetail * DefaultBondDetail),
+						values.BondRadius3D * DefaultBondRadius,
+						values.BondRadius3D * DefaultBondRadius,
+						static_cast<int>(values.BondDetail3D * DefaultBondDetail),
 						Core::RAYWHITE
 					);
 				}
@@ -144,9 +159,11 @@ void View3DLayer::SetupRenderTexture()
 	int w = std::fmax(m_WindowData.width, 10);
 	int h = std::fmax(m_WindowData.height, 10);
 	m_Target = LoadRenderTexture(w, h);
+	m_ForceRender = true;
 }
 
-void View3DLayer::ResetCamera()
+void View3DLayer::ResetCamera(Vector3 Target)
 {
+	m_Camera.SetTarget(Target);
 	m_Camera.Update(0.0f, m_WindowData.width, m_WindowData.height);
 }
