@@ -100,9 +100,11 @@ void InterfaceLayer::DrawMenuBar()
 	{
 		if (ImGui::BeginMenu("File"))
 		{
+			ImGui::BeginDisabled();
 			ImGui::MenuItem("Export"); // TODO : Implement Export Functionality
 			ImGui::MenuItem("Import"); // TODO : Implement Import Functionality
-			
+			ImGui::EndDisabled();
+
 			if (ImGui::BeginMenu("Cache"))
 			{
 				if (ImGui::MenuItem("View", nullptr, &m_ShowCacheList) && m_ShowCacheList)
@@ -130,10 +132,14 @@ void InterfaceLayer::DrawMenuBar()
 		}
 		if (ImGui::BeginMenu("Help"))
 		{
+			ImGui::BeginDisabled();
 			ImGui::MenuItem("Documentation"); // TODO : Link to online docs
 			ImGui::MenuItem("Send Feedback"); // TODO : Link to feedback form
+			ImGui::EndDisabled();
 			ImGui::MenuItem("Dear ImGui Demo", nullptr, &m_ShowDemo);
+			ImGui::BeginDisabled();
 			ImGui::MenuItem("About"); // TODO : Opens an About Window
+			ImGui::EndDisabled();
 			ImGui::EndMenu();
 		}
 		ImGui::EndMainMenuBar();
