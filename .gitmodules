@@ -1,3 +1,11 @@
-[submodule "external/rlImGui"]
-	path = external/rlImGui
-	url = https://github.com/MarlonOtter/rlImGui.git
+[submodule "external/Slate"]
+	path = external/Slate
+	url = https://github.com/MarlonOtter/Slate.git
+	branch = dev
+[submodule "external/Slate-Http"]
+	path = external/Slate-Http
+	url = https://github.com/MarlonOtter/Slate-Http.git
+[submodule "external/Slate-Assets"]
+	path = external/Slate-Assets
+	url = https://github.com/MarlonOtter/Slate-Assets.git
+	branch = dev

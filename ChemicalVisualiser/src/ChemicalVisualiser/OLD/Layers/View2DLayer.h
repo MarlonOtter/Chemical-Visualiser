@@ -1,0 +1,47 @@
+#pragma once
+
+#include "Slate/Core.h"
+#include "Slate/Renderer.h"
+
+#include "Camera2D.h"
+
+#include "WindowData.h"
+#include "ChemVis/Chemical.h"
+
+class View2DLayer : public Slate::Layer
+{
+public:
+	View2DLayer();
+	View2DLayer(std::shared_ptr<ChemVis::Chemical> chem);
+	virtual ~View2DLayer();
+
+	virtual void OnUpdate(float ts) override;
+	virtual void OnRender() override;
+	virtual void OnComposite() override;
+
+	Slate::RenderTexture& getRenderTexture() { return m_Target; }
+
+	void setWindowData(WindowData data) { m_WindowData = data; }
+
+private:
+	Camera2D m_Camera;
+	Slate::RenderTexture m_Target;
+
+	glm::vec2 m_TargetPosition = { 0, 0 };
+	float m_CameraZoom = 1.0f;
+
+	// Window Information
+	glm::vec2 m_PrevSize = { 800, 800 };
+	WindowData m_WindowData;
+	bool m_Resizing = false;
+	bool m_FirstFrame = true;
+	bool m_ResizeQueued = false;
+	
+	bool m_ForceRender = false;
+
+	std::shared_ptr<ChemVis::Chemical> m_Chemical;
+
+	void SetupRenderTexture();
+	void ResetCamera(glm::vec2 Target = {0,0});
+	void HandleCameraMovement(float ts, glm::vec2 windowSize);
+};

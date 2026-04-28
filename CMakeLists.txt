@@ -1,29 +1,19 @@
 cmake_minimum_required(VERSION 3.15)
-project(MyProject)
-
-set(CMAKE_CXX_STANDARD 23)
-
-# Generate compile_commands.json
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
-
-# Dependencies
-include(Dependencies.cmake)
-
-set(IMGUI_INCLUDE_DIR ${imgui_SOURCE_DIR} CACHE INTERNAL "ImGui include path")
-add_subdirectory(external/rlImGui)
-
-set(IMGUI_SOURCES
-  ${imgui_SOURCE_DIR}/imgui.cpp
-  ${imgui_SOURCE_DIR}/imgui_draw.cpp
-  ${imgui_SOURCE_DIR}/imgui_tables.cpp
-  ${imgui_SOURCE_DIR}/imgui_widgets.cpp
-  ${imgui_SOURCE_DIR}/imgui_demo.cpp
+project(ChemicalVisualiser 
+    LANGUAGES C CXX
+    DESCRIPTION "Chemical Visualiser"
+    VERSION 0.1.0
 )
 
-add_library(imgui STATIC ${IMGUI_SOURCES})
-target_include_directories(imgui PUBLIC ${imgui_SOURCE_DIR})
+# Enforce C++ standard
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Projects
-add_subdirectory(Core)
-add_subdirectory(App)
+# Override Shader Source Directory
+set(SLATE_SHADER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/external/Slate/src/Shaders" CACHE PATH "" FORCE)
+
+# Build projects
+add_subdirectory(ChemicalVisualiser)
+add_subdirectory(external/Slate)
+add_subdirectory(external/Slate-Http)
+add_subdirectory(external/Slate-Assets)
